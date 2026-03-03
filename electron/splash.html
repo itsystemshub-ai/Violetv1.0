@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Violet ERP</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 420px;
+        height: 280px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        -webkit-app-region: drag;
+        overflow: hidden;
+      }
+
+      .card {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          #1e1b4b 0%,
+          #312e81 50%,
+          #4c1d95 100%
+        );
+        border-radius: 18px;
+        box-shadow:
+          0 32px 64px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 32px;
+      }
+
+      .logo-ring {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .logo-ring svg {
+        width: 40px;
+        height: 40px;
+        fill: white;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+        }
+        50% {
+          box-shadow: 0 8px 36px rgba(168, 85, 247, 0.8);
+        }
+      }
+
+      h1 {
+        color: white;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+
+      .subtitle {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        margin-top: -14px;
+      }
+
+      .progress-track {
+        width: 200px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7c3aed, #c084fc);
+        border-radius: 2px;
+        animation: load 2.2s ease-in-out forwards;
+      }
+
+      @keyframes load {
+        0% {
+          width: 0%;
+        }
+        40% {
+          width: 55%;
+        }
+        80% {
+          width: 85%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      .status {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 11px;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 0.9;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo-ring">
+        <!-- Violet "V" icon -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 4l8 16L20 4h-3.5L12 13.5 7.5 4z" />
+        </svg>
+      </div>
+      <h1>Violet ERP</h1>
+      <p class="subtitle">Sistema de Gestión Empresarial</p>
+      <div class="progress-track">
+        <div class="progress-bar"></div>
+      </div>
+      <p class="status">Iniciando…</p>
+    </div>
+  </body>
+</html>

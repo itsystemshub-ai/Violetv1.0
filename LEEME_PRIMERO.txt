@@ -1,0 +1,154 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║              ⚠️  IMPORTANTE - LEE ESTO PRIMERO  ⚠️            ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🚨 ERROR COMÚN: "Error de conexión"
+
+Si ves este error en el chat de IA:
+  ❌ Error de conexión. Verifica tu conexión a internet...
+
+CAUSA:
+  El servidor proxy NO está corriendo.
+
+SOLUCIÓN:
+  1. Cierra la aplicación (Ctrl+C)
+  2. Ejecuta: INICIO_RAPIDO.bat
+  3. Espera a ver estos mensajes:
+     - "🚀 Groq Proxy Server running on http://localhost:3001"
+     - "VITE ready in xxx ms"
+
+═══════════════════════════════════════════════════════════════
+
+✅ FORMA CORRECTA DE INICIAR
+
+NO USES:
+  ❌ npm run dev
+  ❌ npm start
+  ❌ Solo abrir la aplicación
+
+USA:
+  ✅ INICIO_RAPIDO.bat
+  ✅ npm run dev:full
+  ✅ INICIAR_CON_VERIFICACION.bat
+
+═══════════════════════════════════════════════════════════════
+
+📋 PASOS PARA USAR LA IA
+
+1️⃣  INICIAR EL SISTEMA
+   → Doble clic en: INICIO_RAPIDO.bat
+   → Espera a ver los mensajes de inicio
+
+2️⃣  VERIFICAR QUE EL PROXY FUNCIONA
+   → Abre: http://localhost:3001/health
+   → Debes ver: {"status":"ok","message":"Groq Proxy..."}
+
+3️⃣  CONFIGURAR API KEY
+   → Abre: http://localhost:8080
+   → Ve a: Configuración > IA
+   → Pega: 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
+   → Haz clic en: Guardar API Key
+
+4️⃣  USAR EL CHAT
+   → Ve al Dashboard
+   → Haz clic en el botón flotante de IA
+   → Escribe tu pregunta
+
+═══════════════════════════════════════════════════════════════
+
+🔧 SCRIPTS DISPONIBLES
+
+INICIO_RAPIDO.bat
+  → Inicia todo automáticamente
+  → Instala dependencias si es necesario
+  → Verifica puertos
+
+INICIAR_CON_VERIFICACION.bat
+  → Igual que INICIO_RAPIDO pero con más verificaciones
+  → Te pregunta si continuar si hay conflictos
+
+VERIFICAR_IA.bat
+  → Verifica que todo esté configurado correctamente
+  → No inicia nada, solo verifica
+
+PROBAR_API_GROQ.bat
+  → Prueba la API de Groq directamente
+  → Útil para verificar que tu API key funciona
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOCUMENTACIÓN
+
+SOLUCION_ERROR_CONEXION.md
+  → Guía completa para solucionar el error de conexión
+  → Pasos detallados con explicaciones
+
+INSTRUCCIONES_IA_GROQ.md
+  → Guía completa de uso de la IA
+  → Todas las funciones disponibles
+
+SOLUCION_IA_GROQ.md
+  → Documentación técnica de la solución
+  → Arquitectura y configuración
+
+CAMBIOS_FINALES.md
+  → Últimos cambios realizados
+  → Modelo actualizado a Llama 3.3 70B
+
+═══════════════════════════════════════════════════════════════
+
+🎯 RESUMEN RÁPIDO
+
+El chat de IA necesita DOS cosas corriendo:
+  1. La aplicación (puerto 8080)
+  2. El servidor proxy (puerto 3001)
+
+Si solo inicias con "npm run dev", solo se inicia la aplicación.
+Debes usar "npm run dev:full" para iniciar ambos.
+
+El script INICIO_RAPIDO.bat hace esto automáticamente.
+
+═══════════════════════════════════════════════════════════════
+
+✨ CARACTERÍSTICAS DE LA IA
+
+✓ Modelo: Llama 3.3 70B Versatile (muy inteligente)
+✓ Contexto: 128,000 tokens
+✓ Respuestas en español
+✓ Análisis de datos de negocio
+✓ Recomendaciones inteligentes
+✓ OCR de facturas
+✓ Predicción de inventario
+
+═══════════════════════════════════════════════════════════════
+
+❓ PREGUNTAS FRECUENTES
+
+P: ¿Por qué necesito un proxy?
+R: Groq API tiene restricciones CORS. El proxy actúa como
+   intermediario para evitar estos problemas.
+
+P: ¿Es seguro?
+R: Sí, el proxy corre localmente en tu computadora.
+   Tu API key no se envía a ningún otro servidor.
+
+P: ¿Puedo usar solo la aplicación sin IA?
+R: Sí, usa "npm run dev". La IA simplemente no funcionará.
+
+P: ¿Qué pasa si cierro el proxy?
+R: El chat de IA dejará de funcionar, pero el resto del
+   ERP seguirá funcionando normalmente.
+
+═══════════════════════════════════════════════════════════════
+
+🆘 SOPORTE
+
+Si tienes problemas:
+  1. Lee: SOLUCION_ERROR_CONEXION.md
+  2. Ejecuta: VERIFICAR_IA.bat
+  3. Revisa la consola del navegador (F12)
+  4. Revisa los logs en la terminal
+
+═══════════════════════════════════════════════════════════════
