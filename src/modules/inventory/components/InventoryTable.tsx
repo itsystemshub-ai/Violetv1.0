@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { InventoryLogic, Product, SortField } from "@/types/inventory";
-import { useImageConverter } from "@/hooks/useImageConverter";
+import { useImageConverter } from "@/shared/hooks/useImageConverter";
 
 // Modal de Vista Previa de Imagen
 const ImagePreviewModal = ({

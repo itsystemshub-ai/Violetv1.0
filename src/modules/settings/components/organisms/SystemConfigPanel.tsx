@@ -55,8 +55,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import SettingsCard from "../Atoms/SettingsCard";
 import ConfigToggle from "../Molecules/ConfigToggle";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
-import { TenantSetupForm } from "@/components/Forms";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
+import { TenantSetupForm } from "@/shared/components/common/Forms";
 
 // Valores por defecto para taxes
 const DEFAULT_TAXES = {

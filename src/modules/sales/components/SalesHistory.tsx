@@ -35,9 +35,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDate, formatCurrency } from "@/lib/index";
 import { exportInvoicePDF, exportInvoiceExcel } from "@/lib/exportUtils";
-import { usePagination } from "@/hooks/usePagination";
-import { useDebounce } from "@/hooks/useDebounce";
-import { PaginationControls } from "@/components/PaginationControls";
+import { usePagination } from "@/core/shared/hooks/usePagination";
+import { useDebounce } from "@/core/shared/hooks/useDebounce";
+import { PaginationControls } from "@/shared/components/common/PaginationControls";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 

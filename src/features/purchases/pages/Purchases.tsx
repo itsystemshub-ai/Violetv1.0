@@ -8,12 +8,12 @@ import React, {
 } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PurchasesService } from "../services/purchases.service";
 import { localDb } from "@/lib/localDb";
 import { Product } from "@/lib/index";
-import { ModuleAIAssistant } from "@/components/AIAssistant";
+import { ModuleAIAssistant } from "@/core/ai/components";
 
 // Lazy-loaded Organisms
 const PurchasesHeader = lazy(

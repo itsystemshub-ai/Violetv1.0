@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 import { localDb } from "@/lib/localDb";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { cn } from "@/lib/utils";
 
 interface StockAlert {

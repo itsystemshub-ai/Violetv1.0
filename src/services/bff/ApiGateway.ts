@@ -6,7 +6,7 @@
  * manages central configuration flags.
  */
 
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
 
 export interface APIGatewayRoute {

@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { Employee, formatCurrency } from "@/lib/index";
 import { SyncService } from "@/lib/SyncService";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { localDb } from "@/lib/localDb";
 import { generatePDFReport } from "@/lib/pdfUtils";
 import { PayrollService } from "@/lib/PayrollService";
 import { AccountingService } from "@/lib/AccountingService";
-import { useNotificationStore } from "@/hooks/useNotificationStore";
+import { useNotificationStore } from "@/shared/hooks/useNotificationStore";
 
 export function useHRLogic() {
   const { user } = useAuth();

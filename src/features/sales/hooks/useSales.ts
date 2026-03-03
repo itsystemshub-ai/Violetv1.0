@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Product } from '@/lib/index';
 import { toast } from 'sonner';
-import { useSystemConfig } from '../../../hooks/useSystemConfig';
+import { useSystemConfig } from '../../../modules/settings/hooks/useSystemConfig';
 import { useSalesStore } from './useSalesStore';
 import { NetworkService } from '@/services/LocalNetworkService';
 import { AccountingService } from '@/lib/AccountingService';
 import { ventasService } from '@/services/microservices/ventas/VentasService';
 import { supabase } from '@/lib/supabase';
 import { localDb } from '@/lib/localDb';
-import { useNotificationStore } from '../../../hooks/useNotificationStore';
+import { useNotificationStore } from '../../../shared/hooks/useNotificationStore';
 import type { InvoiceDB, CrudResponse } from '@/types/database.types';
 
 /**

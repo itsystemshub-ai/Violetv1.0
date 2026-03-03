@@ -1,5 +1,5 @@
 import React from "react";
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { formatCurrency } from "@/lib/index";
 import { TrendingUp, CreditCard, DollarSign, Users } from "lucide-react";
 

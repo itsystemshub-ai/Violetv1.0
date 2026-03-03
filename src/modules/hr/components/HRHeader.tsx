@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CardDescription } from "@/components/ui/card";
-import { EmployeeForm } from "@/components/Forms";
+import { EmployeeForm } from "@/shared/components/common/Forms";
 import { HRLogic } from "@/features/hr/hooks/useHRLogic";
 
 interface HRHeaderProps {

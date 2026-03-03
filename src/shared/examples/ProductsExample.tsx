@@ -5,9 +5,9 @@
 
 import React, { useState } from 'react';
 import { api } from '@/api';
-import { useApi } from '@/hooks/useApi';
-import { ApiDataTable, Column, StatusBadge, CurrencyCell } from '@/components/ApiDataTable';
-import { ApiForm, FormField } from '@/components/ApiForm';
+import { useApi } from "@/core/api/hooks/useApi";
+import { ApiDataTable, Column, StatusBadge, CurrencyCell } from "@/shared/components/common/ApiDataTable";
+import { ApiForm, FormField } from "@/shared/components/common/ApiForm";
 import { Product } from '@/lib';
 import { Button } from '@/components/ui/button';
 import {

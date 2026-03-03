@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAI } from "@/hooks/useAI";
+import { useAI } from "@/core/ai/hooks/useAI";
 import { cn } from "@/lib/utils";
 import { springPresets } from "@/lib/motion";
 import { toast } from "sonner";

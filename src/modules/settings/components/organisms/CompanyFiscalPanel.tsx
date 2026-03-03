@@ -39,9 +39,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TenantSetupForm } from "@/components/Forms";
+import { TenantSetupForm } from "@/shared/components/common/Forms";
 import SettingsCard from "../Atoms/SettingsCard";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
 
 interface CompanyFiscalPanelProps {

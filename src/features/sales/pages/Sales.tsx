@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { SalesChart } from "@/components/Charts";
+import { SalesChart } from "@/shared/components/common/Charts";
 import { useSalesLogic } from "@/features/sales/hooks/useSalesLogic";
 import { formatCurrency, formatDate } from "@/lib";
-import { useExchangeDifference } from "@/hooks/useExchangeDifference";
-import { ModuleAIAssistant } from "@/components/AIAssistant";
+import { useExchangeDifference } from "@/modules/finance/hooks/useExchangeDifference";
+import { ModuleAIAssistant } from "@/core/ai/components";
 import {
   Card,
   CardHeader,

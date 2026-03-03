@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib";
 import { localDb } from "@/lib/localDb";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 

@@ -1,4 +1,4 @@
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { DollarSign, FileText, TrendingUp, Target } from "lucide-react";
 
 export const SalesKPIs = ({

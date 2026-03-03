@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Product } from '@/lib/index';
 import { toast } from 'sonner';
-import { useSystemConfig } from '@/hooks/useSystemConfig';
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useInventoryStore } from '@/features/inventory/hooks/useInventoryStore';
 import { SyncService } from '@/lib/SyncService';
 import { inventarioService } from '@/services/microservices/inventario/InventarioService';
-import { useNotificationStore } from '@/hooks/useNotificationStore';
+import { useNotificationStore } from "@/shared/hooks/useNotificationStore";
 import type { ProductDB, SyncMutationResult, CrudResponse } from '@/types/database.types';
 
 /**

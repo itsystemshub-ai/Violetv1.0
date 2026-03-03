@@ -11,14 +11,14 @@ import {
   Activity,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useUserManagement } from "@/hooks/useUserManagement";
-import { useInstanceStore } from "@/hooks/useInstanceStore";
-import { useAI } from "@/hooks/useAI";
-import { useAudit } from "@/hooks/useAudit";
+import { useUserManagement } from "@/modules/settings/hooks/useUserManagement";
+import { useInstanceStore } from "@/shared/hooks/useInstanceStore";
+import { useAI } from "@/core/ai/hooks/useAI";
+import { useAudit } from "@/modules/settings/hooks/useAudit";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BackupSettings } from "@/components/Settings/BackupSettings";
+import { BackupSettings } from "@/modules/settings/components/BackupSettings";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

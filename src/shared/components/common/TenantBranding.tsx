@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { getContrastColor } from "@/lib/index";
 
 interface TenantBrandingProps {

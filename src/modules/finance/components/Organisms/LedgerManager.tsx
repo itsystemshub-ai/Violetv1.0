@@ -25,8 +25,8 @@ import {
 import { FileSpreadsheet } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/index";
 import { TransactionTypeIcon } from "../Atoms/TransactionTypeIcon";
-import { PaginationControls } from "@/components/PaginationControls";
-import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/shared/components/common/PaginationControls";
+import { usePagination } from "@/core/shared/hooks/usePagination";
 
 interface LedgerManagerProps {
   logic: any;

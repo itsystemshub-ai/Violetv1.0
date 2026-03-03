@@ -1,5 +1,5 @@
 import React from "react";
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { Activity, TrendingUp, Zap, Landmark, CreditCard, Download } from "lucide-react";
 
 interface DashboardKPIsProps {

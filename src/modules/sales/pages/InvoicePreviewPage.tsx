@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Printer, Download, FileSpreadsheet, X } from 'lucide-react';
 import { localDb } from '@/lib/localDb';
-import { useSystemConfig } from '@/hooks/useSystemConfig';
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import * as XLSX from 'xlsx';
 
 // Helper function para formatear números de forma segura con formato español (comas)

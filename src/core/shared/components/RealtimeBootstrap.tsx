@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
-import { useUserManagement } from "@/hooks/useUserManagement";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
+import { useUserManagement } from "@/modules/settings/hooks/useUserManagement";
 import { useInventoryStore } from "@/features/inventory/hooks/useInventoryStore";
 import { useSalesStore } from "@/features/sales/hooks/useSalesStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useInstanceStore } from "@/hooks/useInstanceStore";
+import { useInstanceStore } from "@/shared/hooks/useInstanceStore";
 
 /**
  * RealtimeBootstrap

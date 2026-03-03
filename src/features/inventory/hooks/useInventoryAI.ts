@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useAI } from "@/hooks/useAI";
+import { useAI } from "@/core/ai/hooks/useAI";
 import { Product } from "@/lib";
 
 /**

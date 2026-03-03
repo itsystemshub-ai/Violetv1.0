@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib";
 import { cuentasPorCobrarService } from "@/services/microservices/tesoreria/CuentasPorCobrarService";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
 import { PaymentDialog } from "@/components/AccountsReceivable/PaymentDialog";
 

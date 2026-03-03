@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAI } from "@/hooks/useAI";
+import { useAI } from "@/core/ai/hooks/useAI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";

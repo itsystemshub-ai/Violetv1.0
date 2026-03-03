@@ -1,4 +1,4 @@
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Building2, Check, ChevronDown, Globe, PlusCircle } from "lucide-react";
 import {

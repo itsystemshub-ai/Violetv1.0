@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Product, formatCurrency } from "@/lib/index";
 import { IMAGES } from "@/assets/images";
-import { useImageConverter } from "@/hooks/useImageConverter";
+import { useImageConverter } from "@/shared/hooks/useImageConverter";
 
 // --- Internal Components ---
 

@@ -12,7 +12,7 @@ import {
 import { Search, ArrowUp, ArrowDown, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInventoryLogic } from "@/features/inventory/hooks/useInventoryLogic";
-import { ModuleAIAssistant } from "@/components/AIAssistant";
+import { ModuleAIAssistant } from "@/core/ai/components";
 
 // Lazy-loaded components
 const InventoryHeader = lazy(() =>

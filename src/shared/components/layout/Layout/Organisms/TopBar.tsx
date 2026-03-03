@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { ROUTE_PATHS } from "@/lib";
 import { NotificationCenter } from "../Molecules/NotificationCenter";
 import { UserMenu } from "../Molecules/UserMenu";
-import { SyncStatusIndicator } from "@/components/SyncStatusIndicator";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { SyncStatusIndicator } from "@/shared/components/feedback/SyncStatusIndicator";
+import { ThemeToggle } from "@/shared/components/common/ThemeToggle";
 
 interface TopBarProps {
   user: any;

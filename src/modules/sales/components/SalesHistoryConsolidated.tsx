@@ -28,7 +28,7 @@ import {
   ArrowUpDown
 } from "lucide-react";
 import { localDb } from "@/lib/localDb";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {

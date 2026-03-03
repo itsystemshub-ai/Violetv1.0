@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { localDb } from '@/lib/localDb';
 import { SyncService } from '@/lib/SyncService';
 import { CurrencyService } from '@/services/CurrencyService';
-import { sendBroadcastNotification } from '@/hooks/useBroadcastNotifications';
+import { sendBroadcastNotification } from "@/shared/hooks/useBroadcastNotifications";
 
 /**
  * Hook personalizado para gestionar la configuración global del sistema Violet ERP.

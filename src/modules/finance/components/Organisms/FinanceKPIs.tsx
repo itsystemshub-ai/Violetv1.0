@@ -1,4 +1,4 @@
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { Wallet, Scale, Receipt, Zap } from "lucide-react";
 import { formatCurrency } from "@/lib/index";
 

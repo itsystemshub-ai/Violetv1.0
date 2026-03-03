@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IMAGES } from "@/assets/images";
-import { ProductForm } from "@/components/Forms";
+import { ProductForm } from "@/shared/components/common/Forms";
 
 interface InventoryHeaderProps {
   logic: any; // Using the hook return type

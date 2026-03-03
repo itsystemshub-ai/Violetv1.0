@@ -4,7 +4,7 @@
  */
 
 import { toast } from 'sonner';
-import { useNotificationStore } from '@/hooks/useNotificationStore';
+import { useNotificationStore } from "@/shared/hooks/useNotificationStore";
 
 /**
  * Tipos de notificación

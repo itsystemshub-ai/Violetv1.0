@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronRight } from "lucide-react";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { localDb } from "@/lib/localDb";
 import { getCaraboboWeather } from "@/lib/weatherService";
 import { fetchBCVRate } from "@/lib/bcvService";
@@ -15,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { springPresets } from "@/lib/motion";
-import { AIChat } from "@/components/AIChat";
-import { ModuleAIAssistant } from "@/components/AIAssistant";
+import { AIChat } from "@/core/ai/components/AIChat";
+import { ModuleAIAssistant } from "@/core/ai/components";
 import { formatDate } from "@/lib";
 
 // Lazy-loaded Organisms

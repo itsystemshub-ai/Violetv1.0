@@ -7,7 +7,7 @@ import {
 } from "@/lib/index";
 import { supabase } from "@/lib/supabase";
 import { SyncService } from "@/lib/SyncService";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { localDb } from "@/lib/localDb";
 import { finanzasService } from "@/services/microservices/finanzas/FinanzasService";

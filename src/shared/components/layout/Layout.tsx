@@ -3,12 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ROUTE_PATHS, ERP_MODULES } from "@/lib";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
-import { useSecurity } from "@/hooks/useSecurity";
-import { useNetwork } from "@/hooks/useNetwork";
-import { useNotificationStore } from "@/hooks/useNotificationStore";
-import { useAudit } from "@/hooks/useAudit";
-import { CommandPalette } from "@/components/CommandPalette";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
+import { useSecurity } from "@/core/security/hooks/useSecurity";
+import { useNetwork } from "@/core/shared/hooks/useNetwork";
+import { useNotificationStore } from "@/shared/hooks/useNotificationStore";
+import { useAudit } from "@/modules/settings/hooks/useAudit";
+import { CommandPalette } from "@/shared/components/common/CommandPalette";
 
 // Atomic Organisms
 import { TopBar } from "./Layout/Organisms/TopBar";

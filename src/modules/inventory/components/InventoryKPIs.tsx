@@ -1,4 +1,4 @@
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { formatCurrency } from "@/lib/index";
 import { Package, AlertCircle, TrendingUp, Star } from "lucide-react";
 

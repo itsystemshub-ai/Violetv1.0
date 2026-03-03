@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Permission } from '@/lib';
 import { hasPermission, hasAnyPermission } from '@/lib/security/permissions';
-import { TenantBranding } from '@/components/TenantBranding';
-import { Layout } from '@/components/Layout';
+import { TenantBranding } from "@/shared/components/common/TenantBranding";
+import { Layout } from "@/shared/components/layout/Layout";
 
 /**
  * Componente de ruta protegida con validación de permisos

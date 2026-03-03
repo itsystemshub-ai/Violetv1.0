@@ -1,5 +1,5 @@
-import { StandardKPICard } from "@/components/StandardKPICard";
-import { InventoryChart, GenericBarChart } from "@/components/Charts";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
+import { InventoryChart, GenericBarChart } from "@/shared/components/common/Charts";
 import { formatCurrency } from "@/lib/index";
 import { TrendingUp, AlertCircle, Package, Layers } from "lucide-react";
 

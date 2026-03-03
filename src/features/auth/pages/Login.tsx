@@ -1,7 +1,7 @@
 import React, { useState, type FormEvent, Suspense, lazy } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { NetworkService } from "@/services/LocalNetworkService";
 import { ROUTE_PATHS } from "@/lib";
 import { toast } from "sonner";

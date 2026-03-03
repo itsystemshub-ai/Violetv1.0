@@ -7,12 +7,12 @@ import { InventoryService } from "@/features/inventory/services/inventory.servic
 import { generatePDFReport } from "@/lib/pdfUtils";
 import { inventarioService } from "@/services/microservices/inventario/InventarioService";
 import { ForecastingService, ForecastResult } from "@/lib/ForecastingService";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useInventory } from "@/features/inventory/hooks/useInventory";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { useAudit } from "@/hooks/useAudit";
-import { usePagination } from "@/hooks/usePagination";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useAudit } from "@/modules/settings/hooks/useAudit";
+import { usePagination } from "@/core/shared/hooks/usePagination";
+import { useDebounce } from "@/core/shared/hooks/useDebounce";
 import { localDb } from "@/lib/localDb";
 import { Product as ProductType } from "@/lib";
 

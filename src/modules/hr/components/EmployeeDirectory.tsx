@@ -30,12 +30,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExpenseChart } from "@/components/Charts";
+import { ExpenseChart } from "@/shared/components/common/Charts";
 import { TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib";
 import { HRLogic } from "@/features/hr/hooks/useHRLogic";
-import { PaginationControls } from "@/components/PaginationControls";
-import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/shared/components/common/PaginationControls";
+import { usePagination } from "@/core/shared/hooks/usePagination";
 
 interface EmployeeDirectoryProps {
   logic: HRLogic;

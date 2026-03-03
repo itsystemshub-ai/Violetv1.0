@@ -1,4 +1,4 @@
-import { StandardKPICard } from "@/components/StandardKPICard";
+import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { formatCurrency } from "@/lib/index";
 import { HRLogic } from "@/features/hr/hooks/useHRLogic";
 import { Users, UserCheck, DollarSign, Wallet } from "lucide-react";

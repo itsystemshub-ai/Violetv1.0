@@ -4,7 +4,7 @@ import { Activity, Monitor, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
-import { useSystemConfig } from "@/hooks/useSystemConfig";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 // Atomic Components
