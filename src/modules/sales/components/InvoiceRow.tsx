@@ -11,16 +11,16 @@ import {
   Trash2,
   Edit2,
 } from 'lucide-react';
-import { TableRow, TableCell } from "@/shared/components/ui/table';
-import { Badge } from "@/shared/components/ui/badge';
-import { Button } from "@/shared/components/ui/button';
-import { Separator } from "@/shared/components/ui/separator';
+import { TableRow, TableCell } from "@/shared/components/ui/table";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Separator } from "@/shared/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/shared/components/ui/dropdown-menu';
+} from "@/shared/components/ui/dropdown-menu";
 import { formatDate, formatCurrency } from '@/lib/index';
 
 interface InvoiceRowProps {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Button } from "@/shared/components/ui/button';
+import { Button } from "@/shared/components/ui/button";
 import { Printer, Download, FileSpreadsheet, X } from 'lucide-react';
 import { localDb } from '@/lib/localDb';
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";

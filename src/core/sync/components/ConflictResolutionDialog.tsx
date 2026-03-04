@@ -6,13 +6,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog';
-import { Button } from "@/shared/components/ui/button';
-import { Badge } from "@/shared/components/ui/badge';
-import { Alert, AlertDescription } from "@/shared/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group';
-import { Label } from "@/shared/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs';
+} from "@/shared/components/ui/dialog";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import { Label } from "@/shared/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { AlertTriangle, Clock, User, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
