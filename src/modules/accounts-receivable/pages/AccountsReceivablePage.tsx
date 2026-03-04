@@ -21,7 +21,7 @@ import { formatCurrency, formatDate } from "@/lib";
 import { cuentasPorCobrarService } from "@/services/microservices/tesoreria/CuentasPorCobrarService";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
-import { PaymentDialog } from "@/components/AccountsReceivable/PaymentDialog";
+import { PaymentDialog } from "@/modules/accounts-receivable/components/PaymentDialog";
 
 const AccountsReceivable = () => {
   const { activeTenantId, exchangeRate } = useSystemConfig();

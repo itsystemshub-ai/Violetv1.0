@@ -11,33 +11,33 @@ import { useHRLogic } from "@/features/hr/hooks/useHRLogic";
 
 // Lazy-loaded components
 const HRHeader = lazy(() =>
-  import("@/components/HR/HRHeader").then((m) => ({ default: m.HRHeader })),
+  import("@/modules/hr/components/HRHeader").then((m) => ({ default: m.HRHeader })),
 );
 const HRKPIs = lazy(() =>
-  import("@/components/HR/HRKPIs").then((m) => ({ default: m.HRKPIs })),
+  import("@/modules/hr/components/HRKPIs").then((m) => ({ default: m.HRKPIs })),
 );
 const EmployeeDirectory = lazy(() =>
-  import("@/components/HR/EmployeeDirectory").then((m) => ({
+  import("@/modules/hr/components/EmployeeDirectory").then((m) => ({
     default: m.EmployeeDirectory,
   })),
 );
 const PayrollManager = lazy(() =>
-  import("@/components/HR/PayrollManager").then((m) => ({
+  import("@/modules/hr/components/PayrollManager").then((m) => ({
     default: m.PayrollManager,
   })),
 );
 const PrestacionesManager = lazy(() =>
-  import("@/components/HR/PrestacionesManager").then((m) => ({
+  import("@/modules/hr/components/PrestacionesManager").then((m) => ({
     default: m.PrestacionesManager,
   })),
 );
 const VacacionesManager = lazy(() =>
-  import("@/components/HR/VacacionesManager").then((m) => ({
+  import("@/modules/hr/components/VacacionesManager").then((m) => ({
     default: m.VacacionesManager,
   })),
 );
 const HRReports = lazy(() =>
-  import("@/components/HR/HRReports").then((m) => ({ default: m.HRReports })),
+  import("@/modules/hr/components/HRReports").then((m) => ({ default: m.HRReports })),
 );
 
 const LoadingTab = () => (

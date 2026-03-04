@@ -11,7 +11,7 @@ import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { localDb } from "@/core/database/localDb";
 import { finanzasService } from "@/services/microservices/finanzas/FinanzasService";
-import { generatePDFReport } from "@/lib/pdfUtils";
+import { generatePDFReport } from "@/infrastructure/pdf/pdf-utils";
 import { LibroGeneratorService } from "@/lib/LibroGeneratorService";
 import { IGTFService } from "@/lib/IGTFService";
 import { WithholdingService } from "@/lib/WithholdingService";

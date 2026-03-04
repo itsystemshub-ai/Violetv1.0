@@ -34,7 +34,7 @@ import {
   DropdownMenuItem,
 } from "@/shared/components/ui/dropdown-menu";
 import { formatDate, formatCurrency } from "@/lib/index";
-import { exportInvoicePDF, exportInvoiceExcel } from "@/lib/exportUtils";
+import { exportInvoicePDF, exportInvoiceExcel } from "@/infrastructure/export/export-utils";
 import { usePagination } from "@/core/shared/hooks/usePagination";
 import { useDebounce } from "@/core/shared/hooks/useDebounce";
 import { PaginationControls } from "@/shared/components/common/PaginationControls";

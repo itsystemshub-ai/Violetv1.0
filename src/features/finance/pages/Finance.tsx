@@ -5,47 +5,47 @@ import { ModuleAIAssistant } from "@/core/ai/components";
 
 // Lazy-loaded Organisms
 const FinanceHeader = lazy(() =>
-  import("@/components/Finance/Organisms/FinanceHeader").then((m) => ({
+  import("@/modules/finance/components/Organisms/FinanceHeader").then((m) => ({
     default: m.FinanceHeader,
   })),
 );
 const FinanceKPIs = lazy(() =>
-  import("@/components/Finance/Organisms/FinanceKPIs").then((m) => ({
+  import("@/modules/finance/components/Organisms/FinanceKPIs").then((m) => ({
     default: m.FinanceKPIs,
   })),
 );
 const FinanceDashboard = lazy(() =>
-  import("@/components/Finance/Organisms/FinanceDashboard").then((m) => ({
+  import("@/modules/finance/components/Organisms/FinanceDashboard").then((m) => ({
     default: m.FinanceDashboard,
   })),
 );
 const CxCManager = lazy(() =>
-  import("@/components/Finance/Organisms/CxCManager").then((m) => ({
+  import("@/modules/finance/components/Organisms/CxCManager").then((m) => ({
     default: m.CxCManager,
   })),
 );
 const LibroManager = lazy(() =>
-  import("@/components/Finance/Organisms/LibroManager").then((m) => ({
+  import("@/modules/finance/components/Organisms/LibroManager").then((m) => ({
     default: m.LibroManager,
   })),
 );
 const IGTFManager = lazy(() =>
-  import("@/components/Finance/Organisms/IGTFManager").then((m) => ({
+  import("@/modules/finance/components/Organisms/IGTFManager").then((m) => ({
     default: m.IGTFManager,
   })),
 );
 const ReconciliationManager = lazy(() =>
-  import("@/components/Finance/Organisms/ReconciliationManager").then((m) => ({
+  import("@/modules/finance/components/Organisms/ReconciliationManager").then((m) => ({
     default: m.ReconciliationManager,
   })),
 );
 const LedgerManager = lazy(() =>
-  import("@/components/Finance/Organisms/LedgerManager").then((m) => ({
+  import("@/modules/finance/components/Organisms/LedgerManager").then((m) => ({
     default: m.LedgerManager,
   })),
 );
 const FinanceReports = lazy(() =>
-  import("@/components/Finance/Organisms/FinanceReports").then((m) => ({
+  import("@/modules/finance/components/Organisms/FinanceReports").then((m) => ({
     default: m.FinanceReports,
   })),
 );

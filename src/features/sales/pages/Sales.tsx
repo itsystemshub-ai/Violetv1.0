@@ -27,45 +27,45 @@ import { ArrowUpRight } from "lucide-react";
 
 // Lazy-loaded sub-components
 const SalesPOS = lazy(() =>
-  import("@/components/Sales/SalesPOS").then((m) => ({ default: m.SalesPOS })),
+  import("@/modules/sales/components/SalesPOS").then((m) => ({ default: m.SalesPOS })),
 );
 const SalesCart = lazy(() =>
-  import("@/components/Sales/SalesCart").then((m) => ({
+  import("@/modules/sales/components/SalesCart").then((m) => ({
     default: m.SalesCart,
   })),
 );
 const SalesHistory = lazy(() =>
-  import("@/components/Sales/SalesHistory").then((m) => ({
+  import("@/modules/sales/components/SalesHistory").then((m) => ({
     default: m.SalesHistory,
   })),
 );
 const SalesManagement = lazy(() =>
-  import("@/components/Sales/SalesManagement").then((m) => ({
+  import("@/modules/sales/components/SalesManagement").then((m) => ({
     default: m.SalesManagement,
   })),
 );
 const SalesKPIs = lazy(() =>
-  import("@/components/Sales/SalesKPIs").then((m) => ({
+  import("@/modules/sales/components/SalesKPIs").then((m) => ({
     default: m.SalesKPIs,
   })),
 );
 const EntityDialog = lazy(() =>
-  import("@/components/Sales/EntityDialog").then((m) => ({
+  import("@/modules/sales/components/EntityDialog").then((m) => ({
     default: m.EntityDialog,
   })),
 );
 const ReportDialog = lazy(() =>
-  import("@/components/Sales/ReportDialog").then((m) => ({
+  import("@/modules/sales/components/ReportDialog").then((m) => ({
     default: m.ReportDialog,
   })),
 );
 const SalesHistoryConsolidated = lazy(() =>
-  import("@/components/Sales/SalesHistoryConsolidated").then((m) => ({
+  import("@/modules/sales/components/SalesHistoryConsolidated").then((m) => ({
     default: m.SalesHistoryConsolidated,
   })),
 );
 const PaymentDialog = lazy(() =>
-  import("@/components/Sales/PaymentDialog").then((m) => ({
+  import("@/modules/sales/components/PaymentDialog").then((m) => ({
     default: m.PaymentDialog,
   })),
 );

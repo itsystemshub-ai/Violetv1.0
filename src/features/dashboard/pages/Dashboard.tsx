@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronRight } from "lucide-react";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { localDb } from "@/core/database/localDb";
-import { getCaraboboWeather } from "@/lib/weatherService";
-import { fetchBCVRate } from "@/lib/bcvService";
+import { getCaraboboWeather } from "@/infrastructure/weather/weather.service";
+import { fetchBCVRate } from "@/infrastructure/bcv/bcv.service";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -21,22 +21,22 @@ import { formatDate } from "@/lib";
 
 // Lazy-loaded Organisms
 const QuickAccessModules = lazy(
-  () => import("@/components/Dashboard/Organisms/QuickAccessModules"),
+  () => import("@/modules/dashboard/components/Organisms/QuickAccessModules"),
 );
 const DashboardHeader = lazy(
-  () => import("@/components/Dashboard/Organisms/DashboardHeader"),
+  () => import("@/modules/dashboard/components/Organisms/DashboardHeader"),
 );
 const DashboardKPIs = lazy(
-  () => import("@/components/Dashboard/Organisms/DashboardKPIs"),
+  () => import("@/modules/dashboard/components/Organisms/DashboardKPIs"),
 );
 const DashboardMainContent = lazy(
-  () => import("@/components/Dashboard/Organisms/DashboardMainContent"),
+  () => import("@/modules/dashboard/components/Organisms/DashboardMainContent"),
 );
 const DashboardSidebar = lazy(
-  () => import("@/components/Dashboard/Organisms/DashboardSidebar"),
+  () => import("@/modules/dashboard/components/Organisms/DashboardSidebar"),
 );
 const StockAlerts = lazy(
-  () => import("@/components/Dashboard/StockAlerts").then(m => ({ default: m.StockAlerts })),
+  () => import("@/modules/dashboard/components/StockAlerts").then(m => ({ default: m.StockAlerts })),
 );
 
 const LoadingFallback = () => (

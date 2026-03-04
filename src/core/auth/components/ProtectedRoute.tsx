@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Permission } from '@/lib';
-import { hasPermission, hasAnyPermission } from '@/lib/security/permissions';
+import { hasPermission, hasAnyPermission } from '@/core/security/security/permissions';
 import { TenantBranding } from "@/shared/components/common/TenantBranding";
 import { Layout } from "@/shared/components/layout/Layout";
 

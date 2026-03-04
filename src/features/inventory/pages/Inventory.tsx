@@ -16,42 +16,42 @@ import { ModuleAIAssistant } from "@/core/ai/components";
 
 // Lazy-loaded components
 const InventoryHeader = lazy(() =>
-  import("@/components/Inventory/InventoryHeader").then((m) => ({
+  import("@/modules/inventory/components/InventoryHeader").then((m) => ({
     default: m.InventoryHeader,
   })),
 );
 const InventoryKPIs = lazy(() =>
-  import("@/components/Inventory/InventoryKPIs").then((m) => ({
+  import("@/modules/inventory/components/InventoryKPIs").then((m) => ({
     default: m.InventoryKPIs,
   })),
 );
 const InventoryTable = lazy(() =>
-  import("@/components/Inventory/InventoryTable").then((m) => ({
+  import("@/modules/inventory/components/InventoryTable").then((m) => ({
     default: m.InventoryTable,
   })),
 );
 const CatalogTable = lazy(() =>
-  import("@/components/Inventory/CatalogTable").then((m) => ({
+  import("@/modules/inventory/components/CatalogTable").then((m) => ({
     default: m.CatalogTable,
   })),
 );
 const InventoryStats = lazy(() =>
-  import("@/components/Inventory/InventoryStats").then((m) => ({
+  import("@/modules/inventory/components/InventoryStats").then((m) => ({
     default: m.InventoryStats,
   })),
 );
 const InventoryAIPanel = lazy(() =>
-  import("@/components/Inventory/InventoryAIPanel").then((m) => ({
+  import("@/modules/inventory/components/InventoryAIPanel").then((m) => ({
     default: m.InventoryAIPanel,
   })),
 );
 const InventoryAnalytics = lazy(() =>
-  import("@/components/Inventory/InventoryAnalytics").then((m) => ({
+  import("@/modules/inventory/components/InventoryAnalytics").then((m) => ({
     default: m.InventoryAnalytics,
   })),
 );
 const InventoryDialogs = lazy(() =>
-  import("@/components/Inventory/InventoryDialogs").then((m) => ({
+  import("@/modules/inventory/components/InventoryDialogs").then((m) => ({
     default: m.InventoryDialogs,
   })),
 );

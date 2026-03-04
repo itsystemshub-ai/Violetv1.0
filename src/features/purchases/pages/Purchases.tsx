@@ -17,22 +17,22 @@ import { ModuleAIAssistant } from "@/core/ai/components";
 
 // Lazy-loaded Organisms
 const PurchasesHeader = lazy(
-  () => import("@/components/Purchases/Organisms/PurchasesHeader"),
+  () => import("@/modules/purchases/components/Organisms/PurchasesHeader"),
 );
 const PurchasesStats = lazy(
-  () => import("@/components/Purchases/Organisms/PurchasesStats"),
+  () => import("@/modules/purchases/components/Organisms/PurchasesStats"),
 );
 const PurchasesHistoryTable = lazy(
-  () => import("@/components/Purchases/Organisms/PurchasesHistoryTable"),
+  () => import("@/modules/purchases/components/Organisms/PurchasesHistoryTable"),
 );
 const PurchasesInsights = lazy(
-  () => import("@/components/Purchases/Organisms/PurchasesInsights"),
+  () => import("@/modules/purchases/components/Organisms/PurchasesInsights"),
 );
 const NewPurchaseDialog = lazy(
-  () => import("@/components/Purchases/Organisms/NewPurchaseDialog"),
+  () => import("@/modules/purchases/components/Organisms/NewPurchaseDialog"),
 );
 const NewSupplierDialog = lazy(
-  () => import("@/components/Purchases/Organisms/NewSupplierDialog"),
+  () => import("@/modules/purchases/components/Organisms/NewSupplierDialog"),
 );
 
 const LoadingFallback = () => (
