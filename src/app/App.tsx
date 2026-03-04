@@ -24,6 +24,7 @@ import { AppInitializer } from '@/core/initialization/AppInitializer';
 import { NotificationManager } from '@/core/notifications/NotificationManager';
 import { OfflineBanner } from '@/shared/components/feedback/OfflineBanner';
 import { RealtimeBootstrap } from '@/core/shared/components/RealtimeBootstrap';
+import { AIFloatingButton } from '@/shared/components/ai';
 
 /**
  * App Component
@@ -48,6 +49,7 @@ const App: React.FC = () => {
             <NotificationManager />
             <OfflineBanner />
             <RealtimeBootstrap />
+            <AIFloatingButton />
           </HashRouter>
         </AppInitializer>
       </AppProviders>
