@@ -11,3 +11,7 @@ export * from './TenantBranding';
 export * from './TenantSelector';
 export * from './ThemeToggle';
 export * from './VirtualizedProductList';
+
+// UI/UX Pro Max Enhanced Components
+export * from './EnhancedKPICard';
+export * from './EnhancedDataTable';
