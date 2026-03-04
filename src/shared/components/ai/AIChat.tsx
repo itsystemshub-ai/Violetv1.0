@@ -13,7 +13,7 @@ import { useAIStore } from '@/services/ai/AIService';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/shared/utils/utils';
 
 interface AIChatProps {
   onClose?: () => void;
