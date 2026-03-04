@@ -28,7 +28,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Separator } from "@/shared/components/ui/separator";
 import { DollarSign, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib';
-import { ExchangeDifferenceService } from '@/lib/ExchangeDifferenceService';
+import { ExchangeDifferenceService } from '@/modules/finance/services/exchange-difference.service';
 
 interface PaymentDialogProps {
   isOpen: boolean;

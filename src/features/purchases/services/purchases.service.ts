@@ -1,6 +1,6 @@
 import { localDb } from "@/core/database/localDb";
 import { SyncService } from "@/core/sync/SyncService";
-import { AccountingService } from '@/lib/AccountingService';
+import { AccountingService } from '@/modules/finance/services/accounting.service';
 
 export interface PurchaseItem {
   id: string;

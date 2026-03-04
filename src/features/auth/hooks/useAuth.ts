@@ -10,8 +10,8 @@ import {
   simulateNetworkDelay,
   type AuthResult,
 } from './useAuth.helpers';
-import { loginRateLimiter } from '@/lib/security/rateLimiter';
-import { sanitizeString } from '@/lib/security/sanitization';
+import { loginRateLimiter } from '@/core/security/security/rateLimiter';
+import { sanitizeString } from '@/core/security/security/sanitization';
 
 /**
  * Interfaz que define el estado global de autenticación.

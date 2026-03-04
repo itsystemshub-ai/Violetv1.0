@@ -4,9 +4,9 @@
  */
 
 import { User, ALL_PERMISSIONS } from '@/lib';
-import { sanitizeString } from '@/lib/security/sanitization';
-import { generateSecureToken } from '@/lib/security/encryption';
-import { loginRateLimiter } from '@/lib/security/rateLimiter';
+import { sanitizeString } from '@/core/security/security/sanitization';
+import { generateSecureToken } from '@/core/security/security/encryption';
+import { loginRateLimiter } from '@/core/security/security/rateLimiter';
 
 /**
  * Credenciales de super admin desde variables de entorno

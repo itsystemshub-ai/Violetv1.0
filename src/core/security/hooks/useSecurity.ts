@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '../features/auth/hooks/useAuth';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import { toast } from 'sonner';
 
 /**

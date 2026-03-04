@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { localDb } from "@/core/database/localDb";
 import { generatePDFReport } from "@/infrastructure/pdf/pdf-utils";
-import { PayrollService } from "@/lib/PayrollService";
-import { AccountingService } from "@/lib/AccountingService";
+import { PayrollService } from "@/modules/hr/services/payroll.service";
+import { AccountingService } from "@/modules/finance/services/accounting.service";
 import { useNotificationStore } from "@/shared/hooks/useNotificationStore";
 
 export function useHRLogic() {

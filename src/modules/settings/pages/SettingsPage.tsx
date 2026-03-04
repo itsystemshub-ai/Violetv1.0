@@ -43,25 +43,25 @@ import { NetworkService } from "@/services/LocalNetworkService";
 
 // Lazy-loaded Organisms for Code Splitting
 const SystemConfigPanel = lazy(
-  () => import("@/components/Settings/Organisms/SystemConfigPanel"),
+  () => import("@/modules/settings/components/organisms/SystemConfigPanel"),
 );
 const CompanyFiscalPanel = lazy(
-  () => import("@/components/Settings/Organisms/CompanyFiscalPanel"),
+  () => import("@/modules/settings/components/organisms/CompanyFiscalPanel"),
 );
 const UserManagementPanel = lazy(
-  () => import("@/components/Settings/Organisms/UserManagementPanel"),
+  () => import("@/modules/settings/components/organisms/UserManagementPanel"),
 );
 const AIChatPanel = lazy(
-  () => import("@/components/Settings/Organisms/AIChatPanel"),
+  () => import("@/modules/settings/components/organisms/AIChatPanel"),
 );
 const SecurityAuditPanel = lazy(
-  () => import("@/components/Settings/Organisms/SecurityAuditPanel"),
+  () => import("@/modules/settings/components/organisms/SecurityAuditPanel"),
 );
 const SystemMonitorPanel = lazy(
-  () => import("@/components/Settings/Organisms/SystemMonitorPanel"),
+  () => import("@/modules/settings/components/organisms/SystemMonitorPanel"),
 );
 const ActivityLogPanel = lazy(
-  () => import("@/components/Settings/Organisms/ActivityLogPanel"),
+  () => import("@/modules/settings/components/organisms/ActivityLogPanel"),
 );
 
 const LoadingFallback = () => (

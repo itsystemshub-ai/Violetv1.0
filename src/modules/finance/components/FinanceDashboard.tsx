@@ -1,7 +1,7 @@
 import { Card } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { formatCurrency } from "@/lib/index";
-import { WithholdingService } from "@/lib/WithholdingService";
+import { WithholdingService } from "@/modules/finance/services/withholding.service";
 
 interface FinanceDashboardProps {
   logic: any;

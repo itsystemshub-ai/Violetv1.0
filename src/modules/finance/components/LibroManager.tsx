@@ -10,7 +10,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Input } from "@/shared/components/ui/input";
 import { FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import { formatCurrency } from "@/lib/index";
-import { WithholdingService } from "@/lib/WithholdingService";
+import { WithholdingService } from "@/modules/finance/services/withholding.service";
 
 interface LibroManagerProps {
   logic: any;

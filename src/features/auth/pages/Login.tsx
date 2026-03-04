@@ -8,16 +8,16 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 // Components
-import { LoginBackground } from "@/components/Login/Atoms/LoginBackground";
-import { BrandingSection } from "@/components/Login/Molecules/BrandingSection";
+import { LoginBackground } from "@/core/auth/components/LoginBackground";
+import { BrandingSection } from "@/core/auth/components/BrandingSection";
 import {
   LoginForm,
   type LoginStep,
-} from "@/components/Login/Organisms/LoginForm";
+} from "@/core/auth/components/LoginForm";
 
 // Lazy-loaded components
 const LegalDialogs = lazy(() =>
-  import("@/components/Login/Organisms/LegalDialogs").then((m) => ({
+  import("@/core/auth/components/LegalDialogs").then((m) => ({
     default: m.LegalDialogs,
   })),
 );

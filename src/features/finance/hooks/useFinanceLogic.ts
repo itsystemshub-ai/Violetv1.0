@@ -12,14 +12,14 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { localDb } from "@/core/database/localDb";
 import { finanzasService } from "@/services/microservices/finanzas/FinanzasService";
 import { generatePDFReport } from "@/infrastructure/pdf/pdf-utils";
-import { LibroGeneratorService } from "@/lib/LibroGeneratorService";
-import { IGTFService } from "@/lib/IGTFService";
-import { WithholdingService } from "@/lib/WithholdingService";
-import { AccountingService } from "@/lib/AccountingService";
+import { LibroGeneratorService } from "@/modules/finance/services/libro-generator.service";
+import { IGTFService } from "@/modules/finance/services/igtf.service";
+import { WithholdingService } from "@/modules/finance/services/withholding.service";
+import { AccountingService } from "@/modules/finance/services/accounting.service";
 import { 
   ReconciliationService, 
   ReconciliationMatch 
-} from "@/lib/ReconciliationService";
+} from "@/modules/finance/services/reconciliation.service";
 
 export const useFinanceLogic = () => {
   const { user } = useAuth();

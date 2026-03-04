@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
-import { lookupBarcode } from "@/lib/barcodeService";
+import { barcodeService } from "@/modules/inventory/services/barcode.service";
 import { withAIHealing } from "@/core/ai/ai-error-handler";
 import { InventoryService } from "@/features/inventory/services/inventory.service";
 import { generatePDFReport } from "@/infrastructure/pdf/pdf-utils";
@@ -104,8 +104,12 @@ export const useInventoryLogic = () => {
     if (!searchQuery.trim()) return;
     setIsBarcodeLoading(true);
     setBarcodeResult(null);
-    const result = await lookupBarcode(searchQuery.trim());
-    setBarcodeResult(result);
+    // Buscar producto por código de barras
+    const result = products.find(p => 
+      p.id === searchQuery.trim() || 
+      barcodeService.generateBarcode(p.id) === searchQuery.trim()
+    );
+    setBarcodeResult(result || { error: 'Producto no encontrado' });
     setIsBarcodeLoading(false);
   };
 

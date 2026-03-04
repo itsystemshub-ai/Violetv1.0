@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import { Invoice, Tenant, formatCurrency, formatDate } from './index';
+import { Invoice, Tenant, formatCurrency, formatDate } from '@/lib';
 
 const ITEMS_PER_PAGE = 20; // 20 filas como en la imagen original
 

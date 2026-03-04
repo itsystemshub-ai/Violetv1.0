@@ -8,7 +8,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import { Shield, Copy, Check, AlertTriangle } from 'lucide-react';
-import { enable2FA, verifyTOTP } from '@/lib/security/twoFactor';
+import { enable2FA, verifyTOTP } from '@/core/security/security/twoFactor';
 
 interface TwoFactorSetupProps {
   username: string;

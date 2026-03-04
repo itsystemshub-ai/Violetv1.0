@@ -15,7 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/index";
-import { WithholdingService } from "@/lib/WithholdingService";
+import { WithholdingService } from "@/modules/finance/services/withholding.service";
 
 interface LibroManagerProps {
   logic: any;

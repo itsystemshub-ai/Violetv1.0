@@ -6,12 +6,12 @@
  */
 
 import { useState, useEffect } from 'react';
-import { ExchangeDifferenceService, type ExchangeDifference } from '@/lib/ExchangeDifferenceService';
-import { useTenant } from './useTenant';
+import { ExchangeDifferenceService, type ExchangeDifference } from '@/modules/finance/services/exchange-difference.service';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
 import { toast } from 'sonner';
 
 export const useExchangeDifference = () => {
-  const { tenant } = useTenant();
+  const { tenant } = useSystemConfig();
   const [differences, setDifferences] = useState<ExchangeDifference[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);

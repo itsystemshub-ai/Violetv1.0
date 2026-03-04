@@ -43,7 +43,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Tenant, Product, Employee } from "@/lib";
-import { WithholdingService } from "@/lib/WithholdingService";
+import { WithholdingService } from "@/modules/finance/services/withholding.service";
 import { InventoryService } from "@/features/inventory/services/inventory.service";
 import { useInventory } from "@/features/inventory/hooks/useInventory";
 import { cn } from "@/core/shared/utils/utils";

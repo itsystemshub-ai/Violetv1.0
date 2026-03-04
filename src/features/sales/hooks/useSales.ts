@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useSystemConfig } from '../../../modules/settings/hooks/useSystemConfig';
 import { useSalesStore } from './useSalesStore';
 import { NetworkService } from '@/services/LocalNetworkService';
-import { AccountingService } from '@/lib/AccountingService';
+import { AccountingService } from '@/modules/finance/services/accounting.service';
 import { ventasService } from '@/services/microservices/ventas/VentasService';
 import { supabase } from '@/lib/supabase';
 import { localDb } from "@/core/database/localDb";
