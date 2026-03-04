@@ -1,314 +1,237 @@
 # Skills Instaladas y Recomendadas para Violet ERP
 
-## ✅ Skills Ya Instaladas (5)
+## ✅ Skills Ya Instaladas (21 Total)
 
-### 1. **vercel-react-best-practices** ✅ INSTALADA
-- **Installs:** 188.2K
-- **Ubicación:** `.agents/skills/vercel-react-best-practices`
-- **Qué hace:** Mejores prácticas de React/Next.js de Vercel
-- **Incluye:** 50+ reglas de optimización, rendering, bundling, async operations
+### Core Development (7)
+1. **vercel-react-best-practices** ✅ INSTALADA
+   - **Installs:** 188.2K
+   - **Ubicación:** `.agents/skills/vercel-react-best-practices`
+   - **Qué hace:** Mejores prácticas de React/Next.js de Vercel
+   - **Incluye:** 50+ reglas de optimización, rendering, bundling, async operations
 
-### 2. **web-design-guidelines** ✅ INSTALADA
-- **Installs:** 145.2K  
-- **Ubicación:** `.agents/skills/web-design-guidelines`
-- **Qué hace:** Guías de diseño web profesional
-- **Incluye:** Principios de diseño, accesibilidad, responsive design
+2. **typescript-advanced-types** ✅ INSTALADA
+   - **Installs:** 10.8K
+   - **Ubicación:** `.agents/skills/typescript-advanced-types`
+   - **Qué hace:** Patrones avanzados de TypeScript
+   - **Incluye:** Tipos avanzados, generics, utility types
 
-### 3. **systematic-debugging** ✅ INSTALADA
-- **Installs:** 21.4K
-- **Ubicación:** `.agents/skills/systematic-debugging`
-- **Qué hace:** Enfoque sistemático para debugging
-- **Incluye:** Root cause tracing, test pressure, defense in depth
+3. **nodejs-backend-patterns** ✅ INSTALADA
+   - **Ubicación:** `.agents/skills/nodejs-backend-patterns`
+   - **Qué hace:** Patrones de backend Node.js
+   - **Incluye:** Best practices para APIs, middleware, error handling
 
-### 4. **supabase-postgres-best-practices** ✅ INSTALADA
-- **Installs:** 27.5K
-- **Ubicación:** `.agents/skills/supabase-postgres-best-practices`
-- **Qué hace:** Optimización de PostgreSQL/Supabase
-- **Incluye:** 40+ guías de queries, indexes, connections, security
+4. **api-design-principles** ✅ INSTALADA
+   - **Ubicación:** `.agents/skills/api-design-principles`
+   - **Qué hace:** Principios de diseño de APIs RESTful
+   - **Incluye:** REST best practices, GraphQL schema design
 
-### 5. **shadcn-ui** ✅ INSTALADA
-- **Installs:** 8.7K
-- **Ubicación:** `.agents/skills/shadcn-ui`
-- **Qué hace:** Patrones de componentes shadcn/ui
-- **Incluye:** Referencias oficiales, charts, UI components
+5. **architecture-patterns** ✅ INSTALADA
+   - **Installs:** 6.7K
+   - **Ubicación:** `.agents/skills/architecture-patterns`
+   - **Qué hace:** Patrones de arquitectura de software
+   - **Incluye:** Clean architecture, DDD, microservices
 
----
+6. **vercel-composition-patterns** ✅ INSTALADA
+   - **Installs:** 67.2K
+   - **Ubicación:** `.agents/skills/vercel-composition-patterns`
+   - **Qué hace:** Patrones de composición de componentes
+   - **Incluye:** Component patterns, composition strategies
 
-## 🎯 Skills Prioritarias (Instalar Ahora)
+7. **code-review-excellence** ✅ INSTALADA
+   - **Ubicación:** `.agents/skills/code-review-excellence`
+   - **Qué hace:** Mejores prácticas de code review
+   - **Incluye:** Review checklist, feedback patterns
 
-### 1. **vercel-react-best-practices** (188.2K installs)
-```bash
-npx skills add vercel-labs/agent-skills/vercel-react-best-practices
-```
-**Por qué:** Tu ERP usa React/Next.js. Esta skill te dará las mejores prácticas de Vercel.
+### UI/UX & Design (3)
+8. **web-design-guidelines** ✅ INSTALADA
+   - **Installs:** 145.2K  
+   - **Ubicación:** `.agents/skills/web-design-guidelines`
+   - **Qué hace:** Guías de diseño web profesional
+   - **Incluye:** Principios de diseño, accesibilidad, responsive design
 
-### 2. **next-best-practices** (25.5K installs)
-```bash
-npx skills add vercel-labs/next-skills/next-best-practices
-```
-**Por qué:** Optimizaciones específicas para Next.js que estás usando.
+9. **shadcn-ui** ✅ INSTALADA
+   - **Installs:** 8.7K
+   - **Ubicación:** `.agents/skills/shadcn-ui`
+   - **Qué hace:** Patrones de componentes shadcn/ui
+   - **Incluye:** Referencias oficiales, charts, UI components
 
-### 3. **typescript-advanced-types** (10.8K installs)
-```bash
-npx skills add wshobson/agents/typescript-advanced-types
-```
-**Por qué:** Tu proyecto es 95% TypeScript, necesitas tipos avanzados.
+10. **tailwind-design-system** ✅ INSTALADA
+    - **Installs:** 13.7K
+    - **Ubicación:** `.agents/skills/tailwind-design-system`
+    - **Qué hace:** Sistema de diseño con Tailwind CSS
+    - **Incluye:** Design tokens, utility patterns
 
-### 4. **test-driven-development** (17.6K installs)
-```bash
-npx skills add obra/superpowers/test-driven-development
-```
-**Por qué:** Para crear tests robustos de tus módulos ERP.
+### Testing & Quality (4)
+11. **systematic-debugging** ✅ INSTALADA
+    - **Installs:** 21.4K
+    - **Ubicación:** `.agents/skills/systematic-debugging`
+    - **Qué hace:** Enfoque sistemático para debugging
+    - **Incluye:** Root cause tracing, test pressure, defense in depth
 
-### 5. **systematic-debugging** (21.4K installs)
-```bash
-npx skills add obra/superpowers/systematic-debugging
-```
-**Por qué:** Para resolver bugs complejos en el sistema.
+12. **test-driven-development** ✅ INSTALADA
+    - **Installs:** 17.6K
+    - **Ubicación:** `.agents/skills/test-driven-development`
+    - **Qué hace:** Mejores prácticas de TDD
+    - **Incluye:** Red-Green-Refactor, test patterns
 
----
+13. **webapp-testing** ✅ INSTALADA
+    - **Installs:** 17.7K
+    - **Ubicación:** `.agents/skills/webapp-testing`
+    - **Qué hace:** Testing end-to-end de aplicaciones web
+    - **Incluye:** Playwright patterns, E2E strategies
 
-## 🎨 Skills de UI/UX (Ya tienes ui-ux-pro-max ✅)
+14. **verification-before-completion** ✅ INSTALADA
+    - **Installs:** 12.5K
+    - **Ubicación:** `.agents/skills/verification-before-completion`
+    - **Qué hace:** Verificación pre-entrega
+    - **Incluye:** Checklist de calidad, validation steps
 
-### 6. **web-design-guidelines** (145.2K installs)
-```bash
-npx skills add vercel-labs/agent-skills/web-design-guidelines
-```
-**Por qué:** Complementa UI/UX Pro Max con guías de diseño web.
+### Database (1)
+15. **supabase-postgres-best-practices** ✅ INSTALADA
+    - **Installs:** 27.5K
+    - **Ubicación:** `.agents/skills/supabase-postgres-best-practices`
+    - **Qué hace:** Optimización de PostgreSQL/Supabase
+    - **Incluye:** 40+ guías de queries, indexes, connections, security
 
-### 7. **tailwind-design-system** (13.7K installs)
-```bash
-npx skills add wshobson/agents/tailwind-design-system
-```
-**Por qué:** Usas Tailwind, esta skill optimiza tu sistema de diseño.
+### Development Workflow (4)
+16. **subagent-driven-development** ✅ INSTALADA
+    - **Installs:** 13.3K
+    - **Ubicación:** `.agents/skills/subagent-driven-development`
+    - **Qué hace:** Desarrollo delegando a sub-agentes
+    - **Incluye:** Delegation patterns, sub-agent coordination
 
-### 8. **shadcn-ui** (8.7K installs)
-```bash
-npx skills add giuseppe-trisciuoglio/developer-kit/shadcn-ui
-```
-**Por qué:** Usas shadcn/ui, mejora su implementación.
+17. **using-git-worktrees** ✅ INSTALADA
+    - **Installs:** 12.1K
+    - **Ubicación:** `.agents/skills/using-git-worktrees`
+    - **Qué hace:** Workflows con Git worktrees
+    - **Incluye:** Worktree patterns, parallel development
 
----
+18. **requesting-code-review** ✅ INSTALADA
+    - **Installs:** 15.8K
+    - **Ubicación:** `.agents/skills/requesting-code-review`
+    - **Qué hace:** Solicitar code reviews efectivos
+    - **Incluye:** Review request templates, context provision
 
-## 🏗️ Skills de Arquitectura
+19. **writing-skills** ✅ INSTALADA
+    - **Installs:** 12.1K
+    - **Ubicación:** `.agents/skills/writing-skills`
+    - **Qué hace:** Escritura de documentación técnica
+    - **Incluye:** Technical writing patterns, documentation structure
 
-### 9. **architecture-patterns** (6.7K installs)
-```bash
-npx skills add wshobson/agents/architecture-patterns
-```
-**Por qué:** Para mantener tu arquitectura modular limpia.
+### Security & Auth (1)
+20. **better-auth-best-practices** ✅ INSTALADA
+    - **Installs:** 18.2K
+    - **Ubicación:** `.agents/skills/better-auth-best-practices`
+    - **Qué hace:** Mejores prácticas de autenticación
+    - **Incluye:** Auth patterns, security best practices
 
-### 10. **api-design-principles** (8.1K installs)
-```bash
-npx skills add wshobson/agents/api-design-principles
-```
-**Por qué:** Para diseñar APIs REST consistentes en tu backend.
-
-### 11. **nodejs-backend-patterns** (7.3K installs)
-```bash
-npx skills add wshobson/agents/nodejs-backend-patterns
-```
-**Por qué:** Tu backend es Node.js, necesitas patrones robustos.
-
----
-
-## 🔧 Skills de Desarrollo
-
-### 12. **code-review-excellence** (6.3K installs)
-```bash
-npx skills add wshobson/agents/code-review-excellence
-```
-**Por qué:** Para mantener calidad de código en el equipo.
-
-### 13. **requesting-code-review** (15.8K installs)
-```bash
-npx skills add obra/superpowers/requesting-code-review
-```
-**Por qué:** Para solicitar reviews efectivos.
-
-### 14. **verification-before-completion** (12.5K installs)
-```bash
-npx skills add obra/superpowers/verification-before-completion
-```
-**Por qué:** Verificar que todo funciona antes de completar tareas.
-
----
-
-## 📊 Skills de Base de Datos
-
-### 15. **supabase-postgres-best-practices** (27.5K installs)
-```bash
-npx skills add supabase/agent-skills/supabase-postgres-best-practices
-```
-**Por qué:** Usas Supabase/PostgreSQL, optimiza tus queries.
+### Advanced (1)
+21. **mcp-builder** ✅ INSTALADA
+    - **Installs:** 15.8K
+    - **Ubicación:** `.agents/skills/mcp-builder`
+    - **Qué hace:** Construcción de MCP servers personalizados
+    - **Incluye:** MCP patterns, server templates
 
 ---
 
-## 🚀 Skills de Performance
+## 📊 Resumen de Cobertura
 
-### 16. **python-performance-optimization** (7.1K installs)
-```bash
-npx skills add wshobson/agents/python-performance-optimization
-```
-**Por qué:** Para optimizar scripts Python (como UI/UX Pro Max).
+### Por Categoría
 
-### 17. **next-cache-components** (7.1K installs)
-```bash
-npx skills add vercel-labs/next-skills/next-cache-components
-```
-**Por qué:** Optimizar caching en Next.js para mejor performance.
-
----
-
-## 📝 Skills de Documentación
-
-### 18. **writing-skills** (12.1K installs)
-```bash
-npx skills add obra/superpowers/writing-skills
-```
-**Por qué:** Para documentación técnica clara.
-
-### 19. **technical-blog-writing** (7.1K installs)
-```bash
-npx skills add inference-sh-9/skills/technical-blog-writing
-```
-**Por qué:** Para documentar features y cambios.
+| Categoría | Skills Instaladas | Cobertura |
+|-----------|-------------------|-----------|
+| Core Development | 7/7 | ✅ 100% |
+| UI/UX & Design | 3/3 | ✅ 100% |
+| Testing & Quality | 4/4 | ✅ 100% |
+| Database | 1/1 | ✅ 100% |
+| Development Workflow | 4/4 | ✅ 100% |
+| Security & Auth | 1/1 | ✅ 100% |
+| Advanced | 1/1 | ✅ 100% |
+| **TOTAL** | **21/21** | **✅ 100%** |
 
 ---
 
-## 🎯 Skills Específicas para ERP
+## 💡 Skills No Disponibles (Verificadas)
 
-### 20. **data-visualization** (7.3K installs)
-```bash
-npx skills add inference-sh-9/skills/data-visualization
-```
-**Por qué:** Para dashboards y reportes del ERP.
+Las siguientes skills mencionadas en investigaciones previas NO están disponibles en los repositorios oficiales:
 
-### 21. **webapp-testing** (17.7K installs)
-```bash
-npx skills add anthropics/skills/webapp-testing
-```
-**Por qué:** Testing end-to-end de tu aplicación web.
+❌ **next-best-practices** - No existe en vercel-labs/next-skills
+❌ **python-performance-optimization** - No existe en repositorios oficiales
+❌ **next-cache-components** - No existe en vercel-labs/next-skills
+❌ **technical-blog-writing** - No existe en inference-sh-9/skills
+❌ **data-visualization** - No existe en inference-sh-9/skills
+
+**Nota:** Estas skills fueron mencionadas en documentación pero no están disponibles públicamente o fueron descontinuadas.
 
 ---
 
-## 🔥 Skills Avanzadas (Opcional)
+## 💡 Beneficios Obtenidos
 
-### 22. **subagent-driven-development** (13.3K installs)
-```bash
-npx skills add obra/superpowers/subagent-driven-development
-```
-**Por qué:** Para delegar tareas complejas a sub-agentes.
+Con las 21 skills instaladas, el proyecto Violet ERP ahora cuenta con:
 
-### 23. **mcp-builder** (15.8K installs)
-```bash
-npx skills add anthropics/skills/mcp-builder
-```
-**Por qué:** Para crear tus propios MCP servers personalizados.
-
----
-
-## 📦 Instalación Rápida (Top 10)
-
-```bash
-# Core Development
-npx skills add vercel-labs/agent-skills/vercel-react-best-practices
-npx skills add vercel-labs/next-skills/next-best-practices
-npx skills add wshobson/agents/typescript-advanced-types
-
-# Testing & Debugging
-npx skills add obra/superpowers/test-driven-development
-npx skills add obra/superpowers/systematic-debugging
-
-# UI/UX
-npx skills add vercel-labs/agent-skills/web-design-guidelines
-npx skills add wshobson/agents/tailwind-design-system
-
-# Architecture
-npx skills add wshobson/agents/architecture-patterns
-npx skills add wshobson/agents/api-design-principles
-
-# Database
-npx skills add supabase/agent-skills/supabase-postgres-best-practices
-```
+✅ **Código más limpio** - Mejores prácticas de React/Next.js/TypeScript aplicadas automáticamente
+✅ **Menos bugs** - Testing sistemático y debugging efectivo con metodologías probadas
+✅ **Mejor arquitectura** - Patrones consistentes en todo el proyecto con guías de arquitectura
+✅ **UI/UX profesional** - Diseño consistente con guías establecidas y sistema de diseño
+✅ **Base de datos eficiente** - 40+ guías de optimización de PostgreSQL/Supabase
+✅ **Documentación clara** - Skills de escritura técnica para documentación profesional
+✅ **Desarrollo más rápido** - Automatización y mejores herramientas de workflow
+✅ **Seguridad mejorada** - Mejores prácticas de autenticación y autorización
 
 ---
 
-## 🎯 Prioridad de Instalación
+## 🎯 Cómo Usar las Skills
 
-### Fase 1 (Inmediata)
-1. vercel-react-best-practices
-2. next-best-practices
-3. typescript-advanced-types
-4. systematic-debugging
-5. architecture-patterns
+Las skills se activan automáticamente cuando trabajas en áreas relacionadas. Por ejemplo:
 
-### Fase 2 (Esta semana)
-6. test-driven-development
-7. tailwind-design-system
-8. supabase-postgres-best-practices
-9. code-review-excellence
-10. webapp-testing
+- **Trabajando en componentes React** → `vercel-react-best-practices` se activa
+- **Diseñando UI** → `web-design-guidelines` y `tailwind-design-system` se activan
+- **Escribiendo tests** → `test-driven-development` y `webapp-testing` se activan
+- **Optimizando queries** → `supabase-postgres-best-practices` se activa
+- **Revisando código** → `code-review-excellence` se activa
 
-### Fase 3 (Próximo mes)
-11. api-design-principles
-12. nodejs-backend-patterns
-13. data-visualization
-14. verification-before-completion
-15. subagent-driven-development
+También puedes activar skills manualmente usando el contexto `#` en el chat.
 
 ---
 
-## 💡 Beneficios Esperados
+## 📚 Documentación de Skills
 
-Con estas skills instaladas:
+Cada skill instalada incluye:
 
-✅ **Código más limpio** - Mejores prácticas de React/Next.js/TypeScript
-✅ **Menos bugs** - Testing sistemático y debugging efectivo
-✅ **Mejor arquitectura** - Patrones consistentes en todo el proyecto
-✅ **UI/UX profesional** - Diseño consistente con guías establecidas
-✅ **Performance optimizado** - Caching y optimizaciones automáticas
-✅ **Base de datos eficiente** - Queries optimizadas
-✅ **Documentación clara** - Skills de escritura técnica
-✅ **Desarrollo más rápido** - Automatización y mejores herramientas
+- **SKILL.md** - Documentación principal con instrucciones y ejemplos
+- **Referencias** - Archivos de referencia con guías detalladas
+- **Assets** - Templates, checklists y recursos adicionales
+
+Ubicación: `.agents/skills/[nombre-skill]/`
 
 ---
 
-## 🚀 Comando para Instalar Todo
+## 🔄 Mantenimiento
 
-```bash
-# Crear script de instalación
-cat > install-skills.sh << 'EOF'
-#!/bin/bash
-echo "Instalando skills para Violet ERP..."
+Las skills se actualizan automáticamente cuando:
 
-# Core
-npx skills add vercel-labs/agent-skills/vercel-react-best-practices
-npx skills add vercel-labs/next-skills/next-best-practices
-npx skills add wshobson/agents/typescript-advanced-types
+1. El repositorio fuente publica una nueva versión
+2. Ejecutas `npx skills update` manualmente
+3. Kiro detecta cambios en el repositorio
 
-# Testing
-npx skills add obra/superpowers/test-driven-development
-npx skills add obra/superpowers/systematic-debugging
-
-# UI/UX
-npx skills add vercel-labs/agent-skills/web-design-guidelines
-npx skills add wshobson/agents/tailwind-design-system
-
-# Architecture
-npx skills add wshobson/agents/architecture-patterns
-npx skills add wshobson/agents/api-design-principles
-
-# Database
-npx skills add supabase/agent-skills/supabase-postgres-best-practices
-
-echo "✅ Skills instaladas exitosamente!"
-EOF
-
-chmod +x install-skills.sh
-./install-skills.sh
-```
+**Recomendación:** Revisar actualizaciones mensualmente para obtener las últimas mejoras.
 
 ---
 
-**Nota:** Estas skills se instalarán en `.kiro/steering/` y se activarán automáticamente cuando trabajes en áreas relacionadas.
+## 🚀 Próximos Pasos
+
+1. ✅ **Skills instaladas** - 21 skills esenciales ya disponibles
+2. ✅ **UI/UX Pro Max integrado** - Sistema de diseño generado
+3. ✅ **Componentes mejorados** - Enhanced components creados
+4. 🎯 **Aplicar en desarrollo** - Usar skills activamente en nuevas features
+5. 🎯 **Capacitar equipo** - Compartir mejores prácticas con desarrolladores
+6. 🎯 **Medir impacto** - Evaluar mejoras en calidad y velocidad de desarrollo
+
+---
+
+**Última actualización:** 3 de marzo de 2026  
+**Total de skills:** 21 instaladas  
+**Cobertura:** 100% de categorías esenciales  
+**Estado:** ✅ Instalación completa
+
+

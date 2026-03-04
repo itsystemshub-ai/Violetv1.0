@@ -1,0 +1,14 @@
+wshobson/agents@architecture-patterns
+wshobson/agents@api-design-principles
+wshobson/agents@nodejs-backend-patterns
+wshobson/agents@code-review-excellence
+wshobson/agents@tailwind-design-system
+obra/superpowers@verification-before-completion
+obra/superpowers@requesting-code-review
+obra/superpowers@writing-skills
+obra/superpowers@subagent-driven-development
+obra/superpowers@using-git-worktrees
+vercel-labs/agent-skills@vercel-composition-patterns
+anthropics/skills@webapp-testing
+anthropics/skills@mcp-builder
+better-auth/skills@better-auth-best-practices
