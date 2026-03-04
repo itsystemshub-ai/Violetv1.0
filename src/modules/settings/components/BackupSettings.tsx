@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { backupService, BackupConfig } from "@/services/backup/BackupService";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 export const BackupSettings = () => {
   const [config, setConfig] = useState<BackupConfig>(backupService.getConfig());

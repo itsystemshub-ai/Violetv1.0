@@ -9,7 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { ERP_MODULES } from "@/lib/index";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 const QuickAccessModules: React.FC = () => {
   return (

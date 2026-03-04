@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface DashboardHeaderProps {
   tenantName: string;

@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { formatDate } from "@/lib";
 
 interface Notification {

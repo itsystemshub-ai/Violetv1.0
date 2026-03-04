@@ -5,7 +5,7 @@ import { useSales } from "@/features/sales/hooks/useSales";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAddressSearch } from "@/shared/hooks/useAddressSearch";
 import { Product, formatCurrency, formatDate as formatDateUtil } from "@/lib";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { notifyOrderWhatsApp } from "@/lib/whatsappService";

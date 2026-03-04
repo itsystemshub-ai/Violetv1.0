@@ -6,10 +6,10 @@ import {
   FinancialTransaction 
 } from "@/lib/index";
 import { supabase } from "@/lib/supabase";
-import { SyncService } from "@/lib/SyncService";
+import { SyncService } from "@/core/sync/SyncService";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { finanzasService } from "@/services/microservices/finanzas/FinanzasService";
 import { generatePDFReport } from "@/lib/pdfUtils";
 import { LibroGeneratorService } from "@/lib/LibroGeneratorService";

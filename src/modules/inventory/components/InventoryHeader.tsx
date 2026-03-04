@@ -43,7 +43,7 @@ import {
   Box,
   AlertCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { IMAGES } from "@/assets/images";
 import { ProductForm } from "@/shared/components/common/Forms";
 

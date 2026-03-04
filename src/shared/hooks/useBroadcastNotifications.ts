@@ -1,6 +1,6 @@
 ﻿import { useEffect } from 'react';
 import { toast } from 'sonner';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 
 interface BroadcastNotification {
   id: string;

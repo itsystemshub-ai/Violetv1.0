@@ -26,7 +26,7 @@ import {
   Search,
   CheckSquare,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { formatCurrency } from "@/lib/index";
 
 interface ReconciliationManagerProps {

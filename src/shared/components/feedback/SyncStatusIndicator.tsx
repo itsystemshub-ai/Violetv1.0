@@ -8,9 +8,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { cn } from '@/lib/utils';
-import { localDb } from '@/lib/localDb';
-import { SyncEngine } from '@/lib/SyncEngine';
+import { cn } from "@/core/shared/utils/utils";
+import { localDb } from "@/core/database/localDb";
+import { SyncEngine } from "@/core/sync/SyncEngine";
 
 interface SyncStatus {
   isOnline: boolean;

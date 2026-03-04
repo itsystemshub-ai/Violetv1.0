@@ -8,8 +8,8 @@ import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 // Atomic Components
-import { ConnectionVisualizer } from "@/components/Connectivity/Organisms/ConnectionVisualizer";
-import { InsightCard } from "@/components/Connectivity/Molecules/InsightCard";
+import { ConnectionVisualizer } from "@/shared/components/connectivity/organisms/ConnectionVisualizer";
+import { InsightCard } from "@/shared/components/connectivity/molecules/InsightCard";
 
 export default function ConnectivityError({ error }: { error?: Error | null }) {
   const { tenant } = useSystemConfig();

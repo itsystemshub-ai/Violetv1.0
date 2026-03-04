@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useInventoryAI } from "@/features/inventory/hooks/useInventoryAI";
 import { Product } from "@/lib";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface InventoryAIPanelProps {
   products: Product[];

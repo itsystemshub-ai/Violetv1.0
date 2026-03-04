@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/lib/index';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 
 interface InventoryState {
   products: Product[];

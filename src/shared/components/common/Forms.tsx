@@ -46,7 +46,7 @@ import { Tenant, Product, Employee } from "@/lib";
 import { WithholdingService } from "@/lib/WithholdingService";
 import { InventoryService } from "@/features/inventory/services/inventory.service";
 import { useInventory } from "@/features/inventory/hooks/useInventory";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 // --- SCHEMAS ---
 

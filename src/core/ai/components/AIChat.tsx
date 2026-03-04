@@ -12,7 +12,7 @@ import {
   RefreshCcw,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { useAI } from "@/core/ai/hooks/useAI";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";

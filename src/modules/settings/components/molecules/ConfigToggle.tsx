@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch } from "@/shared/components/ui/switch";
 import { Label } from "@/shared/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface ConfigToggleProps {
   label: string;

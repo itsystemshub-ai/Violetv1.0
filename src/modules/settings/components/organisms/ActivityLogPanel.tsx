@@ -38,7 +38,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { toast } from "sonner";
 
 interface ActivityLog {

@@ -2,7 +2,7 @@
  * MS Contabilidad - Libro de Ventas SENIAT
  * Gestiona el registro cronológico de facturas para cumplimiento fiscal en Venezuela
  */
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { toast } from "sonner";
 
 export interface LibroVentasEntry {

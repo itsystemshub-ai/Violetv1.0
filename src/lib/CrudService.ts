@@ -4,7 +4,7 @@
  */
 
 import { toast } from 'sonner';
-import { SyncService } from '@/lib/SyncService';
+import { SyncService } from "@/core/sync/SyncService";
 import { GenericMapper } from './DataMapper';
 import type { CrudResponse, SyncMutationResult } from '@/types/database.types';
 

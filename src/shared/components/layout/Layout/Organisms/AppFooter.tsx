@@ -1,6 +1,6 @@
 import React from "react";
 import { ShieldCheck, Lock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { formatDate } from "@/lib";
 
 interface AppFooterProps {

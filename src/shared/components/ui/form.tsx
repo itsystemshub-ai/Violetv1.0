@@ -9,7 +9,7 @@ import {
   FormProvider,
 } from "react-hook-form";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { Label } from "@/shared/components/ui/label";
 import {
   FormFieldContext,

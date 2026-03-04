@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/shared/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface SettingsCardProps {
   title: React.ReactNode;

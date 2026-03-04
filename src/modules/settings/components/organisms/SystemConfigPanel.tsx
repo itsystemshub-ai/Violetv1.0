@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import SettingsCard from "../Atoms/SettingsCard";
 import ConfigToggle from "../Molecules/ConfigToggle";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";

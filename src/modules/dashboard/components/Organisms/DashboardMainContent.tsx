@@ -1,7 +1,7 @@
 import React from "react";
 import { Landmark, Activity, Archive, Users, TrendingUp } from "lucide-react";
 import { RevenueChart } from "@/shared/components/common/Charts";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface DashboardMainContentProps {
   charts: { revenue: any[] };

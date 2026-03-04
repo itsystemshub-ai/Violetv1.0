@@ -2,7 +2,7 @@
  * MS Finanzas/Contabilidad
  * Handles all financial operations, accounts, and manual transactions.
  */
-import { SyncService } from "@/lib/SyncService";
+import { SyncService } from "@/core/sync/SyncService";
 import { FinancialTransaction, FinancialAccount } from "@/lib";
 
 export class FinanzasService {

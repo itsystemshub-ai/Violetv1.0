@@ -18,10 +18,10 @@ import {
   FileText,
 } from "lucide-react";
 import { formatDate } from "@/lib";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 const InventoryMovements: React.FC = () => {
   const { activeTenantId } = useSystemConfig();

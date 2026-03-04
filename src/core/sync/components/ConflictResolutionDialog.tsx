@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { Label } from "@/shared/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { AlertTriangle, Clock, User, Database } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from "@/core/shared/utils/utils";
 
 export interface ConflictData<T = Record<string, unknown>> {
   field: string;

@@ -11,7 +11,7 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 export function TenantSelector() {
   const {

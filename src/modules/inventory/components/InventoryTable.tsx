@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import type { InventoryLogic, Product, SortField } from "@/types/inventory";
 import { useImageConverter } from "@/shared/hooks/useImageConverter";
 

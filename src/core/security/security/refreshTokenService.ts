@@ -1,4 +1,4 @@
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 import { generateRefreshToken } from './jwt';
 
 export interface RefreshToken {

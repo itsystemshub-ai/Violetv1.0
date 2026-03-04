@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Invoice } from '@/lib/index';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 import { NetworkService } from '@/services/LocalNetworkService';
 
 interface SalesState {

@@ -2,7 +2,7 @@ import React from "react";
 import { Sparkles, Zap, ChevronRight, Activity } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface DashboardSidebarProps {
   lowStockCount: number;

@@ -2,7 +2,7 @@
  * MS Tesorería - Cuentas por Cobrar
  * Gestiona las cuentas por cobrar, pagos y flujo de caja
  */
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { toast } from "sonner";
 
 export interface AccountReceivable {

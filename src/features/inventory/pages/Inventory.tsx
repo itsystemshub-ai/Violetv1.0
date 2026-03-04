@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { Search, ArrowUp, ArrowDown, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { useInventoryLogic } from "@/features/inventory/hooks/useInventoryLogic";
 import { ModuleAIAssistant } from "@/core/ai/components";
 

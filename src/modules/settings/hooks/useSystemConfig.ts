@@ -3,8 +3,8 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { supabase } from '@/lib/supabase';
 import { Tenant, User, VenezuelaTaxConfig, ApprovalRule, SysConfigEntry } from "@/lib";
 import { toast } from 'sonner';
-import { localDb } from '@/lib/localDb';
-import { SyncService } from '@/lib/SyncService';
+import { localDb } from "@/core/database/localDb";
+import { SyncService } from "@/core/sync/SyncService";
 import { CurrencyService } from '@/services/CurrencyService';
 import { sendBroadcastNotification } from "@/shared/hooks/useBroadcastNotifications";
 

@@ -2,9 +2,9 @@
  * MS Ventas/CRM
  * Encompasses POS, Invoicing, Clients, and interaction with Inventory.
  */
-import { SyncService } from "@/lib/SyncService";
+import { SyncService } from "@/core/sync/SyncService";
 import { Invoice } from "@/lib";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { toast } from "sonner";
 import { cuentasPorCobrarService } from "@/services/microservices/tesoreria/CuentasPorCobrarService";
 

@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import {
   Card,
   CardContent,

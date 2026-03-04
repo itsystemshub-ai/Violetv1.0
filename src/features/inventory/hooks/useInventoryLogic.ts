@@ -13,7 +13,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useAudit } from "@/modules/settings/hooks/useAudit";
 import { usePagination } from "@/core/shared/hooks/usePagination";
 import { useDebounce } from "@/core/shared/hooks/useDebounce";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { Product as ProductType } from "@/lib";
 
 const VEHICLE_BRANDS = [

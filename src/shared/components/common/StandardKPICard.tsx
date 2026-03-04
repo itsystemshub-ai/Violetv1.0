@@ -1,6 +1,6 @@
 import React from "react";
 import { TrendingUp, TrendingDown, LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface StandardKPICardProps {
   label: string;

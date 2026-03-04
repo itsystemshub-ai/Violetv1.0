@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { SyncEngine } from "@/lib/SyncEngine";
+import { SyncEngine } from "@/core/sync/SyncEngine";
 
 interface OnlineStatusContextType {
   isOnline: boolean;

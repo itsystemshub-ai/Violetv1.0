@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/shared/components/ui/button";
 import { Printer, Download, FileSpreadsheet, X } from 'lucide-react';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import * as XLSX from 'xlsx';
 

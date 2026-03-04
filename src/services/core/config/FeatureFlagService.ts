@@ -2,7 +2,7 @@
  * Feature Flag & RBAC/ABAC Service
  * Source of truth for enabling/disabling modules per tenant or globally.
  */
-import { SyncService } from "@/lib/SyncService";
+import { SyncService } from "@/core/sync/SyncService";
 
 export interface FeatureFlag {
   id: string;

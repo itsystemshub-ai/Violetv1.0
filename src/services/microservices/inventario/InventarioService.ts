@@ -1,7 +1,7 @@
-import { SyncService } from "@/lib/SyncService";
+import { SyncService } from "@/core/sync/SyncService";
 import { Product } from "@/lib";
 import { NotificationPayload, notifications } from "../../core/notifications/NotificationService";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 
 /**
  * Microservicio de Inventario para Violet ERP.

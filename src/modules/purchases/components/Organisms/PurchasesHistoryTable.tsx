@@ -14,7 +14,7 @@ import {
 } from "@/shared/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { formatCurrency, formatDate } from "@/lib/index";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface PurchasesHistoryTableProps {
   compras: any[];

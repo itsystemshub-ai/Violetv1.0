@@ -1,5 +1,5 @@
-import { localDb } from '@/lib/localDb';
-import { SyncService } from '@/lib/SyncService';
+import { localDb } from "@/core/database/localDb";
+import { SyncService } from "@/core/sync/SyncService";
 import { AccountingService } from '@/lib/AccountingService';
 
 export interface PurchaseItem {

@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import { SyncService } from '@/lib/SyncService';
+import { SyncService } from "@/core/sync/SyncService";
 import { User, UserRole } from '@/lib';
 import { toast } from 'sonner';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 
 interface UserManagementState {
   users: User[];

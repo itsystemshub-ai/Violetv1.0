@@ -7,7 +7,7 @@ import { NetworkService } from '@/services/LocalNetworkService';
 import { AccountingService } from '@/lib/AccountingService';
 import { ventasService } from '@/services/microservices/ventas/VentasService';
 import { supabase } from '@/lib/supabase';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 import { useNotificationStore } from '../../../shared/hooks/useNotificationStore';
 import type { InvoiceDB, CrudResponse } from '@/types/database.types';
 

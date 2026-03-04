@@ -1,4 +1,4 @@
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 

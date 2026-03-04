@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { localDb } from '@/lib/localDb';
+import { localDb } from "@/core/database/localDb";
 
 export interface AuditLogEntry {
   id: string;

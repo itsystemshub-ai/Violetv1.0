@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "@/shared/components/ui/card";
 import { CurrencyBadge } from "../Atoms/CurrencyBadge";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/core/shared/utils/utils";
 
 interface AccountSummaryItemProps {
   name: string;

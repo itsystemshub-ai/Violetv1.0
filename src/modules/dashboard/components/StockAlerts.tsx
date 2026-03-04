@@ -5,9 +5,9 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 
 interface StockAlert {
   id: string;

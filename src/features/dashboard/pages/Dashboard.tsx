@@ -2,7 +2,7 @@ import React, { useState, useEffect, Suspense, lazy, useMemo, useCallback } from
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronRight } from "lucide-react";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { getCaraboboWeather } from "@/lib/weatherService";
 import { fetchBCVRate } from "@/lib/bcvService";
 import { Button } from "@/shared/components/ui/button";
@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/core/shared/utils/utils";
 import { springPresets } from "@/lib/motion";
 import { AIChat } from "@/core/ai/components/AIChat";
 import { ModuleAIAssistant } from "@/core/ai/components";

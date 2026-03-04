@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PurchasesService } from "../services/purchases.service";
-import { localDb } from "@/lib/localDb";
+import { localDb } from "@/core/database/localDb";
 import { Product } from "@/lib/index";
 import { ModuleAIAssistant } from "@/core/ai/components";
 
