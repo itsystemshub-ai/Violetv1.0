@@ -7,15 +7,31 @@
  */
 
 import React from 'react';
-import { Bot, Sparkles, Check, X } from 'lucide-react';
+import { Bot, Sparkles, Check, Eye, EyeOff, Save } from 'lucide-react';
 import { useAIStore } from '@/services/ai';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Switch } from '@/shared/components/ui/switch';
 import { Label } from '@/shared/components/ui/label';
 import { Badge } from '@/shared/components/ui/badge';
+import { Input } from '@/shared/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
+import { toast } from 'sonner';
 
 export const AISettings: React.FC = () => {
-  const { config, capabilities, updateConfig, toggleCapability } = useAIStore();
+  const { config, capabilities, updateConfig, toggleCapability, getDecryptedApiKey } = useAIStore();
+  const [apiKeyInput, setApiKeyInput] = React.useState('');
+  const [showApiKey, setShowApiKey] = React.useState(false);
+
+  // Load decrypted API key on mount
+  React.useEffect(() => {
+    const decryptedKey = getDecryptedApiKey();
+    setApiKeyInput(decryptedKey);
+  }, [getDecryptedApiKey]);
+
+  const handleSaveApiKey = () => {
+    updateConfig({ apiKey: apiKeyInput });
+    toast.success('API Key guardada correctamente');
+  };
 
   return (
     <div className="space-y-6">
@@ -54,6 +70,108 @@ export const AISettings: React.FC = () => {
               checked={config.enabled}
               onCheckedChange={(checked) => updateConfig({ enabled: checked })}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* API Key Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Configuración de Groq API</CardTitle>
+          <CardDescription>
+            Configura tu API key de Groq para usar el asistente de IA
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="api-key">API Key de Groq</Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  id="api-key"
+                  type={showApiKey ? 'text' : 'password'}
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  placeholder="gsk_..."
+                  className="pr-10"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                >
+                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+              <Button onClick={handleSaveApiKey} disabled={!apiKeyInput}>
+                <Save className="h-4 w-4 mr-2" />
+                Guardar
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Obtén tu API key en{' '}
+              <a
+                href="https://console.groq.com/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                console.groq.com/keys
+              </a>
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="model">Modelo de IA</Label>
+            <select
+              id="model"
+              value={config.model}
+              onChange={(e) => updateConfig({ model: e.target.value })}
+              className="w-full px-3 py-2 border border-border rounded-md bg-background"
+            >
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Recomendado)</option>
+              <option value="llama-3.1-70b-versatile">Llama 3.1 70B</option>
+              <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+              <option value="gemma2-9b-it">Gemma 2 9B</option>
+            </select>
+            <p className="text-xs text-muted-foreground">
+              Llama 3.3 70B ofrece el mejor balance entre velocidad y calidad
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="temperature">Temperatura: {config.temperature}</Label>
+            <input
+              id="temperature"
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={config.temperature}
+              onChange={(e) => updateConfig({ temperature: parseFloat(e.target.value) })}
+              className="w-full"
+            />
+            <p className="text-xs text-muted-foreground">
+              Menor = más preciso y determinista | Mayor = más creativo y variado
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="max-tokens">Tokens máximos: {config.maxTokens}</Label>
+            <input
+              id="max-tokens"
+              type="range"
+              min="500"
+              max="4000"
+              step="100"
+              value={config.maxTokens}
+              onChange={(e) => updateConfig({ maxTokens: parseInt(e.target.value) })}
+              className="w-full"
+            />
+            <p className="text-xs text-muted-foreground">
+              Controla la longitud máxima de las respuestas
+            </p>
           </div>
         </CardContent>
       </Card>
