@@ -1,0 +1,200 @@
+﻿Listado de rutas de carpetas para el volumen SYSTEM
+El número de serie del volumen es 000000E3 349F:1AE0
+C:\USERS\ET\DOCUMENTS\GITHUB\VIOLET - CAUPLAS\VIOLET V1 - 1247PM - COPIA\SRC
+|   App-simple.tsx
+|   index.css
+|   vite-env.d.ts
+|   
++---api
+|       demo.ts
+|       index.ts
+|       
++---app
+|       App.tsx
+|       main.tsx
+|       
++---assets
+|       images.ts
+|       
++---config
+|       constants.ts
+|       featureFlags.ts
+|       sentry.ts
+|       
++---contexts
+|       ThemeContext.tsx
+|       
++---core
+|   |   README.md
+|   |   
+|   +---ai
+|   |   |   ai-error-handler.ts
+|   |   |   index.ts
+|   |   |   
+|   |   +---components
+|   |   |       AIChat.tsx
+|   |   |       index.ts
+|   |   |       ModuleAIAssistant.tsx
+|   |   |       
+|   |   +---hooks
+|   |   |       useAI.ts
+|   |   |       
+|   |   \---services
+|   +---api
+|   |   |   index.ts
+|   |   |   
+|   |   \---hooks
+|   |           useApi.ts
+|   |           
+|   +---auth
+|   |   |   index.ts
+|   |   |   
+|   |   +---components
+|   |   |       BrandingSection.tsx
+|   |   |       LegalDialogs.tsx
+|   |   |       LoginBackground.tsx
+|   |   |       LoginForm.tsx
+|   |   |       ProtectedRoute.tsx
+|   |   |       TwoFactorSetup.tsx
+|   |   |       TwoFactorVerify.tsx
+|   |   |       
+|   |   +---hooks
+|   |   +---services
+|   |   \---types
+|   +---database
+|   |   |   index.ts
+|   |   |   localDb.ts
+|   |   |   
+|   |   +---migrations
+|   |   \---schemas
+|   |       |   employee.schema.ts
+|   |       |   invoice.schema.ts
+|   |       |   product.schema.ts
+|   |       |   user.schema.ts
+|   |       |   
+|   |       \---schemas
+|   |               employee.schema.ts
+|   |               invoice.schema.ts
+|   |               product.schema.ts
+|   |               user.schema.ts
+|   |               
+|   +---security
+|   |   |   index.ts
+|   |   |   
+|   |   +---hooks
+|   |   |       useSecurity.ts
+|   |   |       
+|   |   \---security
+|   |       |   authMiddleware.ts
+|   |       |   encryption.ts
+|   |       |   index.ts
+|   |       |   jwt.ts
+|   |       |   passwordHash.ts
+|   |       |   permissions.ts
+|   |       |   rateLimiter.ts
+|   |       |   refreshTokenService.ts
+|   |       |   sanitization.ts
+|   |       |   twoFactor.ts
+|   |       |   
+|   |       \---__tests__
+|   |               jwt.test.ts
+|   |               passwordHash.test.ts
+|   |               permissions.test.ts
+|   |               sanitization.test.ts
+|   |               twoFactor.test.ts
+|   |               
+|   +---shared
+|   |   |   index.ts
+|   |   |   
+|   |   +---components
+|   |   |       OnlineStatusProvider.tsx
+|   |   |       RealtimeBootstrap.tsx
+|   |   |       
+|   |   +---constants
+|   |   +---hooks
+|   |   |       use-toast.ts
+|   |   |       useDebounce.ts
+|   |   |       useNetwork.ts
+|   |   |       usePagination.ts
+|   |   |       useZodForm.ts
+|   |   |       
+|   |   +---services
+|   |   |       analytics.ts
+|   |   |       error-handler.ts
+|   |   |       
+|   |   \---utils
+|   |           utils.ts
+|   |           validators.ts
+|   |           
+|   \---sync
+|       |   index.ts
+|       |   SyncEngine.ts
+|       |   SyncManager.ts
+|       |   SyncService.ts
+|       |   
+|       +---components
+|       |       ConflictResolutionDialog.tsx
+|       |       
+|       \---hooks
++---data
+|       index.ts
+|       
++---features
+|   +---auth
+|   |   +---hooks
+|   |   |       useAuth.helpers.ts
+|   |   |       useAuth.ts
+|   |   |       
+|   |   \---pages
+|   |           Login.tsx
+|   |           
+|   +---dashboard
+|   |   \---pages
+|   |           Dashboard.tsx
+|   |           
+|   +---finance
+|   |   +---hooks
+|   |   |       useFinanceLogic.ts
+|   |   |       
+|   |   \---pages
+|   |           Finance.tsx
+|   |           
+|   +---hr
+|   |   +---hooks
+|   |   |       useHRLogic.ts
+|   |   |       
+|   |   \---pages
+|   |           HR.tsx
+|   |           
+|   +---inventory
+|   |   +---hooks
+|   |   |       useInventory.ts
+|   |   |       useInventoryAI.ts
+|   |   |       useInventoryLogic.ts
+|   |   |       useInventoryStore.ts
+|   |   |       
+|   |   +---pages
+|   |   |       Inventory.tsx
+|   |   |       InventoryMovements.tsx
+|   |   |       
+|   |   \---services
+|   |           inventory.service.ts
+|   |           
+|   +---purchases
+|   |   +---pages
+|   |   |       Purchases.tsx
+|   |   |       
+|   |   \---services
+|   |           purchases.service.ts
+|   |           
+|   \---sales
+|       +---hooks
+|       |       useSales.ts
+|       |       useSalesLogic.ts
+|       |       useSalesStore.ts
+|       |       
+|       \---pages
+|               Sales.tsx
+|               
++---infrastructure
+|   +---bcv
