@@ -5,9 +5,9 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import {
   Table,
   TableHeader,
@@ -15,8 +15,8 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/components/ui/table";
+import { Badge } from "@/shared/components/ui/badge";
 import { useState, useMemo } from "react";
 
 interface SalesManagementProps {

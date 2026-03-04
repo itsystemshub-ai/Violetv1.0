@@ -1,7 +1,7 @@
 import React from "react";
 import { Sparkles, Zap, ChevronRight, Activity } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface DashboardSidebarProps {

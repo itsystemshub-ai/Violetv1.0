@@ -14,18 +14,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAI } from "@/core/ai/hooks/useAI";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/shared/components/ui/card";
+import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { springPresets } from "@/lib/motion";
 
 interface Message {

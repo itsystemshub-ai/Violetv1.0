@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Cloud, CloudOff, RefreshCw, CheckCircle2, AlertCircle, Wifi, WifiOff } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from "@/shared/components/ui/badge';
+import { Button } from "@/shared/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/shared/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { localDb } from '@/lib/localDb';
 import { SyncEngine } from '@/lib/SyncEngine';

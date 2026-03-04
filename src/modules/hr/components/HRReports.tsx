@@ -1,5 +1,5 @@
 import { FileText, Download, DollarSign } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import { toast } from "sonner";
 import { HRLogic } from "@/features/hr/hooks/useHRLogic";
 

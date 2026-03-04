@@ -5,23 +5,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+} from "@/shared/components/ui/table";
+import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+} from "@/shared/components/ui/dialog";
+import { Label } from "@/shared/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 import { formatCurrency } from "@/lib/index";
 
 interface CxCManagerProps {

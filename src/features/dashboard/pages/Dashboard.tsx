@@ -5,14 +5,14 @@ import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { localDb } from "@/lib/localDb";
 import { getCaraboboWeather } from "@/lib/weatherService";
 import { fetchBCVRate } from "@/lib/bcvService";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@/shared/components/ui/dialog";
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/lib/utils";
 import { springPresets } from "@/lib/motion";
 import { AIChat } from "@/core/ai/components/AIChat";

@@ -8,8 +8,8 @@ import {
   ShoppingBasket,
   Download,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Button } from "@/shared/components/ui/button";
 import { SalesChart } from "@/shared/components/common/Charts";
 import { useSalesLogic } from "@/features/sales/hooks/useSalesLogic";
 import { formatCurrency, formatDate } from "@/lib";
@@ -21,8 +21,8 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/shared/components/ui/card";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { ArrowUpRight } from "lucide-react";
 
 // Lazy-loaded sub-components

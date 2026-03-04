@@ -1,7 +1,7 @@
 import React from "react";
 import { Plus, Users, Briefcase } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
 
 interface PurchasesHeaderProps {
   onNewPurchase: () => void;

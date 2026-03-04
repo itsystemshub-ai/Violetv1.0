@@ -17,9 +17,9 @@ import { useUserManagement } from "@/modules/settings/hooks/useUserManagement";
 import { useInstanceStore } from "@/shared/hooks/useInstanceStore";
 import { useAI } from "@/core/ai/hooks/useAI";
 import { useAudit } from "@/modules/settings/hooks/useAudit";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { BackupSettings } from "@/modules/settings/components/BackupSettings";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -28,16 +28,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/shared/components/ui/dialog";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 import { USER_ROLES, DEPARTMENTS, Tenant, User } from "@/lib";
 import { NetworkService } from "@/services/LocalNetworkService";
 

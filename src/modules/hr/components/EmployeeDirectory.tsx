@@ -9,9 +9,9 @@ import {
   FileText,
   Activity,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Card, CardHeader, CardContent } from "@/shared/components/ui/card";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,9 +27,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@/shared/components/ui/dropdown-menu";
+import { Badge } from "@/shared/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { ExpenseChart } from "@/shared/components/common/Charts";
 import { TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib";

@@ -1,14 +1,14 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 import { Search, ArrowUp, ArrowDown, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInventoryLogic } from "@/features/inventory/hooks/useInventoryLogic";

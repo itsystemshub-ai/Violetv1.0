@@ -5,9 +5,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/components/ui/table";
+import { Card } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/index";
 import { Zap, Receipt } from "lucide-react";
 

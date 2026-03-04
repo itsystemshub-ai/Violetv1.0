@@ -1,8 +1,8 @@
 import React from "react";
 import { TrendingUp, Receipt, ArrowUpRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import { InsightCard } from "@/shared/components/common/Cards";
 import { formatCurrency } from "@/lib/index";
 

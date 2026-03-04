@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import { Product } from '@/lib';
-import { Card } from '@/components/ui/card';
+import { Card } from "@/shared/components/ui/card';
 
 /**
  * Lista virtualizada de productos para mejorar rendimiento

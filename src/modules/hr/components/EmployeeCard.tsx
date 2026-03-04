@@ -5,10 +5,10 @@
 
 import React from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Edit2, Trash2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from "@/shared/components/ui/card';
+import { Badge } from "@/shared/components/ui/badge';
+import { Button } from "@/shared/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar';
 import { formatDate } from '@/lib/index';
 
 interface EmployeeCardProps {

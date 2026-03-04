@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { useFinanceLogic } from "@/features/finance/hooks/useFinanceLogic";
 import { ModuleAIAssistant } from "@/core/ai/components";
 

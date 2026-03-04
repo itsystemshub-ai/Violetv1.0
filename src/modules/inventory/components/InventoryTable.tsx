@@ -20,8 +20,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/shared/components/ui/table";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { InventoryLogic, Product, SortField } from "@/types/inventory";
 import { useImageConverter } from "@/shared/hooks/useImageConverter";

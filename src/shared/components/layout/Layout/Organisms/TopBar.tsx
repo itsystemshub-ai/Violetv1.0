@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Search, ArrowLeft, Cloud, Monitor, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ROUTE_PATHS } from "@/lib";
 import { NotificationCenter } from "../Molecules/NotificationCenter";

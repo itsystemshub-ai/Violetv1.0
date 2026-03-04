@@ -4,8 +4,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "@/shared/components/ui/dialog";
+import { Button } from "@/shared/components/ui/button";
 
 interface ReportDialogProps {
   isOpen: boolean;

@@ -3,14 +3,14 @@
  */
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/shared/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/shared/components/ui/select';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { PAGINATION } from '@/config/constants';
 

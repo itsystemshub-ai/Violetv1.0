@@ -24,7 +24,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card";
+} from "@/shared/components/ui/card";
 import { IMAGES } from "@/assets/images";
 
 interface ChartProps {

@@ -9,14 +9,14 @@ import { useApi } from "@/core/api/hooks/useApi";
 import { ApiDataTable, Column, StatusBadge, CurrencyCell } from "@/shared/components/common/ApiDataTable";
 import { ApiForm, FormField } from "@/shared/components/common/ApiForm";
 import { Product } from '@/lib';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/shared/components/ui/dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 

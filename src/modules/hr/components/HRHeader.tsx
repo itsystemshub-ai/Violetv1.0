@@ -1,13 +1,13 @@
 import { Shield, Download, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { CardDescription } from "@/components/ui/card";
+} from "@/shared/components/ui/dialog";
+import { CardDescription } from "@/shared/components/ui/card";
 import { EmployeeForm } from "@/shared/components/common/Forms";
 import { HRLogic } from "@/features/hr/hooks/useHRLogic";
 

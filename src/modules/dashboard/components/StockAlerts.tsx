@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { AlertTriangle, Package, TrendingDown, X } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 import { localDb } from "@/lib/localDb";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";

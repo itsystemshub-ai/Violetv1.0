@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Plus, ShoppingCart, Info, Package, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
 import { formatCurrency } from "@/lib/index";
 import { IMAGES } from "@/assets/images";
 

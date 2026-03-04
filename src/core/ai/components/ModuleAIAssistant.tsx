@@ -12,11 +12,11 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useAI } from "@/core/ai/hooks/useAI";
 import { cn } from "@/lib/utils";
 import { springPresets } from "@/lib/motion";

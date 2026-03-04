@@ -6,12 +6,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/shared/components/ui/table';
+import { Button } from "@/shared/components/ui/button';
+import { Badge } from "@/shared/components/ui/badge';
+import { Skeleton } from "@/shared/components/ui/skeleton';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert';
 
 export interface Column<T> {
   key: keyof T | string;
