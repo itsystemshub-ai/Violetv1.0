@@ -43,7 +43,7 @@ interface SystemStatus {
 
 const SystemMonitorPanel: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
-    app: { status: "online", port: 8080, uptime: "0h 0m" },
+    app: { status: "online", port: 5173, uptime: "0h 0m" },
     proxy: { status: "offline", port: 3001, endpoint: "/api/groq/chat" },
     database: { status: "online", records: 0 },
     network: { status: "online", latency: 0 },
@@ -65,7 +65,7 @@ const SystemMonitorPanel: React.FC = () => {
 
       // Check network
       const networkStart = Date.now();
-      const networkStatus = await fetch("http://localhost:8080", {
+      const networkStatus = await fetch("http://localhost:5173", {
         method: "HEAD",
         signal: AbortSignal.timeout(3000),
       })
@@ -95,7 +95,7 @@ const SystemMonitorPanel: React.FC = () => {
       setSystemStatus({
         app: {
           status: "online",
-          port: 8080,
+          port: 5173,
           uptime,
         },
         proxy: {
@@ -219,12 +219,12 @@ const SystemMonitorPanel: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">URL</span>
               <a
-                href="http://localhost:8080"
+                href="http://localhost:5173"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-primary hover:underline"
               >
-                localhost:8080
+                localhost:5173
               </a>
             </div>
           </CardContent>

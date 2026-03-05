@@ -65,6 +65,7 @@ interface UserManagementPanelProps {
   newUser?: any;
   setNewUser?: (user: any) => void;
   handleAddUser?: () => void;
+  onGenerateDefaultUsers?: () => void;
 }
 
 const UserManagementPanel: React.FC<UserManagementPanelProps> = ({
@@ -78,6 +79,7 @@ const UserManagementPanel: React.FC<UserManagementPanelProps> = ({
   newUser,
   setNewUser,
   handleAddUser,
+  onGenerateDefaultUsers,
 }) => {
   const filteredUsers = users || [];
 
@@ -94,6 +96,16 @@ const UserManagementPanel: React.FC<UserManagementPanelProps> = ({
           </CardDescription>
         </div>
         <div className="flex gap-2">
+          {isMaster && onGenerateDefaultUsers && (
+            <Button
+              onClick={onGenerateDefaultUsers}
+              variant="outline"
+              className="gap-2"
+            >
+              <UserPlus className="h-4 w-4" />
+              Generar 10 Usuarios
+            </Button>
+          )}
           {isMaster && setIsAddUserOpen && (
             <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
               <DialogTrigger asChild>

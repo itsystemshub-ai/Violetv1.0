@@ -15,10 +15,8 @@ import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useUserManagement } from "@/modules/settings/hooks/useUserManagement";
 import { useInstanceStore } from "@/shared/hooks/useInstanceStore";
-import { useAI } from "@/core/ai/hooks/useAI";
 import { useAudit } from "@/modules/settings/hooks/useAudit";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { BackupSettings } from "@/modules/settings/components/BackupSettings";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -54,14 +52,8 @@ const UserManagementPanel = lazy(
 const AIChatPanel = lazy(
   () => import("@/modules/settings/components/organisms/AIChatPanel"),
 );
-const SecurityAuditPanel = lazy(
-  () => import("@/modules/settings/components/organisms/SecurityAuditPanel"),
-);
-const SystemMonitorPanel = lazy(
-  () => import("@/modules/settings/components/organisms/SystemMonitorPanel"),
-);
-const ActivityLogPanel = lazy(
-  () => import("@/modules/settings/components/organisms/ActivityLogPanel"),
+const SystemSecurityPanel = lazy(
+  () => import("@/modules/settings/components/organisms/SystemSecurityPanel"),
 );
 
 const LoadingFallback = () => (
@@ -105,7 +97,6 @@ export default function SettingsPage() {
   } = useUserManagement();
 
   const { instances, syncInstances } = useInstanceStore();
-  const { aiConfig, updateAIConfig } = useAI();
   const { auditLogs } = useAudit();
 
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
@@ -141,6 +132,33 @@ export default function SettingsPage() {
       role: "user",
       department: "Ventas",
     });
+  };
+
+  const handleGenerateDefaultUsers = async () => {
+    try {
+      const { generateDefaultUsers } = await import('@/data/defaultUsers');
+      const defaultUsers = generateDefaultUsers(activeTenantId || 'default');
+      
+      let created = 0;
+      for (const user of defaultUsers) {
+        // Verificar si el usuario ya existe
+        const existing = users.find(u => u.username === user.username);
+        if (!existing) {
+          await createUser(user);
+          created++;
+        }
+      }
+      
+      if (created > 0) {
+        toast.success(`${created} usuarios predeterminados creados exitosamente`);
+        await fetchAllUsers();
+      } else {
+        toast.info('Todos los usuarios predeterminados ya existen');
+      }
+    } catch (error) {
+      console.error('Error generating default users:', error);
+      toast.error('Error al generar usuarios predeterminados');
+    }
   };
 
   const handleAddTenant = async (tenantData?: Partial<Tenant>) => {
@@ -204,20 +222,11 @@ export default function SettingsPage() {
               <TabsTrigger value="users" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
                 Usuarios
               </TabsTrigger>
-              <TabsTrigger value="backup" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
-                Backup
-              </TabsTrigger>
               <TabsTrigger value="ai" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
                 IA
               </TabsTrigger>
               <TabsTrigger value="security" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
-                Seguridad
-              </TabsTrigger>
-              <TabsTrigger value="monitor" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
-                Monitoreo
-              </TabsTrigger>
-              <TabsTrigger value="historial" className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-violet-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white">
-                Historial
+                Sistema & Seguridad
               </TabsTrigger>
             </TabsList>
           </div>
@@ -353,34 +362,19 @@ export default function SettingsPage() {
                 newUser={newUser}
                 setNewUser={setNewUser}
                 handleAddUser={handleAddUser}
+                onGenerateDefaultUsers={handleGenerateDefaultUsers}
               />
-            </TabsContent>
-
-            <TabsContent value="backup">
-              <BackupSettings />
             </TabsContent>
 
             <TabsContent value="ai">
-              <AIChatPanel
-                aiConfig={aiConfig}
-                updateAIConfig={updateAIConfig}
-                isMaster={isMaster}
-              />
+              <AIChatPanel isMaster={isMaster} />
             </TabsContent>
 
             <TabsContent value="security">
-              <SecurityAuditPanel
+              <SystemSecurityPanel
                 auditLogs={auditLogs}
                 isMaster={isMaster}
               />
-            </TabsContent>
-
-            <TabsContent value="monitor">
-              <SystemMonitorPanel />
-            </TabsContent>
-
-            <TabsContent value="historial">
-              <ActivityLogPanel isMaster={isMaster} />
             </TabsContent>
           </Suspense>
         </Tabs>

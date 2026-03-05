@@ -16,6 +16,7 @@ const Inventory = lazy(() => import('@/features/inventory/pages/Inventory'));
 const Sales = lazy(() => import('@/features/sales/pages/Sales'));
 const Purchases = lazy(() => import('@/features/purchases/pages/Purchases'));
 const HR = lazy(() => import('@/features/hr/pages/HR'));
+const AI = lazy(() => import('@/features/ai/pages/AIPage'));
 const Settings = lazy(() => import('@/modules/settings/pages/SettingsPage'));
 const Login = lazy(() => import('@/features/auth/pages/Login'));
 const InvoicePreview = lazy(() => import('@/modules/sales/pages/InvoicePreviewPage'));
@@ -137,6 +138,13 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     description: 'Gestión de empleados y nómina',
   },
   {
+    path: '/ai',
+    component: AI,
+    protected: true,
+    title: 'Inteligencia Artificial',
+    description: 'Asistente de IA con 21 skills activas',
+  },
+  {
     path: '/settings',
     component: Settings,
     protected: true,
@@ -178,6 +186,7 @@ export const ROUTE_PATHS = {
   ACCOUNTS_RECEIVABLE: '/accounts-receivable',
   PURCHASES: '/purchases',
   HR: '/hr',
+  AI: '/ai',
   SETTINGS: '/settings',
   CONNECTIVITY_ERROR: '/connectivity-error',
   UNAUTHORIZED: '/unauthorized',

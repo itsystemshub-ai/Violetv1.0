@@ -113,7 +113,7 @@ export class ExchangeDifferenceService {
   static async generateAccountingEntry(
     difference: ExchangeDifference,
     tenant: any,
-    payment: PaymentWithExchangeDifference
+    _payment: PaymentWithExchangeDifference
   ): Promise<string | null> {
     try {
       const isGain = difference.type === 'GAIN';
@@ -242,7 +242,7 @@ export class ExchangeDifferenceService {
     }
   ): Promise<ExchangeDifference[]> {
     try {
-      let query = localDb.exchange_differences
+      const query = localDb.exchange_differences
         .where('tenant_id')
         .equals(tenantId);
       

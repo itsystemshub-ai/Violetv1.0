@@ -12,7 +12,7 @@ export const exportInvoicePDF = (invoice: Invoice, tenant: Tenant, ivaPercentage
   if (tenant.logoUrl) {
     try {
       doc.addImage(tenant.logoUrl, 'PNG', 14, 15, 40, 15);
-    } catch(e) { /* ignore if not loadable */ }
+    } catch { /* ignore if not loadable */ }
   } else {
     doc.setFontSize(22);
     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);

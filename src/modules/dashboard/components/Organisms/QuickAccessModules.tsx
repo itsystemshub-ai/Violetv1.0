@@ -7,6 +7,7 @@ import {
   Activity,
   Users,
   ShieldCheck,
+  Bot,
 } from "lucide-react";
 import { ERP_MODULES } from "@/lib/index";
 import { cn } from "@/core/shared/utils/utils";
@@ -60,6 +61,13 @@ const QuickAccessModules: React.FC = () => {
                 border: "border-rose-400/30",
                 hoverBorder: "group-hover:border-rose-400/60",
               },
+              ai: {
+                color: "from-cyan-500 to-magenta-600",
+                shadow: "shadow-cyan-500/50",
+                glow: "group-hover:shadow-magenta-500/70",
+                border: "border-cyan-400/30",
+                hoverBorder: "group-hover:border-magenta-400/60",
+              },
               security: {
                 color: "from-indigo-500 to-indigo-700",
                 shadow: "shadow-indigo-500/50",
@@ -84,6 +92,7 @@ const QuickAccessModules: React.FC = () => {
                 sales: ShoppingCart,
                 purchases: Activity,
                 hr: Users,
+                ai: Bot,
                 security: ShieldCheck,
               } as any
             )[module.id] || Users;

@@ -31,13 +31,13 @@ export const AIFloatingButton: React.FC = () => {
       aria-label="Abrir asistente de IA"
     >
       <div className="relative">
-        {/* Glow effect */}
-        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/30 transition-all duration-300" />
+        {/* Glow effect - Cyan/Magenta gradient */}
+        <div className="absolute inset-0 bg-linear-to-br from-cyan-500/30 to-magenta-600/30 rounded-full blur-xl group-hover:from-cyan-500/40 group-hover:to-magenta-600/40 transition-all duration-300" />
         
-        {/* Button */}
-        <div className="relative h-14 w-14 bg-primary hover:bg-primary/90 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-          <Bot className="h-6 w-6 text-primary-foreground" />
-          <Sparkles className="h-3 w-3 text-primary-foreground absolute -top-1 -right-1 animate-pulse" />
+        {/* Button - Cyan to Magenta gradient */}
+        <div className="relative h-14 w-14 bg-linear-to-br from-cyan-500 to-magenta-600 hover:from-cyan-400 hover:to-magenta-500 rounded-full shadow-lg shadow-cyan-500/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-cyan-500/70">
+          <Bot className="h-6 w-6 text-white" />
+          <Sparkles className="h-3 w-3 text-white absolute -top-1 -right-1 animate-pulse" />
         </div>
 
         {/* Tooltip */}

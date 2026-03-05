@@ -206,15 +206,15 @@ export const useAIStore = create<AIStore>()(
 
       // Send message and get AI response
       sendMessage: async (conversationId: string, content: string) => {
-        const { config, capabilities, addMessage } = get();
+        const { config, capabilities, addMessage, getDecryptedApiKey } = get();
 
         if (!config.enabled) {
           set({ error: 'IA está deshabilitada. Actívala en configuración.' });
           return;
         }
 
-        // Verificar API key
-        const apiKey = config.apiKey ? decrypt(config.apiKey) : import.meta.env.VITE_GROQ_API_KEY;
+        // Verificar API key usando el método de descifrado
+        const apiKey = getDecryptedApiKey() || import.meta.env.VITE_GROQ_API_KEY;
         if (!apiKey) {
           set({ error: 'API Key de Groq no configurada. Por favor, ve a Configuración > IA y guarda tu API key.' });
           return;
@@ -352,7 +352,17 @@ Instrucciones:
           
           // Si se actualiza la API key, cifrarla
           if (newConfig.apiKey !== undefined) {
-            updatedConfig.apiKey = newConfig.apiKey ? encrypt(newConfig.apiKey) : '';
+            if (newConfig.apiKey) {
+              try {
+                updatedConfig.apiKey = encrypt(newConfig.apiKey);
+                console.log('[AIStore] API key encrypted and saved');
+              } catch (error) {
+                console.error('[AIStore] Error encrypting API key:', error);
+                updatedConfig.apiKey = '';
+              }
+            } else {
+              updatedConfig.apiKey = '';
+            }
           }
           
           // Actualizar otros campos
@@ -383,7 +393,14 @@ Instrucciones:
       // Get decrypted API key for display
       getDecryptedApiKey: () => {
         const { config } = get();
-        return config.apiKey ? decrypt(config.apiKey) : '';
+        if (!config.apiKey) return '';
+        try {
+          const decrypted = decrypt(config.apiKey);
+          return decrypted || '';
+        } catch (error) {
+          console.error('[AIStore] Error decrypting API key:', error);
+          return '';
+        }
       },
     }),
     {

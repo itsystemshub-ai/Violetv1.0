@@ -40,6 +40,7 @@ pids/
 # --- Coverage ---
 coverage/
 .nyc_output/
+*.lcov
 
 # --- Build outputs / caches ---
 dist/
@@ -95,6 +96,9 @@ cypress/downloads/
 .DS_Store
 Thumbs.db
 .node_repl_history
+
+# --- ESLint cache ---
+.eslintcache
 
 # --- Uploaded Files ---
 uploaded_files/

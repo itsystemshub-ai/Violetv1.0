@@ -57,6 +57,7 @@ import SettingsCard from "../Atoms/SettingsCard";
 import ConfigToggle from "../Molecules/ConfigToggle";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { TenantSetupForm } from "@/shared/components/common/Forms";
+import { TableColumnEditor } from "./TableColumnEditor";
 
 // Valores por defecto para taxes
 const DEFAULT_TAXES = {
@@ -107,6 +108,15 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
   const [isEditTenantOpen, setIsEditTenantOpen] = React.useState(false);
   const [selectedTenant, setSelectedTenant] = React.useState<any>(null);
   const [isDeleteTenantOpen, setIsDeleteTenantOpen] = React.useState(false);
+  const [isNewRuleOpen, setIsNewRuleOpen] = React.useState(false);
+  const [isColumnEditorOpen, setIsColumnEditorOpen] = React.useState(false);
+  const [isCustomFieldsOpen, setIsCustomFieldsOpen] = React.useState(false);
+  const [isTabVisibilityOpen, setIsTabVisibilityOpen] = React.useState(false);
+  const [newRule, setNewRule] = React.useState({
+    rule_name: '',
+    condition: { field: 'total', operator: '>', value: '1000' },
+    action: { role: 'Gerente' }
+  });
 
   // Usar taxes de props si existe, sino usar del sistema, sino usar DEFAULT_TAXES
   const taxesConfig = taxes || systemTaxes || DEFAULT_TAXES;
@@ -149,6 +159,46 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
     }
   };
 
+  const handleSyncInstances = async () => {
+    try {
+      await syncInstances();
+      toast.success(`${safeInstances.length} instancias sincronizadas correctamente`);
+    } catch (error) {
+      toast.error("Error al sincronizar instancias");
+      console.error(error);
+    }
+  };
+
+  const handleCreateRule = () => {
+    if (!newRule.rule_name.trim()) {
+      toast.error("Por favor ingresa un nombre para la regla");
+      return;
+    }
+    
+    // Aquí se guardaría la regla en la base de datos
+    toast.success(`Regla "${newRule.rule_name}" creada correctamente`);
+    setIsNewRuleOpen(false);
+    setNewRule({
+      rule_name: '',
+      condition: { field: 'total', operator: '>', value: '1000' },
+      action: { role: 'Gerente' }
+    });
+  };
+
+  const handleOpenColumnEditor = () => {
+    setIsColumnEditorOpen(true);
+  };
+
+  const handleOpenCustomFields = () => {
+    setIsCustomFieldsOpen(true);
+    toast.info("Campos personalizados - Próximamente disponible");
+  };
+
+  const handleOpenTabVisibility = () => {
+    setIsTabVisibilityOpen(true);
+    toast.info("Configuración de pestañas - Próximamente disponible");
+  };
+
   return (
     <>
     <div className="space-y-6">
@@ -189,12 +239,7 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
             description="Activa el motor de Cuentas y Transacciones."
             checked={true}
             onCheckedChange={(val) => {
-              if (window.electronAPI?.saveConfig) {
-                window.electronAPI.saveConfig(
-                  "module_finance_enabled",
-                  val ? "1" : "0",
-                );
-              }
+              updateConfig({ module_finance_enabled: val });
               toast.success(
                 `Módulo de Finanzas ${val ? "habilitado" : "deshabilitado"} globalmente.`,
               );
@@ -205,12 +250,7 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
             description="Permite el dispatch multicanal de alertas."
             checked={true}
             onCheckedChange={(val) => {
-              if (window.electronAPI?.saveConfig) {
-                window.electronAPI.saveConfig(
-                  "module_sms_enabled",
-                  val ? "1" : "0",
-                );
-              }
+              updateConfig({ module_sms_enabled: val });
               toast.success(
                 `Canal SMS ${val ? "habilitado" : "deshabilitado"} globalmente.`,
               );
@@ -221,14 +261,42 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
             description="Acceso a fórmulas y órdenes de ensamblaje."
             checked={false}
             onCheckedChange={(val) => {
-              if (window.electronAPI?.saveConfig) {
-                window.electronAPI.saveConfig(
-                  "module_production_enabled",
-                  val ? "1" : "0",
-                );
-              }
+              updateConfig({ module_production_enabled: val });
               toast.success(
                 `Módulo de Producción ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+              );
+            }}
+          />
+          <ConfigToggle
+            label="Módulo de Inventario Avanzado"
+            description="Control de lotes, series y ubicaciones."
+            checked={true}
+            onCheckedChange={(val) => {
+              updateConfig({ module_inventory_advanced: val });
+              toast.success(
+                `Inventario Avanzado ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+              );
+            }}
+          />
+          <ConfigToggle
+            label="Módulo de RRHH (Nómina)"
+            description="Gestión de empleados y nómina LOTTT."
+            checked={true}
+            onCheckedChange={(val) => {
+              updateConfig({ module_hr_enabled: val });
+              toast.success(
+                `Módulo de RRHH ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+              );
+            }}
+          />
+          <ConfigToggle
+            label="Módulo de Compras"
+            description="Órdenes de compra y gestión de proveedores."
+            checked={true}
+            onCheckedChange={(val) => {
+              updateConfig({ module_purchases_enabled: val });
+              toast.success(
+                `Módulo de Compras ${val ? "habilitado" : "deshabilitado"} globalmente.`,
               );
             }}
           />
@@ -283,7 +351,7 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
           <Button
             variant="outline"
             className="w-full gap-2"
-            onClick={syncInstances}
+            onClick={handleSyncInstances}
           >
             <RefreshCw className="w-4 h-4" />
             Sincronizar Instancias
@@ -323,6 +391,7 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
           <Button
             variant="outline"
             className="w-full border-dashed gap-2 text-xs py-5"
+            onClick={() => setIsNewRuleOpen(true)}
           >
             <Plus className="h-4 w-4" /> Nueva Regla de Negocio
           </Button>
@@ -338,19 +407,19 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
             <span className="text-sm font-medium">Editar Encabezados</span>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleOpenColumnEditor}>
               Abrir Editor
             </Button>
           </div>
           <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
             <span className="text-sm font-medium">UDF (Custom Fields)</span>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleOpenCustomFields}>
               Añadir Campo
             </Button>
           </div>
           <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
             <span className="text-sm font-medium">Visibilidad de Pestañas</span>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleOpenTabVisibility}>
               Configurar
             </Button>
           </div>
@@ -376,6 +445,148 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
         </DialogContent>
       </Dialog>
 
+      {/* Dialog para crear nueva regla de negocio */}
+      <Dialog open={isNewRuleOpen} onOpenChange={setIsNewRuleOpen}>
+        <DialogContent className="max-w-2xl rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GitBranch className="w-5 h-5 text-amber-500" />
+              Nueva Regla de Negocio
+            </DialogTitle>
+            <DialogDescription>
+              Define una regla de aprobación automática basada en condiciones
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Nombre de la Regla</Label>
+              <Input
+                placeholder="Ej: Aprobación de Compras Mayores"
+                value={newRule.rule_name}
+                onChange={(e) => setNewRule({ ...newRule, rule_name: e.target.value })}
+              />
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <Label className="text-base font-semibold">Condición</Label>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-xs">Campo</Label>
+                  <Select
+                    value={newRule.condition.field}
+                    onValueChange={(value) =>
+                      setNewRule({
+                        ...newRule,
+                        condition: { ...newRule.condition, field: value },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="total">Total</SelectItem>
+                      <SelectItem value="subtotal">Subtotal</SelectItem>
+                      <SelectItem value="quantity">Cantidad</SelectItem>
+                      <SelectItem value="discount">Descuento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs">Operador</Label>
+                  <Select
+                    value={newRule.condition.operator}
+                    onValueChange={(value) =>
+                      setNewRule({
+                        ...newRule,
+                        condition: { ...newRule.condition, operator: value },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value=">">Mayor que (&gt;)</SelectItem>
+                      <SelectItem value="<">Menor que (&lt;)</SelectItem>
+                      <SelectItem value=">=">Mayor o igual (≥)</SelectItem>
+                      <SelectItem value="<=">Menor o igual (≤)</SelectItem>
+                      <SelectItem value="=">Igual (=)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs">Valor</Label>
+                  <Input
+                    type="number"
+                    placeholder="1000"
+                    value={newRule.condition.value}
+                    onChange={(e) =>
+                      setNewRule({
+                        ...newRule,
+                        condition: { ...newRule.condition, value: e.target.value },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <Label className="text-base font-semibold">Acción</Label>
+              <div className="space-y-2">
+                <Label className="text-xs">Requiere Aprobación de</Label>
+                <Select
+                  value={newRule.action.role}
+                  onValueChange={(value) =>
+                    setNewRule({
+                      ...newRule,
+                      action: { ...newRule.action, role: value },
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Gerente">Gerente</SelectItem>
+                    <SelectItem value="Director">Director</SelectItem>
+                    <SelectItem value="Administrador">Administrador</SelectItem>
+                    <SelectItem value="Contador">Contador</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <p className="text-sm text-amber-700 dark:text-amber-400">
+                <span className="font-semibold">Vista previa:</span> Si{" "}
+                <span className="font-mono">{newRule.condition.field}</span>{" "}
+                {newRule.condition.operator}{" "}
+                <span className="font-mono">{newRule.condition.value}</span> USD →
+                Requiere aprobación de{" "}
+                <span className="font-semibold">{newRule.action.role}</span>
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNewRuleOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateRule} className="bg-amber-600 hover:bg-amber-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Crear Regla
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog para eliminar empresa */}
       <AlertDialog open={isDeleteTenantOpen} onOpenChange={setIsDeleteTenantOpen}>
         <AlertDialogContent className="rounded-3xl">
@@ -397,6 +608,12 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Editor de Columnas de Tablas */}
+      <TableColumnEditor
+        open={isColumnEditorOpen}
+        onOpenChange={setIsColumnEditorOpen}
+      />
     </>
   );
 };

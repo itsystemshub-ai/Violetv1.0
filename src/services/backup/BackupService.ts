@@ -154,12 +154,14 @@ export class BackupService {
    * Obtiene todos los datos de la base de datos
    */
   private async getAllData() {
-    const [products, invoices, customers, suppliers, transactions] = await Promise.all([
+    const [products, invoices, profiles, suppliers, transactions, employees, financial_accounts] = await Promise.all([
       localDb.products.toArray(),
       localDb.invoices.toArray(),
-      localDb.customers.toArray(),
+      localDb.profiles.toArray(),
       localDb.suppliers.toArray(),
-      localDb.transactions.toArray(),
+      localDb.financial_transactions.toArray(),
+      localDb.employees.toArray(),
+      localDb.financial_accounts.toArray(),
     ]);
 
     // Si no se incluyen imágenes, eliminarlas de los productos
@@ -170,9 +172,11 @@ export class BackupService {
     return {
       products: processedProducts,
       invoices,
-      customers,
+      customers: profiles, // profiles son los clientes
       suppliers,
       transactions,
+      employees,
+      financial_accounts,
     };
   }
 

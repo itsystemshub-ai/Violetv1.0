@@ -100,7 +100,7 @@ export class LedgerService {
     accountCode?: string;
   }): Promise<any[]> {
     try {
-      let query = localDb.financial_transactions
+      const query = localDb.financial_transactions
         .where('tenant_id')
         .equals(tenantId);
       

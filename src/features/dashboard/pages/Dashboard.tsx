@@ -1,11 +1,8 @@
 import React, { useState, useEffect, Suspense, lazy, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ChevronRight } from "lucide-react";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { localDb } from "@/core/database/localDb";
 import { getCaraboboWeather } from "@/infrastructure/weather/weather.service";
 import { fetchBCVRate } from "@/infrastructure/bcv/bcv.service";
-import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,9 +10,6 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
-import { cn } from "@/core/shared/utils/utils";
-import { springPresets } from "@/lib/motion";
-import { AIChat } from "@/core/ai/components/AIChat";
 import { ModuleAIAssistant } from "@/core/ai/components";
 import { formatDate } from "@/lib";
 
@@ -103,7 +97,6 @@ const Dashboard: React.FC = () => {
 
   // Picker States
   const [isWeekPickerOpen, setIsWeekPickerOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -230,10 +223,6 @@ const Dashboard: React.FC = () => {
   }, [dashboardData]);
 
   // OPTIMIZACIÓN: Memoizar handlers para evitar re-renders
-  const handleChatToggle = useCallback(() => {
-    setIsChatOpen(prev => !prev);
-  }, []);
-
   const handleRangeChange = useCallback((range: "today" | "week" | "month" | "year") => {
     setActiveRange(range);
   }, []);
@@ -291,41 +280,6 @@ const Dashboard: React.FC = () => {
             />
           </div>
         </Suspense>
-
-        {/* Floating AI Chat */}
-        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-4">
-          <AnimatePresence>
-            {isChatOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                transition={springPresets.gentle}
-                className="w-[320px] h-[450px] shadow-3xl rounded-[20px] overflow-hidden border-2 border-primary/20 bg-white"
-              >
-                <AIChat
-                  contextData={dashboardContext}
-                  onClose={() => setIsChatOpen(false)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <Button
-            onClick={handleChatToggle}
-            className={cn(
-              "w-16 h-16 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-xl border-2",
-              isChatOpen 
-                ? "bg-slate-200 dark:bg-slate-900/80 border-slate-300 dark:border-slate-700 rotate-90" 
-                : "bg-linear-to-br from-cyan-500 to-magenta-600 border-cyan-400/50 scale-110 shadow-cyan-500/50 shadow-2xl hover:shadow-cyan-500/70 hover:scale-125",
-            )}
-          >
-            {isChatOpen ? (
-              <ChevronRight className="w-8 h-8 text-slate-700 dark:text-white" />
-            ) : (
-              <Sparkles className="w-8 h-8 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-            )}
-          </Button>
-        </div>
 
         {/* Simple Range Pickers preserved in main file for now */}
         <Dialog open={isWeekPickerOpen} onOpenChange={setIsWeekPickerOpen}>

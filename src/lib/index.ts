@@ -5,6 +5,7 @@ export const ROUTE_PATHS = {
   SALES: "/sales",
   PURCHASES: "/purchases",
   HR: "/hr",
+  AI: "/ai",
   SETTINGS: "/settings",
   SECURITY: "/security",
   LOGIN: "/login",
@@ -149,6 +150,13 @@ export const ERP_MODULES = [
     path: ROUTE_PATHS.HR,
     icon: "Users",
     description: "Nómina, asistencia y expedientes de empleados.",
+  },
+  {
+    id: "ai",
+    name: "IA",
+    path: ROUTE_PATHS.AI,
+    icon: "Bot",
+    description: "Asistente inteligente con 21 skills activas.",
   },
 ] as const;
 

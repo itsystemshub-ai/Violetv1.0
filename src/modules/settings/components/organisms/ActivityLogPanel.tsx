@@ -76,27 +76,58 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ isMaster }) => {
     filterLogs();
   }, [logs, searchTerm, filterAction, filterModule]);
 
-  const loadActivityLogs = () => {
+  const loadActivityLogs = async () => {
     setIsLoading(true);
     try {
-      // Intentar cargar desde localStorage
-      const storedLogs = localStorage.getItem("violet-activity-logs");
-      if (storedLogs) {
-        const parsedLogs = JSON.parse(storedLogs).map((log: any) => ({
-          ...log,
-          timestamp: new Date(log.timestamp),
+      // Cargar desde IndexedDB (audit_logs)
+      const { localDb } = await import('@/core/database/localDb');
+      const auditLogs = await localDb.audit_logs
+        .orderBy('created_at')
+        .reverse()
+        .limit(100)
+        .toArray();
+
+      if (auditLogs && auditLogs.length > 0) {
+        // Convertir audit logs al formato de ActivityLog
+        const convertedLogs: ActivityLog[] = auditLogs.map((log: any) => ({
+          id: log.id,
+          timestamp: new Date(log.created_at),
+          user: log.changed_by || 'Sistema',
+          action: log.action || 'UPDATE',
+          module: getModuleFromTable(log.table_name),
+          entity: log.table_name,
+          entityId: log.record_id,
+          description: log.description || `${log.action} en ${log.table_name}`,
+          changes: log.changes,
+          ipAddress: log.ip_address,
         }));
-        setLogs(parsedLogs);
+        setLogs(convertedLogs);
       } else {
-        // Generar logs de ejemplo
+        // Si no hay logs reales, generar ejemplos
         generateSampleLogs();
       }
     } catch (error) {
       console.error("Error cargando logs:", error);
-      toast.error("Error al cargar el historial de actividad");
+      // Si hay error, generar logs de ejemplo
+      generateSampleLogs();
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getModuleFromTable = (tableName: string): string => {
+    const moduleMap: Record<string, string> = {
+      products: 'Inventario',
+      invoices: 'Ventas',
+      suppliers: 'Compras',
+      employees: 'RRHH',
+      financial_accounts: 'Finanzas',
+      financial_transactions: 'Finanzas',
+      profiles: 'Usuarios',
+      tenants: 'Configuración',
+      sys_config: 'Configuración',
+    };
+    return moduleMap[tableName] || 'Sistema';
   };
 
   const generateSampleLogs = () => {

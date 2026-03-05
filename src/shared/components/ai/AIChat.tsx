@@ -140,7 +140,7 @@ export const AIChat: React.FC<AIChatProps> = ({ onClose, className }) => {
               )}
             >
               {message.role === 'assistant' && (
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <Bot className="h-4 w-4 text-primary" />
                 </div>
               )}
@@ -161,7 +161,7 @@ export const AIChat: React.FC<AIChatProps> = ({ onClose, className }) => {
                 </p>
               </div>
               {message.role === 'user' && (
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                   <User className="h-4 w-4 text-primary-foreground" />
                 </div>
               )}
@@ -170,7 +170,7 @@ export const AIChat: React.FC<AIChatProps> = ({ onClose, className }) => {
 
           {isProcessing && (
             <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary animate-pulse" />
               </div>
               <div className="bg-muted rounded-lg px-4 py-2">
@@ -185,15 +185,36 @@ export const AIChat: React.FC<AIChatProps> = ({ onClose, className }) => {
 
           {error && (
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-              <p className="text-sm text-destructive">{error}</p>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearError}
-                className="mt-2 h-7 text-xs"
-              >
-                Cerrar
-              </Button>
+              <div className="flex items-start gap-2">
+                <div className="shrink-0 w-5 h-5 rounded-full bg-destructive/20 flex items-center justify-center mt-0.5">
+                  <span className="text-xs font-bold text-destructive">!</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-destructive mb-1">Error</p>
+                  <p className="text-xs text-destructive/90 whitespace-pre-wrap">{error}</p>
+                  {error.includes('API Key') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        clearError();
+                        window.location.href = '/#/settings?tab=ai';
+                      }}
+                      className="mt-2 h-7 text-xs border-destructive/30 hover:bg-destructive/10"
+                    >
+                      Ir a Configuración
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearError}
+                    className="mt-2 h-7 text-xs ml-2"
+                  >
+                    Cerrar
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
         </div>

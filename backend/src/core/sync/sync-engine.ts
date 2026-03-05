@@ -204,7 +204,6 @@ export const SyncEngine = {
     for (const log of pending) {
       try {
         const payload = JSON.parse(log.payload);
-        let result;
 
         // CLOUD SYNC DISABLED - Uncomment when ready
         /*
@@ -327,7 +326,7 @@ export const SyncEngine = {
 /**
  * Conflict detection and resolution types
  */
-export interface ConflictData<T = Record<string, unknown>> {
+export interface ConflictData {
   field: string;
   localValue: unknown;
   remoteValue: unknown;
