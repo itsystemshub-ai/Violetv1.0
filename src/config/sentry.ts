@@ -25,16 +25,16 @@ export function initSentry() {
     dsn,
     environment,
     
-    // Integrations
+    // Integrations - usando las importaciones correctas de @sentry/react v10+
     integrations: [
-      new Sentry.BrowserTracing({
+      Sentry.browserTracingIntegration({
         // Rastreo de navegación
         tracePropagationTargets: [
           'localhost',
           /^https:\/\/.*\.violeterp\.com/,
         ],
       }),
-      new Sentry.Replay({
+      Sentry.replayIntegration({
         // Replay de sesiones para debugging
         maskAllText: true,
         blockAllMedia: true,
@@ -247,13 +247,21 @@ export function setContext(key: string, data: Record<string, any>) {
 export function startTransaction(name: string, op: string) {
   if (import.meta.env.VITE_ENABLE_SENTRY !== 'true') {
     return {
-      finish: () => {},
+      end: () => {},
       setStatus: () => {},
+      finish: () => {}, // backward compatibility
     };
   }
 
-  return Sentry.startTransaction({
+  // En Sentry v10+, usar startSpan en lugar de startTransaction
+  const span = Sentry.startInactiveSpan({
     name,
     op,
   });
+  
+  return {
+    end: () => span?.end(),
+    setStatus: (status: string) => span?.setStatus(status),
+    finish: () => span?.end(), // backward compatibility
+  };
 }
