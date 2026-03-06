@@ -33,6 +33,8 @@ import {
 } from "@/shared/components/ui/card";
 import { toast } from "sonner";
 import { useAIStore } from "@/services/ai/AIService";
+import AIToggle from "@/components/settings/AIToggle";
+import CloudToggle from "@/components/settings/CloudToggle";
 
 interface AIChatPanelProps {
   aiConfig?: any;
@@ -110,6 +112,12 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Toggles de IA y Cloud */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AIToggle />
+        <CloudToggle />
+      </div>
+
       {/* Header Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="border-border/50 bg-linear-to-br from-cyan-500/10 to-magenta-500/10">
