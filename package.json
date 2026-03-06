@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k \"npm run dev:vite\" \"npm run proxy\"",
+    "dev:vite": "vite",
     "dev:host": "vite --host",
     "dev:full": "concurrently -k \"npm run dev\" \"npm run proxy\"",
     "proxy": "cd server && npm install && npm start",

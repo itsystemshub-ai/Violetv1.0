@@ -292,6 +292,7 @@ const UserTable = ({ users, onEdit, onDelete }: any) => (
         <TableHead className="w-[300px]">Usuario</TableHead>
         <TableHead>Rol</TableHead>
         <TableHead>Email</TableHead>
+        <TableHead>Contraseña</TableHead>
         <TableHead className="text-right">Acciones</TableHead>
       </TableRow>
     </TableHeader>
@@ -324,6 +325,13 @@ const UserTable = ({ users, onEdit, onDelete }: any) => (
           </TableCell>
           <TableCell className="text-[11px] text-muted-foreground">
             {u.email || "Sin email"}
+          </TableCell>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
+                {u.password || "••••••••"}
+              </code>
+            </div>
           </TableCell>
           <TableCell className="text-right">
             <DropdownMenu>
