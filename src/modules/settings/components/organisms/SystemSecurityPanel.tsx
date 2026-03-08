@@ -1,9 +1,4 @@
-/**
- * SystemSecurityPanel - Panel unificado de Sistema y Seguridad
- * Combina: Backup, Monitoreo, Historial y Seguridad en una sola vista simplificada
- */
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Shield,
   Database,
@@ -26,16 +21,24 @@ import ActivityLogPanel from './ActivityLogPanel';
 import SecurityAuditPanel from './SecurityAuditPanel';
 
 interface SystemSecurityPanelProps {
-  auditLogs?: any[];
+  auditLogs: any[];
+  syncLogs: any[];
+  dbStats: any;
+  purgeAuditLogs: () => Promise<number>;
+  refreshAudit: () => void;
   isMaster?: boolean;
 }
 
 export const SystemSecurityPanel: React.FC<SystemSecurityPanelProps> = ({
   auditLogs = [],
+  syncLogs = [],
+  dbStats,
+  purgeAuditLogs,
+  refreshAudit,
   isMaster,
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const totalLogs = auditLogs.length;
+  const totalLogs = dbStats?.auditLogs || auditLogs.length;
   const recentLogs = auditLogs.slice(0, 5);
 
   return (
@@ -110,12 +113,12 @@ export const SystemSecurityPanel: React.FC<SystemSecurityPanelProps> = ({
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Server className="w-4 h-4 text-amber-500" />
-                  Monitoreo
+                  Base de Datos
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-amber-600">100%</div>
-                <p className="text-xs text-muted-foreground mt-1">Click para detalles</p>
+                <div className="text-2xl font-bold text-amber-600">{dbStats?.total || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Registros totales</p>
               </CardContent>
             </Card>
           </div>
@@ -168,17 +171,24 @@ export const SystemSecurityPanel: React.FC<SystemSecurityPanelProps> = ({
 
         {/* Monitor Tab */}
         <TabsContent value="monitor">
-          <SystemMonitorPanel />
+          <SystemMonitorPanel dbStats={dbStats} />
         </TabsContent>
 
         {/* Activity Tab */}
         <TabsContent value="activity">
-          <ActivityLogPanel isMaster={isMaster} />
+          <ActivityLogPanel auditLogs={auditLogs} onRefresh={refreshAudit} isMaster={isMaster} />
         </TabsContent>
 
         {/* Security Tab */}
         <TabsContent value="security">
-          <SecurityAuditPanel auditLogs={auditLogs} isMaster={isMaster} />
+          <SecurityAuditPanel 
+            auditLogs={auditLogs} 
+            syncLogs={syncLogs}
+            dbStats={dbStats}
+            purgeAuditLogs={purgeAuditLogs}
+            refreshAudit={refreshAudit}
+            isMaster={isMaster} 
+          />
         </TabsContent>
       </Tabs>
     </div>

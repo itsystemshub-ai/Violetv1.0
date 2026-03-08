@@ -33,7 +33,11 @@ import {
 } from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
 import { Switch } from "@/shared/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -44,8 +48,8 @@ import {
 } from "@/shared/components/ui/table";
 import { Tenant, Product, Employee } from "@/lib";
 import { WithholdingService } from "@/modules/finance/services/withholding.service";
-import { InventoryService } from "@/features/inventory/services/inventory.service";
-import { useInventory } from "@/features/inventory/hooks/useInventory";
+import { InventoryService } from "@/modules/inventory/services/inventory.service";
+import { useInventory } from "@/modules/inventory/hooks/useInventory";
 import { cn } from "@/core/shared/utils/utils";
 
 // --- SCHEMAS ---
@@ -171,9 +175,11 @@ export function TenantSetupForm({
   onSubmit: (data: any) => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [primaryColor, setPrimaryColor] = useState(initialData?.primaryColor || '#7c3aed');
-  const [logoUrl, setLogoUrl] = useState(initialData?.logoUrl || '');
-  
+  const [primaryColor, setPrimaryColor] = useState(
+    initialData?.primaryColor || "#7c3aed",
+  );
+  const [logoUrl, setLogoUrl] = useState(initialData?.logoUrl || "");
+
   const {
     register,
     handleSubmit,
@@ -192,13 +198,13 @@ export function TenantSetupForm({
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
           let width = img.width;
           let height = img.height;
           const maxSize = 200;
-          
+
           if (width > height) {
             if (width > maxSize) {
               height = (height * maxSize) / width;
@@ -210,12 +216,12 @@ export function TenantSetupForm({
               height = maxSize;
             }
           }
-          
+
           canvas.width = width;
           canvas.height = height;
           ctx?.drawImage(img, 0, 0, width, height);
-          
-          const compressedDataUrl = canvas.toDataURL('image/png', 0.7);
+
+          const compressedDataUrl = canvas.toDataURL("image/png", 0.7);
           resolve(compressedDataUrl);
         };
         img.onerror = reject;
@@ -234,13 +240,13 @@ export function TenantSetupForm({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Por favor selecciona un archivo de imagen válido');
+    if (!file.type.startsWith("image/")) {
+      alert("Por favor selecciona un archivo de imagen válido");
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('El archivo es muy grande. Máximo 2MB');
+      alert("El archivo es muy grande. Máximo 2MB");
       return;
     }
 
@@ -248,11 +254,11 @@ export function TenantSetupForm({
       const compressedLogo = await compressImage(file);
       setLogoUrl(compressedLogo);
     } catch (error) {
-      console.error('Error al procesar el logo:', error);
-      alert('Error al procesar la imagen');
+      console.error("Error al procesar el logo:", error);
+      alert("Error al procesar la imagen");
     }
 
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleFormSubmit = (data: any) => {
@@ -283,7 +289,7 @@ export function TenantSetupForm({
               <Palette className="w-5 h-5 text-primary" />
               <h3 className="font-semibold">Identidad Visual</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Logo */}
               <div className="space-y-2">
@@ -303,7 +309,12 @@ export function TenantSetupForm({
                       onChange={handleFileChange}
                       className="hidden"
                     />
-                    <Button type="button" variant="outline" size="sm" onClick={handleLogoClick}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleLogoClick}
+                    >
                       Cambiar Logo
                     </Button>
                     <p className="text-xs text-muted-foreground">
@@ -405,7 +416,10 @@ export function TenantSetupForm({
             </div>
             <div className="space-y-2">
               <Label>Sector / Zona (Opcional)</Label>
-              <Input {...register("sector")} placeholder="Sector Centro Turnero" />
+              <Input
+                {...register("sector")}
+                placeholder="Sector Centro Turnero"
+              />
             </div>
             <div className="space-y-2">
               <Label>Ciudad</Label>
@@ -425,7 +439,11 @@ export function TenantSetupForm({
             </div>
             <div className="space-y-2">
               <Label>Email (Opcional)</Label>
-              <Input {...register("email")} type="email" placeholder="contacto@empresa.com" />
+              <Input
+                {...register("email")}
+                type="email"
+                placeholder="contacto@empresa.com"
+              />
             </div>
             <div className="space-y-2">
               <Label>Sitio Web (Opcional)</Label>
@@ -433,12 +451,19 @@ export function TenantSetupForm({
             </div>
             <div className="space-y-2">
               <Label>Moneda Principal</Label>
-              <Select defaultValue={initialData?.currency || "USD"} onValueChange={(value) => register("currency").onChange({ target: { value } })}>
+              <Select
+                defaultValue={initialData?.currency || "USD"}
+                onValueChange={(value) =>
+                  register("currency").onChange({ target: { value } })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar moneda" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
+                  <SelectItem value="USD">
+                    USD - Dólar Estadounidense
+                  </SelectItem>
                   <SelectItem value="VES">VES - Bolívar Venezolano</SelectItem>
                   <SelectItem value="EUR">EUR - Euro</SelectItem>
                 </SelectContent>
@@ -800,7 +825,12 @@ export function ProductForm({
   // Si no hay almacenes configurados y se ingresa stock, asignar al almacén principal
   useEffect(() => {
     const currentStock = watch("stock");
-    if (!isCombo && warehouseFields.length === 0 && currentStock > 0 && !initialData?.warehouseStocks) {
+    if (
+      !isCombo &&
+      warehouseFields.length === 0 &&
+      currentStock > 0 &&
+      !initialData?.warehouseStocks
+    ) {
       appendWarehouse({ warehouseId: "wh-01", stock: currentStock });
     }
   }, [watch("stock"), isCombo, warehouseFields.length, initialData]);
@@ -813,14 +843,14 @@ export function ProductForm({
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
           // Redimensionar a máximo 300x300 manteniendo aspecto (más pequeño)
           let width = img.width;
           let height = img.height;
           const maxSize = 300;
-          
+
           if (width > height) {
             if (width > maxSize) {
               height = (height * maxSize) / width;
@@ -832,14 +862,18 @@ export function ProductForm({
               height = maxSize;
             }
           }
-          
+
           canvas.width = width;
           canvas.height = height;
           ctx?.drawImage(img, 0, 0, width, height);
-          
+
           // Comprimir a 40% de calidad (más compresión)
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.4);
-          console.log("Imagen comprimida:", compressedDataUrl.length, "caracteres");
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.4);
+          console.log(
+            "Imagen comprimida:",
+            compressedDataUrl.length,
+            "caracteres",
+          );
           resolve(compressedDataUrl);
         };
         img.onerror = reject;
@@ -853,15 +887,15 @@ export function ProductForm({
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const currentImages = watch("images") || [];
-    
+
     if (files.length + currentImages.length > 3) {
       alert("Solo puedes seleccionar máximo 3 fotos");
       e.target.value = "";
       return;
     }
-    
+
     setSelectedFiles(files);
-    
+
     // Comprimir y convertir archivos a URLs
     const newImages = [...currentImages];
     for (let i = 0; i < files.length; i++) {
@@ -874,7 +908,7 @@ export function ProductForm({
         alert("Error al procesar la imagen " + (i + 1));
       }
     }
-    
+
     setValue("images", newImages, { shouldValidate: true });
     console.log("Total de imágenes:", newImages.length);
     e.target.value = "";
@@ -905,10 +939,11 @@ export function ProductForm({
       <CardContent>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            
             {/* FOTOS - Primera sección */}
             <div className="md:col-span-3 space-y-4 border-b pb-4">
-              <Label className="text-primary font-bold text-lg">Galería de Fotos (Máx 3)</Label>
+              <Label className="text-primary font-bold text-lg">
+                Galería de Fotos (Máx 3)
+              </Label>
               <div className="grid grid-cols-3 gap-4">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="space-y-2 relative">
@@ -1010,10 +1045,7 @@ export function ProductForm({
             {/* NUEVOS ITEMS */}
             <div className="space-y-2">
               <Label>NUEVOS ITEMS</Label>
-              <Input
-                {...register("isNuevo")}
-                placeholder="Ej: BOLETIN #33"
-              />
+              <Input {...register("isNuevo")} placeholder="Ej: BOLETIN #33" />
             </div>
 
             {/* PRECIO FCA */}
@@ -1042,7 +1074,12 @@ export function ProductForm({
             {/* Campos adicionales */}
             <div className="space-y-2">
               <Label>PRECIO DE VENTA ($)</Label>
-              <Input type="number" step="0.01" {...register("price")} placeholder="0.00" />
+              <Input
+                type="number"
+                step="0.01"
+                {...register("price")}
+                placeholder="0.00"
+              />
               {errors.price && (
                 <p className="text-xs text-destructive">
                   {errors.price.message as string}
@@ -1052,7 +1089,11 @@ export function ProductForm({
 
             <div className="space-y-2">
               <Label>UNIDAD</Label>
-              <Input {...register("unit")} placeholder="Unidad" defaultValue="Unidad" />
+              <Input
+                {...register("unit")}
+                placeholder="Unidad"
+                defaultValue="Unidad"
+              />
               {errors.unit && (
                 <p className="text-xs text-destructive">
                   {errors.unit.message as string}
@@ -1062,7 +1103,12 @@ export function ProductForm({
 
             <div className="space-y-2">
               <Label>STOCK MÍNIMO</Label>
-              <Input type="number" {...register("minStock")} placeholder="5" defaultValue="5" />
+              <Input
+                type="number"
+                {...register("minStock")}
+                placeholder="5"
+                defaultValue="5"
+              />
             </div>
 
             <div className="space-y-4 lg:col-span-3 border-t pt-4">

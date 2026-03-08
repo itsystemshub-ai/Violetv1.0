@@ -15,3 +15,4 @@ export * from './VirtualizedProductList';
 // UI/UX Pro Max Enhanced Components
 export * from './EnhancedKPICard';
 export * from './EnhancedDataTable';
+export * from './ErrorBoundary';

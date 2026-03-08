@@ -1,17 +1,19 @@
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { Wallet, Scale, Receipt, Zap } from "lucide-react";
-import { formatCurrency } from "@/lib/index";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
 interface FinanceKPIsProps {
   logic: any;
 }
 
 export const FinanceKPIs = ({ logic }: FinanceKPIsProps) => {
+  const { formatMoney } = useCurrencyStore();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       <StandardKPICard
         label="Activos Totales"
-        value={formatCurrency(logic.financialSummary?.assets || 0, "USD")}
+        value={formatMoney(logic.financialSummary?.assets || 0)}
         change={5.2}
         trend="up"
         icon={Wallet}
@@ -20,7 +22,7 @@ export const FinanceKPIs = ({ logic }: FinanceKPIsProps) => {
       />
       <StandardKPICard
         label="Cuentas por Pagar"
-        value={formatCurrency(logic.financialSummary?.liabilities || 0, "USD")}
+        value={formatMoney(logic.financialSummary?.liabilities || 0)}
         change={3.1}
         trend="down"
         icon={Scale}
@@ -29,7 +31,7 @@ export const FinanceKPIs = ({ logic }: FinanceKPIsProps) => {
       />
       <StandardKPICard
         label="Utilidad Neta"
-        value={formatCurrency(logic.financialSummary?.netIncome || 0, "USD")}
+        value={formatMoney(logic.financialSummary?.netIncome || 0)}
         change={8.5}
         trend="up"
         icon={Receipt}
@@ -38,7 +40,7 @@ export const FinanceKPIs = ({ logic }: FinanceKPIsProps) => {
       />
       <StandardKPICard
         label="IGTF Mensual"
-        value={formatCurrency(logic.igtfSummary?.totalIGTF || 0, "USD")}
+        value={formatMoney(logic.igtfSummary?.totalIGTF || 0)}
         change={2.3}
         trend="up"
         icon={Zap}

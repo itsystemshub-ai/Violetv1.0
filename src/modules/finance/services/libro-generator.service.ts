@@ -122,4 +122,22 @@ export class LibroGeneratorService {
     link.click();
     URL.revokeObjectURL(url);
   }
+
+  static generateARC(invoices: Invoice[], supplierRif: string, year: number) {
+    const details = invoices
+      .filter(inv => inv.customerRif === supplierRif && inv.date && inv.date.startsWith(year.toString()))
+      .map(inv => ({
+        date: inv.date.split('T')[0],
+        invoice: inv.number,
+        base: inv.subtotal,
+        ivaWithheld: (inv.total - inv.subtotal) * ((inv.ivaWithholdingPercentage || 0) / 100),
+        islrWithheld: 0, 
+      }));
+
+    return {
+      supplier: supplierRif,
+      year,
+      details,
+    };
+  }
 }

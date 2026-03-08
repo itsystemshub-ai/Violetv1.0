@@ -99,7 +99,11 @@ export const SyncEngine = {
         if (action === 'DELETE') {
           await table.delete(recordId);
         } else if (payload) {
-          await table.put({ ...payload, id: recordId });
+          if (action === 'UPDATE') {
+            await table.update(recordId, payload);
+          } else {
+            await table.put({ ...payload, id: recordId });
+          }
         }
       }
 

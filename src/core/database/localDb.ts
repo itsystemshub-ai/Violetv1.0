@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { Product, Invoice, Tenant } from './index';
+import { Product, Invoice, Tenant } from '@/lib/index';
 
 /**
  * VioletLocalDb
@@ -33,6 +33,7 @@ export class VioletLocalDb extends Dexie {
   cash_register!: Table<any>;
   libro_ventas!: Table<any>;
   exchange_differences!: Table<any>;
+  password_reset_requests!: Table<any>;
 
   constructor() {
     super('VioletERP_LocalDB');
@@ -292,6 +293,37 @@ export class VioletLocalDb extends Dexie {
         cash_register: 'id, tenant_id, type, reference_id, created_at',
         libro_ventas: 'id, tenant_id, numero_factura, fecha_factura, periodo_fiscal, rif_cliente, created_at',
         exchange_differences: 'id, invoice_id, payment_id, tenant_id, type, created_at, is_dirty'
+      });
+
+      // v13: Gestión de Cambio de Contraseña con Aprobación
+      this.version(13).stores({
+        products: 'id, name, category, tenant_id, updated_at, is_dirty, last_sync, deleted_at, version',
+        invoices: 'id, number, customerName, date, tenant_id, is_dirty, last_sync, type, deleted_at, payment_type, payment_status',
+        tenants: 'id, name, slug, is_dirty, deleted_at',
+        profiles: 'id, username, email, rif, tenant_id, is_dirty',
+        employees: 'id, dni, rif, tenant_id, status, is_dirty, deleted_at',
+        financial_accounts: 'id, code, tenant_id, is_dirty, deleted_at',
+        financial_transactions: 'id, account_id, tenant_id, created_at, is_dirty, deleted_at',
+        payroll_records: 'id, employee_id, tenant_id, period_date, is_dirty, deleted_at',
+        requisitions: 'id, tenant_id, status, created_at, is_dirty, deleted_at',
+        sys_config: 'id, key, tenant_id, is_dirty',
+        audit_logs: 'id, table_name, record_id, changed_by, created_at',
+        sync_logs: 'id, table_name, action, sync_status, created_at',
+        sellers: 'id, name, tenant_id, is_dirty, deleted_at',
+        salary_history: 'id, employee_id, tenant_id, is_dirty',
+        prestaciones_acumuladas: 'id, employee_id, tenant_id, is_dirty',
+        igtf_records: 'id, invoice_id, tenant_id, created_at, is_dirty',
+        compras_maestro: 'id, num_factura, proveedor_id, tenant_id, is_dirty, deleted_at',
+        compras_detalle: 'id, compra_id, producto_id, tenant_id',
+        suppliers: 'id, rif, name, tenant_id, is_dirty, deleted_at',
+        notifications: 'id, type, timestamp, userId, tenantId, read',
+        inventory_movements: 'id, product_id, tenant_id, type, reference_id, created_at',
+        accounts_receivable: 'id, invoice_id, customer_rif, tenant_id, status, due_date, created_at',
+        payments: 'id, receivable_id, tenant_id, payment_method, created_at',
+        cash_register: 'id, tenant_id, type, reference_id, created_at',
+        libro_ventas: 'id, tenant_id, numero_factura, fecha_factura, periodo_fiscal, rif_cliente, created_at',
+        exchange_differences: 'id, invoice_id, payment_id, tenant_id, type, created_at, is_dirty',
+        password_reset_requests: 'id, user_id, username, status, tenant_id, created_at'
       });
   }
 

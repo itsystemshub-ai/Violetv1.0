@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 // Atomic Components
 import { ConnectionVisualizer } from "@/shared/components/connectivity/organisms/ConnectionVisualizer";

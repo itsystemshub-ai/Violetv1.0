@@ -20,6 +20,7 @@ interface TenantBrandingProps {
  */
 export function TenantBranding({ children }: TenantBrandingProps) {
   const { tenant } = useSystemConfig();
+  const appName = import.meta.env.VITE_APP_NAME || "Violet ERP";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -43,7 +44,7 @@ export function TenantBranding({ children }: TenantBrandingProps) {
         );
 
         // Actualizamos el branding del navegador
-        document.title = `${tenant.name} | Violet ERP`;
+        document.title = `${tenant.name} | ${appName}`;
 
         // Actualización dinámica del Favicon si existe logo personalizado
         const favicon = document.querySelector(
@@ -54,7 +55,7 @@ export function TenantBranding({ children }: TenantBrandingProps) {
         }
       } else {
         // Valores por defecto si no hay tenant
-        document.title = 'Violet ERP';
+        document.title = appName;
       }
     } catch (error) {
       console.error('[TenantBranding] Error al aplicar branding:', error);

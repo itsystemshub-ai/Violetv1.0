@@ -11,9 +11,26 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
+  MessageSquareQuote,
+  Copy,
+  Plus,
 } from "lucide-react";
+import { Textarea } from "@/shared/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/shared/components/ui/dialog";
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -47,8 +64,12 @@ export function ModuleAIAssistant({
 }: ModuleAIAssistantProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isExpanded, setIsExpanded] = useState(!compact);
+  const [isExpandingAction, setIsExpandingAction] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const { analyzeNaturalLanguage, isLoading, aiConfig } = useAI();
+  const [extractionText, setExtractionText] = useState("");
+  const [extractedOrder, setExtractedOrder] = useState<any>(null);
+  const { analyzeNaturalLanguage, extractOrderFromText, isLoading, aiConfig } =
+    useAI();
 
   useEffect(() => {
     if (aiConfig?.apiKey && aiConfig?.enabled) {
@@ -90,13 +111,15 @@ Responde SOLO con el JSON array, sin texto adicional.
 `;
 
       const response = await analyzeNaturalLanguage(prompt, moduleContext);
-      
+
       if (response) {
         try {
           // Limpiar la respuesta de posibles bloques de código markdown
-          const cleanResponse = response.replace(/```json\n?|\n?```/g, "").trim();
+          const cleanResponse = response
+            .replace(/```json\n?|\n?```/g, "")
+            .trim();
           const parsedSuggestions = JSON.parse(cleanResponse);
-          
+
           const formattedSuggestions: Suggestion[] = parsedSuggestions.map(
             (s: any, idx: number) => ({
               id: `${moduleName}-${idx}-${Date.now()}`,
@@ -104,9 +127,9 @@ Responde SOLO con el JSON array, sin texto adicional.
               title: s.title || "Sugerencia",
               description: s.description || "",
               priority: s.priority || "medium",
-            })
+            }),
           );
-          
+
           setSuggestions(formattedSuggestions);
         } catch (parseError) {
           console.error("Error parsing AI suggestions:", parseError);
@@ -121,6 +144,32 @@ Responde SOLO con el JSON array, sin texto adicional.
     }
   };
 
+  const handleExtractOrder = async () => {
+    if (!extractionText.trim()) return;
+    setIsAnalyzing(true);
+    try {
+      const result = await extractOrderFromText(extractionText);
+      if (result) {
+        setExtractedOrder(result);
+        toast.success("Pedido extraído correctamente.");
+      }
+    } catch (error) {
+      toast.error("Error al extraer el pedido.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleCreateDraft = () => {
+    // Simulated action
+    toast.success(
+      `Borrador de pedido para ${extractedOrder.customerName} creado en Ventas.`,
+    );
+    setIsExpandingAction(false);
+    setExtractionText("");
+    setExtractedOrder(null);
+  };
+
   const createDefaultSuggestions = (): Suggestion[] => {
     const defaultSuggestions: Record<string, Suggestion[]> = {
       Dashboard: [
@@ -128,14 +177,16 @@ Responde SOLO con el JSON array, sin texto adicional.
           id: "dash-1",
           type: "insight",
           title: "Análisis de Tendencias",
-          description: "Revisa las métricas de ventas del último mes para identificar patrones estacionales.",
+          description:
+            "Revisa las métricas de ventas del último mes para identificar patrones estacionales.",
           priority: "medium",
         },
         {
           id: "dash-2",
           type: "action",
           title: "Optimizar Visualización",
-          description: "Considera agregar gráficos de comparación año a año para mejor análisis.",
+          description:
+            "Considera agregar gráficos de comparación año a año para mejor análisis.",
           priority: "low",
         },
       ],
@@ -144,14 +195,16 @@ Responde SOLO con el JSON array, sin texto adicional.
           id: "sales-1",
           type: "improvement",
           title: "Automatizar Seguimiento",
-          description: "Implementa recordatorios automáticos para facturas pendientes de pago.",
+          description:
+            "Implementa recordatorios automáticos para facturas pendientes de pago.",
           priority: "high",
         },
         {
           id: "sales-2",
           type: "insight",
           title: "Clientes Frecuentes",
-          description: "Identifica tus top 10 clientes y crea programas de fidelización.",
+          description:
+            "Identifica tus top 10 clientes y crea programas de fidelización.",
           priority: "medium",
         },
       ],
@@ -160,14 +213,16 @@ Responde SOLO con el JSON array, sin texto adicional.
           id: "inv-1",
           type: "warning",
           title: "Stock Bajo",
-          description: "Varios productos están cerca del punto de reorden. Revisa y genera órdenes de compra.",
+          description:
+            "Varios productos están cerca del punto de reorden. Revisa y genera órdenes de compra.",
           priority: "high",
         },
         {
           id: "inv-2",
           type: "improvement",
           title: "Optimización de Almacén",
-          description: "Reorganiza productos por rotación para mejorar eficiencia de picking.",
+          description:
+            "Reorganiza productos por rotación para mejorar eficiencia de picking.",
           priority: "medium",
         },
       ],
@@ -176,14 +231,16 @@ Responde SOLO con el JSON array, sin texto adicional.
           id: "pur-1",
           type: "action",
           title: "Negociar Precios",
-          description: "Revisa contratos con proveedores principales para obtener mejores términos.",
+          description:
+            "Revisa contratos con proveedores principales para obtener mejores términos.",
           priority: "high",
         },
         {
           id: "pur-2",
           type: "insight",
           title: "Análisis de Proveedores",
-          description: "Evalúa el desempeño de proveedores basado en tiempos de entrega y calidad.",
+          description:
+            "Evalúa el desempeño de proveedores basado en tiempos de entrega y calidad.",
           priority: "medium",
         },
       ],
@@ -192,28 +249,33 @@ Responde SOLO con el JSON array, sin texto adicional.
           id: "fin-1",
           type: "warning",
           title: "Flujo de Caja",
-          description: "Proyecta el flujo de caja para los próximos 30 días y asegura liquidez.",
+          description:
+            "Proyecta el flujo de caja para los próximos 30 días y asegura liquidez.",
           priority: "high",
         },
         {
           id: "fin-2",
           type: "improvement",
           title: "Reducir Gastos",
-          description: "Identifica gastos recurrentes que pueden optimizarse o eliminarse.",
+          description:
+            "Identifica gastos recurrentes que pueden optimizarse o eliminarse.",
           priority: "medium",
         },
       ],
     };
 
-    return defaultSuggestions[moduleName] || [
-      {
-        id: "default-1",
-        type: "insight",
-        title: "Análisis Disponible",
-        description: "El asistente de IA puede proporcionar sugerencias personalizadas para este módulo.",
-        priority: "low",
-      },
-    ];
+    return (
+      defaultSuggestions[moduleName] || [
+        {
+          id: "default-1",
+          type: "insight",
+          title: "Análisis Disponible",
+          description:
+            "El asistente de IA puede proporcionar sugerencias personalizadas para este módulo.",
+          priority: "low",
+        },
+      ]
+    );
   };
 
   const getSuggestionIcon = (type: string) => {
@@ -352,7 +414,7 @@ Responde SOLO con el JSON array, sin texto adicional.
                           <div
                             className={cn(
                               "p-2 rounded-lg",
-                              getSuggestionColor(suggestion.type)
+                              getSuggestionColor(suggestion.type),
                             )}
                           >
                             {getSuggestionIcon(suggestion.type)}
@@ -366,14 +428,14 @@ Responde SOLO con el JSON array, sin texto adicional.
                                 variant="outline"
                                 className={cn(
                                   "text-xs",
-                                  getPriorityBadge(suggestion.priority)
+                                  getPriorityBadge(suggestion.priority),
                                 )}
                               >
                                 {suggestion.priority === "high"
                                   ? "Alta"
                                   : suggestion.priority === "medium"
-                                  ? "Media"
-                                  : "Baja"}
+                                    ? "Media"
+                                    : "Baja"}
                               </Badge>
                             </div>
                             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -386,10 +448,115 @@ Responde SOLO con el JSON array, sin texto adicional.
                   )}
                 </div>
               </ScrollArea>
+
+              <div className="mt-4 pt-4 border-t space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                  Acciones Especiales
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl h-10 border-primary/20 hover:border-primary/50 hover:bg-primary/5 gap-2 font-bold text-xs"
+                    onClick={() => setIsExpandingAction(true)}
+                  >
+                    <MessageSquareQuote size={14} className="text-primary" />
+                    Extraer Pedido
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={isExpandingAction} onOpenChange={setIsExpandingAction}>
+        <DialogContent className="max-w-md rounded-3xl border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="p-8 bg-slate-900 text-white">
+            <DialogTitle className="text-xl font-black flex items-center gap-2">
+              <Sparkles size={20} className="text-violet-400" />
+              Extraer Pedido con IA
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Pega el mensaje de WhatsApp o correo para que la IA extraiga los
+              productos y cantidades.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-8 space-y-6">
+            {!extractedOrder ? (
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="Ej: Hola! Necesito 5 filtros de aceite y 2 pastillas de freno para hoy..."
+                  className="min-h-[150px] rounded-2xl bg-slate-50 border-slate-200 focus:ring-violet-500 font-medium"
+                  value={extractionText}
+                  onChange={(e) => setExtractionText(e.target.value)}
+                />
+                <Button
+                  className="w-full h-12 rounded-xl bg-violet-600 hover:bg-violet-700 font-black uppercase text-xs"
+                  onClick={handleExtractOrder}
+                  disabled={isAnalyzing || !extractionText.trim()}
+                >
+                  {isAnalyzing
+                    ? "Analizando Texto..."
+                    : "Analizar y Extraer Datos"}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-in fade-in zoom-in duration-300">
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                    <span className="text-xs font-black uppercase text-slate-500">
+                      Cliente Detectado
+                    </span>
+                    <span className="font-bold text-violet-600">
+                      {extractedOrder.customerName}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {extractedOrder.items.map((item: any, i: number) => (
+                      <div
+                        key={i}
+                        className="flex justify-between text-sm py-1"
+                      >
+                        <span className="font-medium text-slate-700">
+                          {item.productName}
+                        </span>
+                        <span className="font-black italic text-slate-900">
+                          x{item.quantity}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                    <span className="text-xs font-black uppercase text-slate-500">
+                      Total Estimado
+                    </span>
+                    <span className="font-black text-lg text-slate-900">
+                      ${extractedOrder.total}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    className="flex-1 h-12 rounded-xl"
+                    onClick={() => setExtractedOrder(null)}
+                  >
+                    Reintentar
+                  </Button>
+                  <Button
+                    className="flex-[2] h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 font-black uppercase text-xs gap-2"
+                    onClick={handleCreateDraft}
+                  >
+                    <Plus size={16} />
+                    Crear Borrador Pedido
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

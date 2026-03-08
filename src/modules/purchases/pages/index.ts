@@ -1,1 +1,3 @@
-// Empty barrel export
+// Auto-generated barrel export
+
+export * from './PurchasesPage';

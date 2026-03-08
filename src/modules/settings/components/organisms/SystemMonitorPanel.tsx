@@ -41,11 +41,15 @@ interface SystemStatus {
   };
 }
 
-const SystemMonitorPanel: React.FC = () => {
+interface SystemMonitorPanelProps {
+  dbStats?: any;
+}
+
+const SystemMonitorPanel: React.FC<SystemMonitorPanelProps> = ({ dbStats }) => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     app: { status: "online", port: 5173, uptime: "0h 0m" },
     proxy: { status: "offline", port: 3001, endpoint: "/api/groq/chat" },
-    database: { status: "online", records: 0 },
+    database: { status: "online", records: dbStats?.total || 0 },
     network: { status: "online", latency: 0 },
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -75,11 +79,6 @@ const SystemMonitorPanel: React.FC = () => {
         })
         .catch(() => ({ status: "offline" as const, latency: 0 }));
 
-      // Get database info from localStorage
-      const dbKeys = Object.keys(localStorage).filter(
-        (key) => key.startsWith("violet-") || key.includes("tenant") || key.includes("user")
-      );
-
       // Calculate uptime (simplified)
       const startTime = sessionStorage.getItem("app-start-time");
       let uptime = "0h 0m";
@@ -105,7 +104,7 @@ const SystemMonitorPanel: React.FC = () => {
         },
         database: {
           status: "online",
-          records: dbKeys.length,
+          records: dbStats?.total || 0,
         },
         network: {
           status: networkStatus.status,
@@ -114,10 +113,8 @@ const SystemMonitorPanel: React.FC = () => {
       });
 
       setLastUpdate(new Date());
-      toast.success("Estado del sistema actualizado");
     } catch (error) {
       console.error("Error checking system status:", error);
-      toast.error("Error al verificar el estado del sistema");
     } finally {
       setIsRefreshing(false);
     }
@@ -127,7 +124,7 @@ const SystemMonitorPanel: React.FC = () => {
     checkSystemStatus();
     const interval = setInterval(checkSystemStatus, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [dbStats]); // Re-run when dbStats change
 
   const getStatusIcon = (status: "online" | "offline") => {
     return status === "online" ? (

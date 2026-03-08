@@ -4,6 +4,7 @@ import { SyncService } from "@/core/sync/SyncService";
 import { User, UserRole } from '@/lib';
 import { toast } from 'sonner';
 import { localDb } from "@/core/database/localDb";
+import { DEFAULT_USERS } from '@/data/defaultUsers';
 
 interface UserManagementState {
   users: User[];
@@ -25,6 +26,10 @@ export const useUserManagement = create<UserManagementState>((set) => ({
     const localUsers = await localDb.profiles.toArray();
     if (localUsers.length > 0) {
       set({ users: localUsers });
+    } else {
+      // Auto-seed if empty
+      const tenantId = '3e4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d'; // Default tenant
+      await useUserManagement.getState().seedMockUsers(tenantId);
     }
 
     set({ isLoading: true });
@@ -94,7 +99,7 @@ export const useUserManagement = create<UserManagementState>((set) => ({
       if (error) throw error;
 
       const newUser: User = {
-        id: data?.id || tempId,
+        id: (data as any)?.id || tempId,
         username: dbPayload.username,
         name: dbPayload.full_name,
         email: dbPayload.email,
@@ -176,7 +181,7 @@ export const useUserManagement = create<UserManagementState>((set) => ({
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'profiles' },
-        (payload) => {
+        (payload: any) => {
           const { eventType, new: newRecord, old: oldRecord } = payload;
           
           if (eventType === 'INSERT') {
@@ -227,43 +232,38 @@ export const useUserManagement = create<UserManagementState>((set) => ({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      channel?.unsubscribe();
     };
   },
 
   seedMockUsers: async (tenantId) => {
     set({ isLoading: true });
     try {
-      const MOCK_USERS = [
-        { username: 'ventas_gerente', full_name: 'Gerente de Ventas', role: 'gerente', department: 'Ventas', email: 'ventas@violet.erp' },
-        { username: 'almacen_op', full_name: 'Operador de Almacén', role: 'almacen', department: 'Almacén', email: 'almacen@violet.erp' },
-        { username: 'finanzas_cont', full_name: 'Contador Senior', role: 'contador', department: 'Finanzas', email: 'finanzas@violet.erp' },
-        { username: 'rrhh_gestor', full_name: 'Gestor de RRHH', role: 'recursos_humanos', department: 'Recursos Humanos', email: 'rrhh@violet.erp' },
-        { username: 'it_admin', full_name: 'Admin de Sistemas', role: 'admin', department: 'Administración / IT', email: 'it@violet.erp' },
-      ];
-
-      for (const u of MOCK_USERS) {
-        // Verificar si existe
-        const { data: existing } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('username', u.username)
-          .maybeSingle();
-
+      let createdCount = 0;
+      for (const u of DEFAULT_USERS) {
+        // Check if already exists in localDb
+        const existing = await localDb.profiles.where('username').equals(u.username).first();
+        
         if (!existing) {
-          await supabase.from('profiles').insert({
+          const newUser: User = {
             ...u,
-            tenant_id: tenantId,
-            updated_at: new Date().toISOString()
-          });
+            id: `usr_${crypto.randomUUID()}`,
+            tenantId: tenantId,
+            permissions: (u as any).permissions || []
+          };
+          
+          await localDb.profiles.put(newUser);
+          createdCount++;
         }
       }
 
-      toast.success('Usuarios y departamentos generados correctamente');
-      // No llamamos a fetchAllUsers aquí para dejar que Realtime o el componente lo haga si quiere
+      if (createdCount > 0) {
+        const allUsers = await localDb.profiles.toArray();
+        set({ users: allUsers });
+        console.log(`[useUserManagement] Seedeados ${createdCount} usuarios por defecto.`);
+      }
     } catch (err) {
       console.error('Error seeding users:', err);
-      toast.error('Error al generar usuarios');
     } finally {
       set({ isLoading: false });
     }

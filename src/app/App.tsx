@@ -25,6 +25,7 @@ import { NotificationManager } from '@/core/notifications/NotificationManager';
 import { OfflineBanner } from '@/shared/components/feedback/OfflineBanner';
 import { RealtimeBootstrap } from '@/core/shared/components/RealtimeBootstrap';
 import { AIFloatingButton } from '@/shared/components/ai';
+import { IdleTimer } from '@/core/auth/components/IdleTimer';
 
 /**
  * App Component
@@ -50,6 +51,7 @@ const App: React.FC = () => {
             <OfflineBanner />
             <RealtimeBootstrap />
             <AIFloatingButton />
+            <IdleTimer />
           </HashRouter>
         </AppInitializer>
       </AppProviders>

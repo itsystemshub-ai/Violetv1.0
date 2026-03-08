@@ -33,7 +33,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avat
 import { ExpenseChart } from "@/shared/components/common/Charts";
 import { TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib";
-import { HRLogic } from "@/features/hr/hooks/useHRLogic";
+import { HRLogic } from "@/modules/hr/hooks/useHRLogic";
 import { PaginationControls } from "@/shared/components/common/PaginationControls";
 import { usePagination } from "@/core/shared/hooks/usePagination";
 

@@ -1,12 +1,14 @@
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
-import { formatCurrency } from "@/lib/index";
 import { Package, AlertCircle, TrendingUp, Star } from "lucide-react";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
 interface InventoryKPIsProps {
   logic: any;
 }
 
 export const InventoryKPIs = ({ logic }: InventoryKPIsProps) => {
+  const { formatMoney } = useCurrencyStore();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
       <StandardKPICard
@@ -29,7 +31,7 @@ export const InventoryKPIs = ({ logic }: InventoryKPIsProps) => {
       />
       <StandardKPICard
         label="Valorización FCA"
-        value={formatCurrency(logic.totalInventoryValue || 0)}
+        value={formatMoney(logic.totalInventoryValue || 0)}
         icon={TrendingUp}
         change={8.1}
         trend="up"

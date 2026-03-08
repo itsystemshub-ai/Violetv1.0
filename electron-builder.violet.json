@@ -1,0 +1,36 @@
+{
+  "appId": "com.violet.erp",
+  "productName": "Violet ERP",
+  "copyright": "Copyright © 2026 Violet ERP",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "electron"
+  },
+  "files": [
+    "electron/**/*",
+    "!electron/db.cjs",
+    "!backend/**/*"
+  ],
+  "extraResources": [
+    {
+      "from": "dist",
+      "to": "dist",
+      "filter": ["**/*"]
+    }
+  ],
+  "win": {
+    "target": ["nsis"],
+    "artifactName": "${productName}-Setup-${version}.${ext}"
+  },
+  "nsis": {
+    "include": "electron/installer.nsh",
+    "oneClick": true,
+    "perMachine": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": false,
+    "runAfterFinish": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Violet ERP"
+  }
+}

@@ -1,18 +1,23 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Badge } from "@/shared/components/ui/badge";
-import { 
-  Brain, 
-  TrendingUp, 
-  AlertTriangle, 
-  Sparkles, 
+import {
+  Brain,
+  TrendingUp,
+  AlertTriangle,
+  Sparkles,
   MessageSquare,
   BarChart3,
-  Loader2
+  Loader2,
 } from "lucide-react";
-import { useInventoryAI } from "@/features/inventory/hooks/useInventoryAI";
+import { useInventoryAI } from "@/modules/inventory/hooks/useInventoryAI";
 import { Product } from "@/lib";
 import { cn } from "@/core/shared/utils/utils";
 
@@ -21,7 +26,10 @@ interface InventoryAIPanelProps {
   className?: string;
 }
 
-export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps) => {
+export const InventoryAIPanel = ({
+  products,
+  className,
+}: InventoryAIPanelProps) => {
   const {
     isLoading,
     error,
@@ -39,9 +47,9 @@ export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps)
   const handleAnalyze = async (type: string) => {
     setActiveAnalysis(type);
     setResponse(null);
-    
+
     let result: string | null = null;
-    
+
     switch (type) {
       case "general":
         result = await analyzeInventory(products);
@@ -53,7 +61,7 @@ export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps)
         result = await analyzeSalesTrends(products);
         break;
     }
-    
+
     if (result) {
       setResponse(result);
     }
@@ -61,10 +69,10 @@ export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps)
 
   const handleAsk = async () => {
     if (!question.trim()) return;
-    
+
     setActiveAnalysis("question");
     setResponse(null);
-    
+
     const result = await askAboutInventory(question, products);
     if (result) {
       setResponse(result);
@@ -73,7 +81,12 @@ export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps)
   };
 
   return (
-    <Card className={cn("backdrop-blur-xl bg-card/80 border-border shadow-lg", className)}>
+    <Card
+      className={cn(
+        "backdrop-blur-xl bg-card/80 border-border shadow-lg",
+        className,
+      )}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-primary">
           <Brain className="w-5 h-5" />
@@ -182,7 +195,8 @@ export const InventoryAIPanel = ({ products, className }: InventoryAIPanelProps)
 
         {/* Info */}
         <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-          💡 La IA analiza {products.length} productos con precios FCA Córdoba en tiempo real
+          💡 La IA analiza {products.length} productos con precios FCA Córdoba
+          en tiempo real
         </div>
       </CardContent>
     </Card>

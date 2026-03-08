@@ -1,5 +1,3 @@
-/**
- * Core Notifications Barrel Export
- */
+// Auto-generated barrel export
 
-export { NotificationManager } from './NotificationManager';
+export * from './NotificationManager';

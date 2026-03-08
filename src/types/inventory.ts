@@ -23,6 +23,7 @@ export interface Product {
   historial?: number; // Total histórico de ventas (campo del Excel)
   ventasTotal?: number;
   precioFCA?: number;
+  margen?: number;
   price: number;
   stock: number;
   minStock: number;
@@ -74,6 +75,8 @@ export interface InventoryLogic {
   sortDirection: SortDirection;
   tableHeaders: TableHeaders;
   canManageInventory: boolean;
+  forecasts?: Record<string, any>;
+  suggestedPurchases?: any[];
   isFormOpen: boolean;
   isAuditOpen: boolean;
   selectedProduct: Product | null;

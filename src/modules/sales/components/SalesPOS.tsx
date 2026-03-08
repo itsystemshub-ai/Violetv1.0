@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Search,
@@ -45,12 +45,14 @@ const ImagePreviewModal = ({
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % (images?.length || 1));
   };
 
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + (images?.length || 1)) % (images?.length || 1),
+    );
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -93,14 +95,14 @@ const ImagePreviewModal = ({
         />
 
         {/* Indicador de cantidad */}
-        {images.length > 1 && (
+        {images?.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full font-bold text-sm backdrop-blur-md border border-white/20 shadow-xl">
             {currentIndex + 1} / {images.length}
           </div>
         )}
 
         {/* Botones de navegación */}
-        {images.length > 1 && (
+        {images?.length > 1 && (
           <>
             <button
               onClick={prevImage}
@@ -140,24 +142,22 @@ const ProductGalleryCard = ({
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
-  
-  // Convertir imágenes automáticamente
-  const { images: convertedImages, isConverting } = useImageConverter(product.images);
-  const images = convertedImages.length > 0 ? convertedImages : [IMAGES.AI_TECH_1];
 
-  // Debug: verificar imágenes del producto
-  useEffect(() => {
-    if (product.images && product.images.length > 0) {
-      console.log(`🖼️ ProductGalleryCard - ${product.name} (${product.cauplas}): ${convertedImages.length}/${product.images.length} foto(s) convertidas`);
-    }
-  }, [product.cauplas, product.images, product.name, convertedImages.length]);
+  // Convertir imágenes automáticamente
+  const { images: convertedImages, isConverting } = useImageConverter(
+    product.images,
+  );
+  const images =
+    convertedImages && convertedImages.length > 0
+      ? convertedImages
+      : [IMAGES.AI_TECH_1];
 
   // Reset index si cambian las imágenes
   useEffect(() => {
-    if (currentImageIndex >= images.length) {
+    if (currentImageIndex >= (images?.length || 0)) {
       setCurrentImageIndex(0);
     }
-  }, [images.length, currentImageIndex]);
+  }, [images?.length, currentImageIndex]);
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -224,7 +224,7 @@ const ProductGalleryCard = ({
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
           <div className="w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
         </div>
-        <div 
+        <div
           className="w-full h-full flex items-center justify-center relative z-20 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
@@ -237,10 +237,14 @@ const ProductGalleryCard = ({
             alt={`${product.name} - Foto ${currentImageIndex + 1}`}
             className="max-h-full max-w-full object-contain group-hover:scale-110 group-hover:-translate-y-2 transition-transform duration-500 drop-shadow-md"
             onLoad={() => {
-              console.log(`✅ Imagen ${currentImageIndex + 1}/${images.length} cargada para ${product.name} (${product.cauplas})`);
+              console.log(
+                `✅ Imagen ${currentImageIndex + 1}/${images.length} cargada para ${product.name} (${product.cauplas})`,
+              );
             }}
             onError={() => {
-              console.error(`❌ Error cargando imagen ${currentImageIndex + 1}/${images.length} para ${product.name} (${product.cauplas})`);
+              console.error(
+                `❌ Error cargando imagen ${currentImageIndex + 1}/${images.length} para ${product.name} (${product.cauplas})`,
+              );
             }}
           />
           {/* Icono de zoom al hacer hover */}
@@ -248,14 +252,14 @@ const ProductGalleryCard = ({
             <ZoomIn className="w-12 h-12 text-white drop-shadow-lg" />
           </div>
         </div>
-        
+
         {/* Indicador de cantidad de fotos */}
         {images.length > 1 && (
           <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-bold shadow-lg z-30">
             {currentImageIndex + 1}/{images.length}
           </div>
         )}
-        
+
         {/* Botones de navegación */}
         {images.length > 1 && (
           <>
@@ -275,7 +279,7 @@ const ProductGalleryCard = ({
             </button>
           </>
         )}
-        
+
         {product.isNuevo && (
           <div className="absolute top-2 right-2 z-30">
             <Badge className="bg-emerald-500 hover:bg-emerald-600 border-none font-black text-[9px] px-2.5 py-0.5 shadow-lg animate-pulse ring-2 ring-emerald-500/20">
@@ -331,7 +335,7 @@ const ProductGalleryCard = ({
           <ShoppingCart className="h-4 w-4" /> AÑADIR ORDEN
         </Button>
       </CardContent>
-      
+
       {/* Modal de vista previa */}
       {showPreview && (
         <ImagePreviewModal
@@ -355,24 +359,20 @@ const ProductListRow = ({
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
-  
+
   // Convertir imágenes automáticamente
   const { images: convertedImages } = useImageConverter(product.images);
-  const images = convertedImages.length > 0 ? convertedImages : [IMAGES.AI_TECH_1];
-
-  // Debug: verificar imágenes del producto
-  useEffect(() => {
-    if (product.images && product.images.length > 0) {
-      console.log(`🖼️ ProductListRow - ${product.name} (${product.cauplas}): ${convertedImages.length}/${product.images.length} foto(s) convertidas`);
-    }
-  }, [product.cauplas, product.images, product.name, convertedImages.length]);
+  const images =
+    convertedImages && convertedImages.length > 0
+      ? convertedImages
+      : [IMAGES.AI_TECH_1];
 
   // Reset index si cambian las imágenes
   useEffect(() => {
-    if (currentImageIndex >= images.length) {
+    if (currentImageIndex >= (images?.length || 0)) {
       setCurrentImageIndex(0);
     }
-  }, [images.length, currentImageIndex]);
+  }, [images?.length, currentImageIndex]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -388,7 +388,7 @@ const ProductListRow = ({
     <Card className="group overflow-hidden border border-border/40 hover:border-primary/40 shadow-sm hover:shadow-xl transition-all duration-300 rounded-4xl bg-card/60 backdrop-blur-md relative">
       <div className="absolute inset-y-0 left-0 w-1.5 bg-linear-to-b from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex flex-col sm:flex-row items-center p-3 h-auto sm:h-28 gap-4">
-        <div 
+        <div
           className="w-full sm:w-24 h-24 bg-muted/10 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center relative border border-border/20 group-hover:border-primary/20 transition-colors cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
@@ -401,25 +401,29 @@ const ProductListRow = ({
             alt={`${product.name} - Foto ${currentImageIndex + 1}`}
             className="w-full h-full object-contain mix-blend-multiply opacity-90 p-2 group-hover:scale-110 transition-transform duration-500 drop-shadow-sm"
             onLoad={() => {
-              console.log(`✅ Lista - Imagen ${currentImageIndex + 1}/${images.length} cargada para ${product.name} (${product.cauplas})`);
+              console.log(
+                `✅ Lista - Imagen ${currentImageIndex + 1}/${images.length} cargada para ${product.name} (${product.cauplas})`,
+              );
             }}
             onError={() => {
-              console.error(`❌ Lista - Error cargando imagen ${currentImageIndex + 1}/${images.length} para ${product.name} (${product.cauplas})`);
+              console.error(
+                `❌ Lista - Error cargando imagen ${currentImageIndex + 1}/${images.length} para ${product.name} (${product.cauplas})`,
+              );
             }}
           />
-          
+
           {/* Icono de zoom al hacer hover */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-2xl pointer-events-none">
             <ZoomIn className="w-8 h-8 text-white drop-shadow-lg" />
           </div>
-          
+
           {/* Indicador de cantidad de fotos */}
           {images.length > 1 && (
             <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-lg z-10">
               {currentImageIndex + 1}/{images.length}
             </div>
           )}
-          
+
           {/* Botones de navegación */}
           {images.length > 1 && (
             <>
@@ -518,7 +522,7 @@ const ProductListRow = ({
           </div>
         </div>
       </div>
-      
+
       {/* Modal de vista previa */}
       {showPreview && (
         <ImagePreviewModal
@@ -548,18 +552,81 @@ interface SalesPOSProps {
 }
 
 export const SalesPOS = ({
-  searchQuery,
-  setSearchQuery,
-  products,
-  allProducts,
-  onAdd,
-  onImportExcel,
-  currentPage,
-  setCurrentPage,
-  totalPages,
-  itemsPerPage,
+  searchQuery = "",
+  setSearchQuery = () => {},
+  products = [],
+  allProducts = [],
+  onAdd = () => {},
+  onImportExcel = () => {},
+  currentPage = 1,
+  setCurrentPage = () => {},
+  totalPages = 1,
+  itemsPerPage = 200,
 }: SalesPOSProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Escáner Dinámico de Código de Barras y Hotkey F2
+  useEffect(() => {
+    let barcodeBuffer = "";
+    let barcodeTimeout: NodeJS.Timeout;
+
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // F2 para enfocar el input de búsqueda de inmediato
+      if (e.key === "F2") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      // Evitar interceptar si el usuario está escribiendo manualmente
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      // Detección de salto de línea (enter) de pistola lectora
+      if (e.key === "Enter" && barcodeBuffer.length > 3) {
+        setSearchQuery(barcodeBuffer); // Mostrar el código en barra de búsqueda
+
+        // Agregar automáticamente el primer match si es exacto (Cauplas, Torflex o Indomax)
+        const exactMatch = allProducts.find(
+          (p) =>
+            p.cauplas?.toLowerCase() === barcodeBuffer.toLowerCase() ||
+            p.torflex?.toLowerCase() === barcodeBuffer.toLowerCase() ||
+            p.indomax?.toLowerCase() === barcodeBuffer.toLowerCase(),
+        );
+
+        if (exactMatch) {
+          onAdd(exactMatch, 1);
+          setSearchQuery(""); // Limpiar tras añadirlo
+        }
+
+        barcodeBuffer = "";
+        return;
+      }
+
+      // Interceptar caracteres escribibles
+      if (e.key.length === 1) {
+        barcodeBuffer += e.key;
+        clearTimeout(barcodeTimeout);
+
+        // El lector escupe caracteres rápidamente (< 50ms de latencia entre teclas).
+        // Si tarda más de 50ms, reseteamos el buffer asumiendo que es escritura humana espuria.
+        barcodeTimeout = setTimeout(() => {
+          barcodeBuffer = "";
+        }, 50);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+      clearTimeout(barcodeTimeout);
+    };
+  }, [allProducts, onAdd, setSearchQuery]);
 
   return (
     <div className="space-y-4 pt-0">
@@ -567,7 +634,8 @@ export const SalesPOS = ({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por código Cauplas, OEM, aplicación o nombre..."
+            ref={searchInputRef}
+            placeholder="Buscar (F2) o escanear código (Cauplas, OEM)..."
             className="pl-10 h-12 text-base shadow-sm border-border/60"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -606,11 +674,12 @@ export const SalesPOS = ({
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-background/50 px-3 py-1.5 rounded-lg border border-border/40 shadow-sm">
             Mostrando{" "}
             <span className="text-primary font-black">
-              {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, allProducts.length)}
+              {(currentPage - 1) * itemsPerPage + 1}-
+              {Math.min(currentPage * itemsPerPage, (allProducts || []).length)}
             </span>{" "}
             de{" "}
             <span className="text-primary-foreground bg-primary px-1.5 rounded-sm">
-              {allProducts.length}
+              {(allProducts || []).length}
             </span>{" "}
             productos
           </p>
@@ -658,7 +727,7 @@ export const SalesPOS = ({
           ))}
         </div>
       )}
-      
+
       {/* Controles de paginación */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 backdrop-blur-xl bg-card/80 border border-border rounded-2xl p-4 shadow-lg mt-6">
@@ -680,13 +749,13 @@ export const SalesPOS = ({
           >
             Anterior
           </Button>
-          
+
           <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-xl">
             <span className="text-sm font-bold">
               {currentPage} / {totalPages}
             </span>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"

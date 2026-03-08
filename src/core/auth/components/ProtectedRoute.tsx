@@ -1,10 +1,9 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Permission } from '@/lib';
 import { hasPermission, hasAnyPermission } from '@/core/security/security/permissions';
 import { TenantBranding } from "@/shared/components/common/TenantBranding";
-import { Layout } from "@/shared/components/layout/Layout";
 
 /**
  * Componente de ruta protegida con validación de permisos
@@ -51,7 +50,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   return (
     <TenantBranding>
-      <Layout>{children}</Layout>
+      {children}
     </TenantBranding>
   );
 };

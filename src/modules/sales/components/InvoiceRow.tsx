@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   Trash2,
   Edit2,
+  MessageCircle
 } from 'lucide-react';
 import { TableRow, TableCell } from "@/shared/components/ui/table";
 import { Badge } from "@/shared/components/ui/badge";
@@ -129,6 +130,16 @@ export const InvoiceRow: React.FC<InvoiceRowProps> = React.memo(({
                 className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" /> Exportar Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  const message = `Hola, te envío la ${type === 'venta' ? 'factura' : 'orden'} *#${inv.number}* por un total de *${formatCurrency(inv.total)}*. Ver detalles: https://violet-erp.com/invoice/${inv.id}`;
+                  const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                  window.open(waUrl, "_blank");
+                }}
+                className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3 text-emerald-600 hover:text-emerald-700"
+              >
+                <MessageCircle className="h-3.5 w-3.5" /> Enviar WhatsApp
               </DropdownMenuItem>
               {onEdit && (
                 <DropdownMenuItem

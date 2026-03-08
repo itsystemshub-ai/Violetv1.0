@@ -6,7 +6,10 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  History,
+  Pencil,
 } from "lucide-react";
+import { ProductImageCarousel } from "./ProductImageCarousel";
 import {
   Table,
   TableBody,
@@ -19,80 +22,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/core/shared/utils/utils";
 
-const ProductImageCarousel = ({ images }: { images: string[] }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [imageError, setImageError] = useState(false);
-
-  // Reset index si cambian las imágenes
-  useEffect(() => {
-    if (currentIndex >= images.length) {
-      setCurrentIndex(0);
-    }
-  }, [images.length, currentIndex]);
-
-  if (!images || images.length === 0) {
-    return (
-      <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mx-auto">
-        <ImageIcon className="w-5 h-5 text-muted-foreground/40" />
-      </div>
-    );
-  }
-
-  const next = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-    setImageError(false);
-  };
-
-  const prev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    setImageError(false);
-  };
-
-  return (
-    <div className="relative w-14 h-14 rounded-xl overflow-hidden group mx-auto border border-border/50 shadow-sm bg-muted/20">
-      {imageError ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <ImageIcon className="w-5 h-5 text-muted-foreground/40" />
-        </div>
-      ) : (
-        <img
-          src={images[currentIndex]}
-          alt={`Foto ${currentIndex + 1} de ${images.length}`}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-          onError={() => setImageError(true)}
-        />
-      )}
-      
-      {/* Indicador de cantidad de fotos */}
-      {images.length > 1 && (
-        <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">
-          {currentIndex + 1}/{images.length}
-        </div>
-      )}
-      
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-0 top-0 bottom-0 w-5 bg-black/30 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/50"
-            title="Foto anterior"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-0 top-0 bottom-0 w-5 bg-black/30 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-black/50"
-            title="Foto siguiente"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </>
-      )}
-    </div>
-  );
-};
+// Local ProductImageCarousel removed to use shared component
 
 interface CatalogTableProps {
   logic: any;
@@ -217,6 +147,9 @@ export const CatalogTable = ({ logic }: CatalogTableProps) => {
         <Table className="min-w-[900px] border-collapse table-fixed">
           <TableHeader className="bg-muted/80 sticky top-0 z-20 backdrop-blur-md">
             <TableRow className="hover:bg-transparent border-b border-border h-16">
+              <TableHead className="w-[80px] text-center font-bold text-foreground text-[11px] uppercase tracking-wider px-2">
+                FOTO
+              </TableHead>
               <TableHead
                 className="w-[100px] text-left font-bold text-foreground text-[11px] uppercase tracking-wider px-2 cursor-pointer hover:bg-muted/50 select-none group"
                 onClick={() => logic.handleSort("cauplas")}
@@ -305,6 +238,12 @@ export const CatalogTable = ({ logic }: CatalogTableProps) => {
                 key={product.id}
                 className="hover:bg-muted/30 transition-colors border-b border-border text-xs group"
               >
+                <TableCell className="w-[80px] text-center p-2">
+                  <ProductImageCarousel 
+                    images={product.images || []} 
+                    productName={product.descripcionManguera || product.name}
+                  />
+                </TableCell>
                 <TableCell className="w-[100px] px-2 font-semibold text-primary break-all leading-tight">
                   {product.cauplas || "-"}
                 </TableCell>

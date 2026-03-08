@@ -9,7 +9,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { CardDescription } from "@/shared/components/ui/card";
 import { EmployeeForm } from "@/shared/components/common/Forms";
-import { HRLogic } from "@/features/hr/hooks/useHRLogic";
+import { HRLogic } from "@/modules/hr/hooks/useHRLogic";
 
 interface HRHeaderProps {
   logic: HRLogic;

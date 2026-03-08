@@ -42,6 +42,7 @@ interface LoginFormProps {
   onSubmit: (e: React.FormEvent) => void;
   onVerifyMFA: (e: React.FormEvent) => void;
   onSaveNetwork: (e: React.FormEvent) => void;
+  onPasswordReset: (email: string) => Promise<void>;
   onLegalClick: (type: "terms" | "privacy" | "help") => void;
 }
 
@@ -55,6 +56,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onSubmit,
   onVerifyMFA,
   onSaveNetwork,
+  onPasswordReset,
   onLegalClick,
 }) => {
   const handleBack = () => {
@@ -69,6 +71,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const [showPassword, setShowPassword] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -181,12 +184,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="password">Contrasena</Label>
+                      <Label htmlFor="password">Contraseña</Label>
                       <span
                         className="text-xs text-primary hover:underline cursor-pointer"
                         onClick={() => setStep("forgot-password")}
                       >
-                        Olvid├® mi contrase├▒a
+                        Olvidé mi contraseña
                       </span>
                     </div>
                     <div className="relative">
@@ -224,7 +227,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
-                      "Iniciar Sesion"
+                      "Iniciar Sesión"
                     )}
                   </Button>
                 </form>
@@ -247,11 +250,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   <ShieldCheck className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle className="text-3xl font-bold">
-                  Verificacion 2FA
+                  Verificación 2FA
                 </CardTitle>
                 <CardDescription>
-                  Hemos enviado un codigo a tu dispositivo vinculado. <br />
-                  Por favor, ingresalo para continuar.
+                  Hemos enviado un código a tu dispositivo vinculado. <br />
+                  Por favor, ingrésalo para continuar.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0 pt-4">
@@ -281,7 +284,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </Button>
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">
-                      No recibiste el codigo?{" "}
+                      ¿No recibiste el código?{" "}
                       <span className="text-primary font-medium cursor-pointer">
                         Reenviar
                       </span>
@@ -292,7 +295,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                       className="mt-4 text-xs"
                       onClick={handleBack}
                     >
-                      Usar otro metodo de acceso
+                      Usar otro método de acceso
                     </Button>
                   </div>
                 </form>
@@ -324,19 +327,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   Recuperar acceso
                 </CardTitle>
                 <CardDescription>
-                  Ingresa tu correo para recibir un enlace de recuperaci├│n.
+                  Ingresa tu correo para recibir un enlace de recuperación.
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0 pt-4">
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
-                    // L├│gica manejada en el padre
+                    if (recoveryEmail) {
+                      await onPasswordReset(recoveryEmail);
+                    }
                   }}
                   className="space-y-4"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="recovery-email">Correo Electr├│nico</Label>
+                    <Label htmlFor="recovery-email">Correo Electrónico</Label>
                     <div className="relative">
                       <UserIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -345,18 +350,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         placeholder="tu@correo.com"
                         className="pl-10 h-12"
                         required
+                        value={recoveryEmail}
+                        onChange={(e) => setRecoveryEmail(e.target.value)}
                       />
                     </div>
                   </div>
                   <Button
                     type="submit"
                     className="w-full h-12 text-base font-semibold"
-                    disabled={isLoading}
+                    disabled={isLoading || !recoveryEmail}
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
-                      "Enviar instrucciones"
+                      "Enviar solicitud de cambio"
                     )}
                   </Button>
                 </form>
@@ -388,7 +395,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   <Wifi className="w-8 h-8 text-primary" /> Red Local
                 </CardTitle>
                 <CardDescription>
-                  Si este equipo es un Nodo, ingresa la direcci├│n IP de la
+                  Si este equipo es un Nodo, ingresa la dirección IP de la
                   computadora Maestra para conectarte a la base de datos
                   central.
                 </CardDescription>
@@ -397,7 +404,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 <form onSubmit={onSaveNetwork} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="masterIp">
-                      Direcci├│n IP del Maestro (ej. 192.168.1.50)
+                      Dirección IP del Maestro (ej. 192.168.1.50)
                     </Label>
                     <div className="relative">
                       <ServerCrash className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -419,7 +426,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     className="w-full h-12 text-base font-semibold"
                     disabled={isLoading}
                   >
-                    Guardar Configuraci├│n y Conectar
+                    Guardar Configuración y Conectar
                   </Button>
                 </form>
               </CardContent>
@@ -428,8 +435,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Footer Links (Common to all steps on the right side) */}
-      <div className="absolute -bottom-16 left-0 right-0 flex flex-wrap justify-center gap-4 text-xs text-muted-foreground sm:text-sm">
+      {/* Footer Links (Responsive) */}
+      <div className="mt-12 flex flex-wrap justify-center gap-4 text-xs text-muted-foreground sm:text-sm">
         <span
           className="hover:text-primary cursor-pointer transition-colors flex items-center gap-1"
           onClick={() => setStep("network-setup")}
@@ -446,7 +453,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           className="hover:text-primary cursor-pointer transition-colors"
           onClick={() => onLegalClick("terms")}
         >
-          T├®rminos
+          Términos
         </span>
         <span
           className="hover:text-primary cursor-pointer transition-colors"

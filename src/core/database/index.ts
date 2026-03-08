@@ -1,5 +1,3 @@
-// Database Core Module
-// Exports local database (IndexedDB) services
+// Auto-generated barrel export
 
-export * from './schemas';
-// Main database instance will be exported from localDb.ts
+export * from './localDb';

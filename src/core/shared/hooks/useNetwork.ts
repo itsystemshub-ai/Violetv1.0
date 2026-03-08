@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 export function useNetwork() {
   const { tenant } = useSystemConfig();

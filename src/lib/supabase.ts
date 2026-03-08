@@ -1,4 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+// Archivo deshabilitado temporalmente para evitar errores de inicialización
+// La aplicación usa localStorage y SQLite local en Electron
 
 declare global {
   interface Window {
@@ -13,32 +14,93 @@ declare global {
       getInstanceInfo: () => Promise<{ role: 'master' | 'client'; masterIp: string }>;
       setInstanceInfo: (info: { role: 'master' | 'client'; masterIp: string }) => Promise<{ success: boolean; error?: string }>;
       executeSql: (query: string, params?: any[]) => Promise<{ success: boolean; data?: any; error?: string }>;
+      createBackup: () => Promise<{ success: boolean; path?: string; error?: string; canceled?: boolean }>;
     };
   }
 }
 
-// Valores por defecto de .env (se usan variables dummy para evitar crash sincrónico antes de cargar la config de Electron)
-const defaultUrl = import.meta.env.VITE_SUPABASE_URL || 'https://dummy.supabase.co';
-const defaultKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'dummy_key';
+// Mock de Supabase para evitar errores
+// Todas las operaciones retornan error indicando que Supabase está deshabilitado
+const createSupabaseMock = () => {
+  const mockError = { 
+    message: 'Supabase está deshabilitado. La aplicación usa localStorage/SQLite local.',
+    code: 'SUPABASE_DISABLED'
+  };
 
+  const mockResponse = {
+    data: null,
+    error: mockError,
+    count: null,
+    status: 503,
+    statusText: 'Service Unavailable'
+  };
 
-// Inicialización del cliente con capacidad de actualización
-export let supabase = createClient(defaultUrl, defaultKey);
+  const mockQuery = {
+    select: () => mockQuery,
+    insert: () => mockQuery,
+    update: () => mockQuery,
+    delete: () => mockQuery,
+    upsert: () => mockQuery,
+    eq: () => mockQuery,
+    neq: () => mockQuery,
+    gt: () => mockQuery,
+    gte: () => mockQuery,
+    lt: () => mockQuery,
+    lte: () => mockQuery,
+    like: () => mockQuery,
+    ilike: () => mockQuery,
+    is: () => mockQuery,
+    in: () => mockQuery,
+    contains: () => mockQuery,
+    containedBy: () => mockQuery,
+    rangeGt: () => mockQuery,
+    rangeGte: () => mockQuery,
+    rangeLt: () => mockQuery,
+    rangeLte: () => mockQuery,
+    rangeAdjacent: () => mockQuery,
+    overlaps: () => mockQuery,
+    textSearch: () => mockQuery,
+    match: () => mockQuery,
+    not: () => mockQuery,
+    or: () => mockQuery,
+    filter: () => mockQuery,
+    order: () => mockQuery,
+    limit: () => mockQuery,
+    range: () => mockQuery,
+    single: () => Promise.resolve(mockResponse),
+    maybeSingle: () => Promise.resolve(mockResponse),
+    then: (resolve: any) => Promise.resolve(mockResponse).then(resolve),
+    catch: (reject: any) => Promise.resolve(mockResponse).catch(reject),
+  };
 
-// Si estamos en modo escritorio (Electron), intentamos cargar la config persistente
-if (window.electronAPI?.getConfig) {
-  window.electronAPI.getConfig().then((config) => {
-    const url = config.supabaseUrl as string | undefined;
-    const key = config.supabaseAnonKey as string | undefined;
-    if (url && key) {
-      console.log('Violet ERP: Usando configuración de base de datos persistente.');
-      supabase = createClient(url, key);
-    } else {
-      // Si el archivo de config está vacío, guardamos los valores por defecto
-      window.electronAPI?.saveConfig({
-        supabaseUrl: defaultUrl,
-        supabaseAnonKey: defaultKey,
-      });
-    }
-  }).catch((err: unknown) => console.error('Error al sincronizar config persistente:', err));
-}
+  return {
+    from: () => mockQuery,
+    auth: {
+      signIn: () => Promise.resolve(mockResponse),
+      signUp: () => Promise.resolve(mockResponse),
+      signOut: () => Promise.resolve(mockResponse),
+      getSession: () => Promise.resolve(mockResponse),
+      getUser: () => Promise.resolve(mockResponse),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+    storage: {
+      from: () => ({
+        upload: () => Promise.resolve(mockResponse),
+        download: () => Promise.resolve(mockResponse),
+        remove: () => Promise.resolve(mockResponse),
+        list: () => Promise.resolve(mockResponse),
+        getPublicUrl: () => ({ data: { publicUrl: '' } }),
+      }),
+    },
+    rpc: () => Promise.resolve(mockResponse),
+    channel: () => ({
+      on: () => ({ subscribe: () => {} }),
+      subscribe: () => {},
+      unsubscribe: () => Promise.resolve({ error: null }),
+    }),
+  };
+};
+
+export const supabase = createSupabaseMock() as any;
+
+console.log('[Violet ERP] Supabase deshabilitado - Usando solo localStorage/SQLite');

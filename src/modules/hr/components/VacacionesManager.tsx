@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { formatCurrency } from "@/lib/index";
-import { HRLogic } from "@/features/hr/hooks/useHRLogic";
+import { HRLogic } from "@/modules/hr/hooks/useHRLogic";
 
 interface VacacionesManagerProps {
   logic: HRLogic;

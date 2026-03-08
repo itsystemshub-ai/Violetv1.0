@@ -1,5 +1,7 @@
 // Auto-generated barrel export
 
+export * from './CustomerFormValery';
+export * from './CustomersTableValery';
 export * from './EntityDialog';
 export * from './InvoiceRow';
 export * from './PaymentDialog';

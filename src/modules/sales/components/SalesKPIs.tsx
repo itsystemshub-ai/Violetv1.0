@@ -1,5 +1,6 @@
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { DollarSign, FileText, TrendingUp, Target } from "lucide-react";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
 export const SalesKPIs = ({
   data,
@@ -8,11 +9,13 @@ export const SalesKPIs = ({
   data: any;
   formatCurrency: any;
 }) => {
+  const { formatMoney } = useCurrencyStore();
+
   return (
     <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
       <StandardKPICard
         label="Ventas Totales"
-        value={formatCurrency(data?.sales?.totalSalesVolume || 0)}
+        value={formatMoney(data?.sales?.totalSalesVolume || 0)}
         change={12.5}
         trend="up"
         icon={DollarSign}
@@ -30,7 +33,7 @@ export const SalesKPIs = ({
       />
       <StandardKPICard
         label="Ticket Promedio"
-        value={formatCurrency(
+        value={formatMoney(
           data?.sales?.totalSalesVolume && data?.sales?.totalSalesCount
             ? data.sales.totalSalesVolume / data.sales.totalSalesCount
             : 0,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Search, Filter, History } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -12,31 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { formatCurrency, formatDate } from "@/lib/index";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
 import { cn } from "@/core/shared/utils/utils";
 
-interface PurchasesHistoryTableProps {
-  compras: any[];
-  suppliers: any[];
-  searchQuery: string;
-  setSearchQuery: (val: string) => void;
-}
-
-const PurchasesHistoryTable: React.FC<PurchasesHistoryTableProps> = ({
-  compras,
-  suppliers,
-  searchQuery,
-  setSearchQuery,
-}) => {
-  const filteredCompras = compras.filter(
-    (c) =>
-      c.num_factura.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      suppliers
-        .find((s) => s.id === c.proveedor_id)
-        ?.name.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
-  );
+const PurchasesHistoryTable: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <Tabs defaultValue="history" className="w-full">
@@ -109,55 +94,20 @@ const PurchasesHistoryTable: React.FC<PurchasesHistoryTableProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCompras.length > 0 ? (
-                  filteredCompras.map((c) => (
-                    <TableRow
-                      key={c.id}
-                      className="border-white/5 hover:bg-white/5 transition-colors group"
-                    >
-                      <TableCell className="font-mono text-white text-[10px]">
-                        {c.num_factura}
-                      </TableCell>
-                      <TableCell className="text-white text-xs">
-                        {suppliers.find((s) => s.id === c.proveedor_id)?.name ||
-                          "N/A"}
-                      </TableCell>
-                      <TableCell className="text-gray-400 text-[10px]">
-                        {formatDate(c.fecha_emision)}
-                      </TableCell>
-                      <TableCell className="font-semibold text-white text-sm">
-                        {formatCurrency(c.total_usd, "USD")}
-                      </TableCell>
-                      <TableCell className="text-gray-400 text-[10px]">
-                        {formatCurrency(
-                          c.total_usd * c.tasa_bcv_aplicada,
-                          "VES",
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={cn(
-                            "rounded-lg px-2 py-0.5 text-[9px] font-bold",
-                            c.estatus === "PROCESADA"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-amber-500/10 text-amber-400 border-amber-500/20",
-                          )}
-                        >
-                          {c.estatus}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-64 text-center">
-                      <div className="flex flex-col items-center justify-center gap-3 text-gray-500">
-                        <History size={40} className="text-gray-700" />
-                        <p className="text-sm">No se encontraron registros.</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
+                <TableRow>
+                  <TableCell colSpan={6} className="h-64 text-center">
+                    <div className="flex flex-col items-center justify-center gap-3 text-gray-500">
+                      <History size={40} className="text-gray-700" />
+                      <p className="text-sm">
+                        No se encontraron registros de compras.
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Los registros aparecerán aquí cuando se procesen órdenes
+                        de compra.
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </div>

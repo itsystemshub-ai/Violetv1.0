@@ -55,65 +55,40 @@ interface ActivityLog {
 }
 
 interface ActivityLogPanelProps {
+  auditLogs?: ActivityLog[];
+  isLoading?: boolean;
+  onRefresh?: () => void;
   isMaster?: boolean;
 }
 
-const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ isMaster }) => {
+const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ auditLogs = [], isLoading, onRefresh, isMaster }) => {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<ActivityLog[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAction, setFilterAction] = useState<string>("all");
   const [filterModule, setFilterModule] = useState<string>("all");
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Cargar logs desde localStorage o base de datos
+  // Format incoming audit logs to ActivityLog format
   useEffect(() => {
-    loadActivityLogs();
-  }, []);
-
-  // Filtrar logs cuando cambian los filtros
-  useEffect(() => {
-    filterLogs();
-  }, [logs, searchTerm, filterAction, filterModule]);
-
-  const loadActivityLogs = async () => {
-    setIsLoading(true);
-    try {
-      // Cargar desde IndexedDB (audit_logs)
-      const { localDb } = await import('@/core/database/localDb');
-      const auditLogs = await localDb.audit_logs
-        .orderBy('created_at')
-        .reverse()
-        .limit(100)
-        .toArray();
-
-      if (auditLogs && auditLogs.length > 0) {
-        // Convertir audit logs al formato de ActivityLog
-        const convertedLogs: ActivityLog[] = auditLogs.map((log: any) => ({
-          id: log.id,
-          timestamp: new Date(log.created_at),
-          user: log.changed_by || 'Sistema',
-          action: log.action || 'UPDATE',
-          module: getModuleFromTable(log.table_name),
-          entity: log.table_name,
-          entityId: log.record_id,
-          description: log.description || `${log.action} en ${log.table_name}`,
-          changes: log.changes,
-          ipAddress: log.ip_address,
-        }));
-        setLogs(convertedLogs);
-      } else {
-        // Si no hay logs reales, generar ejemplos
-        generateSampleLogs();
-      }
-    } catch (error) {
-      console.error("Error cargando logs:", error);
-      // Si hay error, generar logs de ejemplo
+    if (auditLogs && auditLogs.length > 0) {
+      const convertedLogs: ActivityLog[] = auditLogs.map((log: any) => ({
+        id: log.id,
+        timestamp: new Date(log.created_at),
+        user: log.changed_by || 'Sistema',
+        action: log.action || 'UPDATE',
+        module: getModuleFromTable(log.table_name),
+        entity: log.table_name,
+        entityId: log.record_id,
+        description: log.description || `${log.action} en ${log.table_name}`,
+        changes: log.changes,
+        ipAddress: log.ip_address,
+      }));
+      setLogs(convertedLogs);
+    } else if (!isLoading) {
+      // If no logs after loading finished, show samples for visual context
       generateSampleLogs();
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [auditLogs, isLoading]);
 
   const getModuleFromTable = (tableName: string): string => {
     const moduleMap: Record<string, string> = {
@@ -284,7 +259,7 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ isMaster }) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={loadActivityLogs}
+            onClick={onRefresh}
             disabled={isLoading}
           >
             <RefreshCw className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")} />

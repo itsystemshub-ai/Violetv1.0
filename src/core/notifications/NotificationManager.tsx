@@ -11,7 +11,7 @@ import React from 'react';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { Toaster as Sonner } from '@/shared/components/ui/sonner';
 import { useBroadcastNotifications } from '@/shared/hooks/useBroadcastNotifications';
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
 
 /**

@@ -1,5 +1,14 @@
 import React from "react";
-import { Banknote, RefreshCw, Building2, Plus, CheckCircle2, Pencil, Trash2 } from "lucide-react";
+import {
+  Banknote,
+  RefreshCw,
+  Building2,
+  Plus,
+  CheckCircle2,
+  Pencil,
+  Trash2,
+  Percent,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -13,6 +22,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { cn } from "@/core/shared/utils/utils";
+import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -75,11 +85,31 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
   setActiveTenant,
   deleteTenant,
 }) => {
-  const { exchangeRate, setExchangeRate, taxes, syncBcvRate} = useSystemConfig();
+  const { exchangeRate, setExchangeRate, taxes, syncBcvRate, updateConfig } =
+    useSystemConfig();
   const [isDeleteTenantOpen, setIsDeleteTenantOpen] = React.useState(false);
   const [isEditTenantOpen, setIsEditTenantOpen] = React.useState(false);
   const [selectedTenant, setSelectedTenant] = React.useState<any>(null);
-  
+  const [isSyncing, setIsSyncing] = React.useState(false);
+
+  // Valores por defecto para taxes si no hay config
+  const DEFAULT_TAXES = {
+    iva_general: 16,
+    iva_reducido: 8,
+    iva_lujo: 31,
+    igtf_divisas: 3,
+    rif_mask: "J-00000000-0",
+    utValue: 90.0,
+  };
+
+  const taxesConfig = taxes || DEFAULT_TAXES;
+
+  const handleSyncBcv = async () => {
+    setIsSyncing(true);
+    await syncBcvRate();
+    setIsSyncing(false);
+  };
+
   const safeTenants = allTenants || [];
 
   const handleUpdateTenant = async (data: any) => {
@@ -110,9 +140,8 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Botón Nueva Empresa */}
-      {isMaster && setIsAddTenantOpen && (
-        <div className="flex justify-end">
+      <div className="flex justify-end">
+        {isMaster && setIsAddTenantOpen && (
           <Dialog open={isAddTenantOpen} onOpenChange={setIsAddTenantOpen}>
             <DialogTrigger asChild>
               <Button
@@ -127,22 +156,23 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
               <DialogHeader>
                 <DialogTitle>Agregar Nueva Empresa</DialogTitle>
                 <DialogDescription>
-                  Completa todos los datos legales y de contacto de la nueva empresa
+                  Completa todos los datos legales y de contacto de la nueva
+                  empresa
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4">
-                <TenantSetupForm 
-                  initialData={newTenant} 
+                <TenantSetupForm
+                  initialData={newTenant}
                   onSubmit={(data) => {
                     // Pasar los datos directamente a handleAddTenant
                     handleAddTenant?.(data);
-                  }} 
+                  }}
                 />
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Selector de Empresa Activa */}
       {isMaster && safeTenants.length > 0 && (
@@ -186,8 +216,12 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
                     <TableHead>Nombre</TableHead>
                     <TableHead>Razón Social</TableHead>
                     <TableHead>RIF</TableHead>
-                    <TableHead className="w-[100px] text-center">Estado</TableHead>
-                    <TableHead className="w-[120px] text-right">Acciones</TableHead>
+                    <TableHead className="w-[100px] text-center">
+                      Estado
+                    </TableHead>
+                    <TableHead className="w-[120px] text-right">
+                      Acciones
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -198,7 +232,7 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
                         "cursor-pointer transition-colors",
                         activeTenantId === t.id
                           ? "bg-primary/5 hover:bg-primary/10"
-                          : "hover:bg-muted/50"
+                          : "hover:bg-muted/50",
                       )}
                       onClick={() => setActiveTenant?.(t.id)}
                     >
@@ -212,15 +246,21 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
                         ) : (
                           <div
                             className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-                            style={{ backgroundColor: t.primaryColor || "#7c3aed" }}
+                            style={{
+                              backgroundColor: t.primaryColor || "#7c3aed",
+                            }}
                           >
                             {(t.name || "??").substring(0, 2).toUpperCase()}
                           </div>
                         )}
                       </TableCell>
                       <TableCell className="font-medium">{t.name}</TableCell>
-                      <TableCell className="text-muted-foreground">{t.fiscalName}</TableCell>
-                      <TableCell className="text-muted-foreground font-mono text-sm">{t.rif}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {t.fiscalName}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground font-mono text-sm">
+                        {t.rif}
+                      </TableCell>
                       <TableCell className="text-center">
                         {activeTenantId === t.id && (
                           <div className="flex items-center justify-center gap-1 text-primary">
@@ -230,7 +270,10 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="flex items-center justify-end gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button
                             variant="ghost"
                             size="icon"
@@ -282,13 +325,17 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
       )}
 
       {/* Diálogo de confirmación para eliminar empresa */}
-      <AlertDialog open={isDeleteTenantOpen} onOpenChange={setIsDeleteTenantOpen}>
+      <AlertDialog
+        open={isDeleteTenantOpen}
+        onOpenChange={setIsDeleteTenantOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar empresa?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente la empresa "{selectedTenant?.name}". 
-              Todos los datos asociados se perderán. Esta acción no se puede deshacer.
+              Esta acción eliminará permanentemente la empresa "
+              {selectedTenant?.name}". Todos los datos asociados se perderán.
+              Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -319,136 +366,13 @@ const CompanyFiscalPanel: React.FC<CompanyFiscalPanelProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <TenantSetupForm 
-              initialData={selectedTenant} 
-              onSubmit={handleEditTenant} 
+            <TenantSetupForm
+              initialData={selectedTenant}
+              onSubmit={handleEditTenant}
             />
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Fiscalidad y Tasas */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader>
-          <CardTitle>Fiscalidad y Tasas</CardTitle>
-          <CardDescription>
-            Gestiona las tasas de impuestos, cambio de moneda y configuración fiscal de Venezuela
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Tasa de Cambio BCV */}
-          <SettingsCard
-            title="Divisas y Tasa de Cambio"
-            description="Define la tasa oficial del BCV para la conversión automática en el sistema."
-            icon={<Banknote className="h-5 w-5" />}
-          >
-            <div className="flex flex-col md:flex-row items-center justify-between p-5 rounded-xl bg-primary/5 border border-primary/10 gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">
-                  Tasa Oficial BCV
-                </span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black text-primary tracking-tighter">
-                    {exchangeRate.toLocaleString("es-VE", {
-                      minimumFractionDigits: 4,
-                    })}
-                  </span>
-                  <span className="text-xs font-bold text-muted-foreground/70 uppercase">
-                    VES / USD
-                  </span>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-3 border-primary/20 bg-background/50 backdrop-blur-sm hover:bg-primary/10 text-primary px-6 h-12"
-                onClick={syncBcvRate}
-              >
-                <RefreshCw className="w-5 h-5" />
-                <span className="font-bold">Sincronizar BCV</span>
-              </Button>
-            </div>
-
-            <div className="grid gap-3 pt-2">
-              <Label className="text-xs uppercase font-bold text-muted-foreground tracking-widest">
-                Ajuste Manual de Seguridad
-              </Label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  step="0.0001"
-                  defaultValue={exchangeRate}
-                  className="h-11 font-mono text-lg"
-                  id="manual-rate-input"
-                />
-                <Button
-                  className="h-11 px-6 font-bold"
-                  onClick={() => {
-                    const input = document.getElementById(
-                      "manual-rate-input",
-                    ) as HTMLInputElement;
-                    const val = parseFloat(input.value);
-                    if (!isNaN(val)) setExchangeRate(val);
-                  }}
-                >
-                  Guardar
-                </Button>
-              </div>
-            </div>
-          </SettingsCard>
-
-          {/* Localización Venezuela */}
-          <SettingsCard
-            title="Localización: Venezuela Deep-Config"
-            description="Ajusta alícuotas de impuestos y validaciones legales."
-            icon={<Building2 className="h-5 w-5" />}
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs uppercase font-bold text-muted-foreground">
-                  IVA General (%)
-                </Label>
-                <div className="relative">
-                  <Input
-                    type="number"
-                    value={taxes?.iva_general ?? 16}
-                    readOnly
-                    className="pr-8"
-                  />
-                  <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">%</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs uppercase font-bold text-muted-foreground">
-                  IGTF Divisas (%)
-                </Label>
-                <div className="relative">
-                  <Input
-                    type="number"
-                    value={taxes?.igtf_divisas ?? 3}
-                    readOnly
-                    className="pr-8"
-                  />
-                  <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">%</span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs uppercase font-bold text-muted-foreground">
-                Máscara de RIF
-              </Label>
-              <Input
-                placeholder="J-00000000-0"
-                value={taxes?.rif_mask ?? 'J-00000000-0'}
-                readOnly
-              />
-              <p className="text-[10px] text-muted-foreground">
-                Formato estándar para validación de RIF en Venezuela
-              </p>
-            </div>
-          </SettingsCard>
-        </CardContent>
-      </Card>
     </div>
   );
 };

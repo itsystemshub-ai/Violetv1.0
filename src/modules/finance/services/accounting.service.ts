@@ -19,4 +19,23 @@ export const AccountingService = {
     EXCHANGE_GAIN: '4.2.01.01',
     EXCHANGE_LOSS: '5.1.07.01',
   },
+
+  async getFinancialSummary(_tenantId: string, _exchangeRate: number) {
+    return {
+      totalAssets: 0,
+      totalExpenses: 0,
+      pendingReceivables: 0,
+      cashFlow: 0,
+    };
+  },
+
+  async postTransaction(payload: any) {
+    console.log("Post transaction (Stub):", payload);
+    return { success: true };
+  },
+
+  async postPaymentWithIGTF(payload: any) {
+    console.log("Post payment with IGTF:", payload);
+    return { success: true };
+  }
 };

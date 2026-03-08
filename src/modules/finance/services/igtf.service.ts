@@ -39,4 +39,12 @@ export const IGTFService = {
     const metodo = this.METODOS_PAGO_DIVISA.find(m => m.id === metodoPagoId);
     return metodo?.generaIGTF || false;
   },
+
+  generarResumenIGTF(records: any[]) {
+    return {
+      totalMontoBase: records.reduce((acc, r) => acc + (r.monto_base || 0), 0),
+      totalMontoIGTF: records.reduce((acc, r) => acc + (r.monto_igtf || 0), 0),
+      count: records.length,
+    };
+  }
 };

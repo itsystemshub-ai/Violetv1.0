@@ -1,4 +1,4 @@
-﻿import { useSystemConfig } from './useSystemConfig';
+﻿import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
 
 /**
  * Hook useTenant (DEPRECATED)
@@ -17,7 +17,7 @@ export const useTenant = () => {
   } = useSystemConfig();
 
   /**
-   * Obtiene la relaci├│n de aspecto del logo si es necesario (legacy)
+   * Obtiene la relación de aspecto del logo si es necesario (legacy)
    */
   const getTenantLogo = () => {
     if (!tenant.logoUrl || tenant.id === 'none') return '';

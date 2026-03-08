@@ -251,6 +251,44 @@ export const useAI = () => {
     ]);
   }, [queryGroq]);
 
+  /**
+   * Extracción de Pedido desde Lenguaje Natural (WhatsApp/Email).
+   */
+  const extractOrderFromText = useCallback(async (text: string) => {
+    const systemPrompt = `
+      Actúa como un receptor de pedidos de alta velocidad.
+      Recibirás un mensaje de WhatsApp o correo de un cliente solicitando productos.
+      Extrae los productos, cantidades y el nombre del cliente.
+      Debes devolver exclusivamente un objeto JSON (sin texto adicional) con esta estructura:
+      {
+        "customerName": "string",
+        "items": [
+          { "productName": "string", "quantity": number, "price": number }
+        ],
+        "total": number,
+        "notes": "string"
+      }
+      Si no hay precio especificado en el texto, usa 0.
+      Mensaje: ${text}
+    `;
+
+    const result = await queryGroq([
+      { role: "system", content: "Eres un parser de pedidos comerciales. Solo respondes con JSON válido." },
+      { role: "user", content: systemPrompt },
+    ], 0.1);
+
+    if (result) {
+      try {
+        const cleanJson = result.replace(/```json\n?|\n?```/g, "").trim();
+        return JSON.parse(cleanJson);
+      } catch {
+        setError("Error al procesar el texto del pedido.");
+        return null;
+      }
+    }
+    return null;
+  }, [queryGroq]);
+
   return {
     isLoading,
     error,
@@ -258,6 +296,7 @@ export const useAI = () => {
     analyzeNaturalLanguage,
     processInvoiceOCR,
     categorizeTransaction,
+    extractOrderFromText,
     /**
      * Analista de Seguridad IA: Escanea logs en busca de anomalías.
      */

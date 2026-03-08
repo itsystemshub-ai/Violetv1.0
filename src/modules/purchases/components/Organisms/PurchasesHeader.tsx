@@ -1,17 +1,8 @@
 import React from "react";
-import { Plus, Users, Briefcase } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import { Briefcase } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
 
-interface PurchasesHeaderProps {
-  onNewPurchase: () => void;
-  onManageSuppliers: () => void;
-}
-
-const PurchasesHeader: React.FC<PurchasesHeaderProps> = ({
-  onNewPurchase,
-  onManageSuppliers,
-}) => {
+const PurchasesHeader: React.FC = () => {
   return (
     <header className="relative overflow-hidden rounded-3xl bg-[#0F1115] border border-white/5 p-8 shadow-2xl">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-l from-violet-500/10 to-transparent opacity-50" />
@@ -35,24 +26,6 @@ const PurchasesHeader: React.FC<PurchasesHeaderProps> = ({
             Centro de abastecimiento inteligente con control de moneda dual, CPP
             y cumplimiento SENIAT.
           </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={onNewPurchase}
-            className="bg-violet-600 hover:bg-violet-500 text-white rounded-2xl px-6 py-6 h-auto shadow-lg shadow-violet-600/20 border-t border-white/20 transition-all hover:translate-y-[-2px] active:translate-y-[1px]"
-          >
-            <Plus size={18} className="mr-2" />
-            Nueva Orden
-          </Button>
-          <Button
-            variant="outline"
-            onClick={onManageSuppliers}
-            className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-2xl px-6 py-6 h-auto transition-all"
-          >
-            <Users size={18} className="mr-2" />
-            Proveedores
-          </Button>
         </div>
       </div>
     </header>

@@ -14,9 +14,18 @@ interface BroadcastNotification {
 }
 
 // Canal de broadcast usando BroadcastChannel API
-const broadcastChannel = typeof window !== 'undefined' 
-  ? new BroadcastChannel('violet-erp-notifications')
-  : null;
+// Wrapped in try/catch because Electron's contextIsolation renderer
+// can throw "TypeError: Illegal constructor" when BroadcastChannel
+// is instantiated at module level before the browsing context is ready.
+const createBroadcastChannel = (): BroadcastChannel | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return new BroadcastChannel('violet-erp-notifications');
+  } catch {
+    return null;
+  }
+};
+const broadcastChannel = createBroadcastChannel();
 
 export const useBroadcastNotifications = (userId?: string, tenantId?: string) => {
   useEffect(() => {

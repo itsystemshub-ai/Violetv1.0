@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 interface EnhancedStockCardProps {
   productName: string;
-  sku: string;
+  cauplas: string;
   currentStock: number;
   minStock: number;
   maxStock?: number;
@@ -24,7 +24,7 @@ interface EnhancedStockCardProps {
  */
 export function EnhancedStockCard({
   productName,
-  sku,
+  cauplas,
   currentStock,
   minStock,
   maxStock,
@@ -137,9 +137,9 @@ export function EnhancedStockCard({
                 {status.label}
               </span>
               
-              {/* SKU */}
+              {/* CAUPLAS */}
               <span className="text-xs text-slate-500 font-mono">
-                {sku}
+                {cauplas}
               </span>
             </div>
             

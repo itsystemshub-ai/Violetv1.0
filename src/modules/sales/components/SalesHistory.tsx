@@ -34,7 +34,10 @@ import {
   DropdownMenuItem,
 } from "@/shared/components/ui/dropdown-menu";
 import { formatDate, formatCurrency } from "@/lib/index";
-import { exportInvoicePDF, exportInvoiceExcel } from "@/infrastructure/export/export-utils";
+import {
+  exportInvoicePDF,
+  exportInvoiceExcel,
+} from "@/infrastructure/export/export-utils";
 import { usePagination } from "@/core/shared/hooks/usePagination";
 import { useDebounce } from "@/core/shared/hooks/useDebounce";
 import { PaginationControls } from "@/shared/components/common/PaginationControls";
@@ -86,8 +89,12 @@ export const SalesHistory = ({
     return invoices.filter(
       (inv) =>
         inv.type === type &&
-        ((inv.number?.toString() || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-          (inv.customerName?.toString() || "").toLowerCase().includes(debouncedSearchTerm.toLowerCase())),
+        ((inv.number?.toString() || "")
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
+          (inv.customerName?.toString() || "")
+            .toLowerCase()
+            .includes(debouncedSearchTerm.toLowerCase())),
     );
   }, [invoices, type, debouncedSearchTerm]);
 
@@ -133,7 +140,7 @@ export const SalesHistory = ({
                 Bs
               </Button>
             </div>
-            
+
             {/* Buscador */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
@@ -145,9 +152,18 @@ export const SalesHistory = ({
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
-                  <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div
+                    className="w-1 h-1 bg-primary rounded-full animate-bounce"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <div
+                    className="w-1 h-1 bg-primary rounded-full animate-bounce"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <div
+                    className="w-1 h-1 bg-primary rounded-full animate-bounce"
+                    style={{ animationDelay: "300ms" }}
+                  />
                 </div>
               )}
             </div>
@@ -218,39 +234,40 @@ export const SalesHistory = ({
                     {(inv.items || []).reduce(
                       (acc: number, item: any) => acc + (item.quantity || 0),
                       0,
-                    )} Unds
+                    )}{" "}
+                    Unds
                   </TableCell>
                   <TableCell className="text-right font-black italic text-sm text-foreground px-6 py-4 tabular-nums">
-                    {displayCurrency === "USD" 
+                    {displayCurrency === "USD"
                       ? formatCurrency(inv.total || 0, "USD")
-                      : formatCurrency((inv.total || 0) * exchangeRate, "VES")
-                    }
+                      : formatCurrency((inv.total || 0) * exchangeRate, "VES")}
                   </TableCell>
                   <TableCell className="text-center px-6 py-4">
                     <Badge
                       variant={
                         inv.status === "pagada" || inv.status === "procesado"
                           ? "default"
-                          : inv.status === "anulado"
+                          : inv.status === "anulada"
                             ? "destructive"
                             : "secondary"
                       }
                       className={`uppercase font-black text-[9px] tracking-wider px-3 py-1 rounded-full shadow-sm ${
                         inv.status === "pagada" || inv.status === "procesado"
                           ? "bg-emerald-500/20 text-emerald-600 border border-emerald-500/30"
-                          : inv.status === "anulado"
+                          : inv.status === "anulada"
                             ? "bg-red-500/20 text-red-600 border border-red-500/30"
                             : "bg-orange-500/20 text-orange-600 border border-orange-500/30"
                       }`}
                     >
-                      {inv.status === "anulado"
+                      {inv.status === "anulada"
                         ? "Anulado"
                         : type === "pedido" &&
-                            (inv.status === "procesado" || inv.status === "pagada")
+                            (inv.status === "procesado" ||
+                              inv.status === "pagada")
                           ? "Aprobado"
                           : type === "pedido"
                             ? "Pendiente"
-                          : inv.status}
+                            : inv.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right px-6 py-4 pr-6">
@@ -260,16 +277,18 @@ export const SalesHistory = ({
                         variant="ghost"
                         size="sm"
                         className="h-7 px-2 rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white transition-all text-[9px] font-black uppercase"
-                        onClick={() => navigate(`/invoice-preview?id=${inv.id}`)}
+                        onClick={() =>
+                          navigate(`/invoice-preview?id=${inv.id}`)
+                        }
                       >
                         <Eye className="h-3 w-3 mr-1" />
                         Ver
                       </Button>
-                      
+
                       {/* Botón Marcar como Pagada (solo para facturas pendientes) */}
                       {type === "venta" &&
                         inv.status !== "pagada" &&
-                        inv.status !== "anulado" &&
+                        inv.status !== "anulada" &&
                         onMarkAsPaid && (
                           <Button
                             variant="ghost"
@@ -281,9 +300,10 @@ export const SalesHistory = ({
                             Cobrar
                           </Button>
                         )}
-                      
+
                       {type === "pedido" &&
-                        (inv.status?.toLowerCase() === "pendiente" || inv.status?.toLowerCase() === "pending") &&
+                        (inv.status?.toLowerCase() === "pendiente" ||
+                          inv.status?.toLowerCase() === "pending") &&
                         onApprove && (
                           <Button
                             variant="ghost"
@@ -332,22 +352,27 @@ export const SalesHistory = ({
                             </DropdownMenuItem>
                           )}
                           <Separator className="my-1 opacity-50" />
-                          {type === "pedido" && onCancel && inv.status !== "anulado" && (
-                            <DropdownMenuItem
-                              onClick={() => onCancel(inv.id)}
-                              className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3 text-orange-500"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" /> Anular Pedido
-                            </DropdownMenuItem>
-                          )}
-                          {type === "venta" && onCancel && inv.status !== "anulado" && (
-                            <DropdownMenuItem
-                              onClick={() => onCancel(inv.id)}
-                              className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3 text-orange-500"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" /> Anular Factura
-                            </DropdownMenuItem>
-                          )}
+                          {type === "pedido" &&
+                            onCancel &&
+                            inv.status !== "anulada" && (
+                              <DropdownMenuItem
+                                onClick={() => onCancel(inv.id)}
+                                className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3 text-orange-500"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Anular Pedido
+                              </DropdownMenuItem>
+                            )}
+                          {type === "venta" &&
+                            onCancel &&
+                            inv.status !== "anulada" && (
+                              <DropdownMenuItem
+                                onClick={() => onCancel(inv.id)}
+                                className="rounded-lg text-[11px] font-bold uppercase gap-2 py-2 px-3 text-orange-500"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Anular
+                                Factura
+                              </DropdownMenuItem>
+                            )}
                           {onDelete && (
                             <DropdownMenuItem
                               onClick={() => onDelete(inv.id)}
@@ -365,20 +390,21 @@ export const SalesHistory = ({
                   </TableCell>
                 </TableRow>
               ))}
-              {paginatedInvoices.length === 0 && filteredInvoices.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={9}
-                    className="h-40 text-center text-muted-foreground/40 font-black uppercase italic text-xs tracking-widest"
-                  >
-                    No hay documentos que coincidan con la búsqueda
-                  </TableCell>
-                </TableRow>
-              )}
+              {paginatedInvoices.length === 0 &&
+                filteredInvoices.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={9}
+                      className="h-40 text-center text-muted-foreground/40 font-black uppercase italic text-xs tracking-widest"
+                    >
+                      No hay documentos que coincidan con la búsqueda
+                    </TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </div>
-        
+
         {/* Controles de paginación */}
         {filteredInvoices.length > 0 && pagination && (
           <div className="p-4 border-t border-border/40">

@@ -1,5 +1,3 @@
-/**
- * Core Providers Barrel Export
- */
+// Auto-generated barrel export
 
-export { AppProviders, queryClient } from './AppProviders';
+export * from './AppProviders';

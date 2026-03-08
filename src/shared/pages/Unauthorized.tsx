@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, ArrowLeft, Home } from 'lucide-react';
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
-import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAuth } from '@/modules/auth/hooks/useAuth';
 
 /**
  * Página de acceso no autorizado

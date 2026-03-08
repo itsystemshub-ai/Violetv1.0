@@ -10,7 +10,6 @@ export const ROUTE_PATHS = {
   SECURITY: "/security",
   LOGIN: "/login",
   TODOS: "/todos",
-  QUOTES: "/quotes",
   ORDERS: "/orders",
 } as const;
 
@@ -19,7 +18,9 @@ export const USER_ROLES = {
   ADMIN: "admin",
   MANAGER: "gerente",
   ACCOUNTANT: "contador",
+  FINANCE: "finanzas",
   SALES: "ventas",
+  CUSTOMER_SERVICE: "atencion_cliente",
   WAREHOUSE: "almacen",
   HR: "recursos_humanos",
   CLIENT: "cliente",
@@ -70,6 +71,7 @@ export const ALL_PERMISSIONS = [
   "view:sales",
   "view:purchases",
   "view:hr",
+  "view:crm",
   "view:settings",
   // Finanzas
   "finance:read",
@@ -100,6 +102,12 @@ export const ALL_PERMISSIONS = [
   "hr:edit",
   "hr:delete",
   "hr:payroll",
+  // CRM
+  "crm:read",
+  "crm:create",
+  "crm:edit",
+  "crm:delete",
+  "crm:export",
   // Configuración y administración
   "settings:read",
   "settings:edit",
@@ -293,8 +301,10 @@ export interface Product {
   historial?: number;
 
   precioFCA?: number;
+  margen?: number;
   rowNumber?: number; // Número de fila del archivo importado
-  status: "disponible" | "poco_stock" | "agotado" | "descontinuado";
+  status: "disponible" | "poco_stock" | "agotado" | "descontinuado" | "active" | "inactive";
+  deactivationReason?: string;
   tenant_id?: string;
   created_at?: string;
   updated_at?: string;
@@ -306,6 +316,7 @@ export interface Product {
 
 export interface InvoiceItem {
   productId: string;
+  product_id?: string; // Temporarily allow both to facilitate migration/compatibility
   name: string;
   quantity: number;
   price: number;
@@ -320,26 +331,37 @@ export interface Invoice {
   customerId?: string;
   customerName: string;
   customerRif?: string;
+  customer_name?: string;
+  customer_rif?: string;
   customer_empresa?: string;
   customer_contacto?: string;
   customer_email?: string;
   customer_direccion?: string;
+  customer_empresa_manual?: string;
   supplier_id?: string;
+  seller_id?: string;
   date: string;
   dueDate?: string;
   subtotal: number;
   taxTotal: number;
+  tax_total?: number;
+  tax_igtf?: number;
   total: number;
+  total_ves?: number;
+  exchange_rate_used?: number;
   status:
     | "pagada"
     | "pendiente"
     | "vencida"
     | "anulada"
     | "borrador"
-    | "procesado"
-    | "convertido";
+    | "convertido"
+    | "procesado";
   items: InvoiceItem[];
-  type: "venta" | "compra" | "presupuesto" | "pedido" | "nota_entrega";
+  payment_type?: string;
+  payment_status?: string;
+  payment_method?: string;
+  type: "venta" | "compra" | "pedido" | "nota_entrega";
   controlNumber?: string; // Número de Control Fiscal
   ivaWithholdingPercentage?: number; // 0, 75, 100
   ivaWithholdingAmount?: number;
@@ -347,7 +369,7 @@ export interface Invoice {
   islrWithholdingAmount?: number;
   totalVES?: number; // Total calculado en Bolívares
   exchangeRateUsed?: number; // Tasa utilizada al momento de la factura
-  parent_id?: string; // ID del documento origen (ej: el presupuesto que generó este pedido)
+  parent_id?: string; // ID del documento origen
   notes?: string;
   metadata?: any;
   created_at?: string;

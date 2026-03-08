@@ -9,9 +9,10 @@
     "dev:host": "vite --host",
     "dev:full": "concurrently -k \"npm run dev\" \"npm run proxy\"",
     "proxy": "cd server && npm install && npm start",
-    "build": "tsc && vite build",
-    "build:staging": "tsc && vite build --mode staging",
-    "build:production": "tsc && vite build --mode production",
+    "build": "npm run clean && tsc && vite build",
+    "build:staging": "npm run clean && tsc && vite build --mode staging",
+    "build:production": "npm run clean && tsc && vite build --mode production",
+    "clean": "node -e \"const fs = require('fs'); ['dist', 'dist-electron'].forEach(d => fs.rmSync(d, { recursive: true, force: true }))\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
@@ -28,12 +29,15 @@
     "electron:start": "wait-on http://localhost:8080 && electron .",
     "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron:start\"",
     "electron:dev:full": "concurrently -k \"npm run dev\" \"npm run proxy\" \"npm run electron:start\"",
-    "electron:build": "npm run build && electron-builder",
-    "electron:dist": "npm run build && node scripts/fix-electron-html.cjs && electron-builder --win",
+    "electron:build": "npm run clean && npm run build && electron-builder",
+    "electron:dist": "npm run clean && npm run build && node scripts/fix-electron-html.cjs && electron-builder --win",
     "release": "npm run electron:dist",
     "vercel-build": "npm run build:production"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.0",
     "@iconify/react": "^6.0.2",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -156,14 +160,15 @@
   "build": {
     "appId": "com.violet.erp",
     "productName": "Violet ERP",
+    "copyright": "Copyright © 2026 Violet ERP",
     "directories": {
-      "output": "dist-electron"
+      "output": "dist-electron",
+      "buildResources": "electron"
     },
     "files": [
       "electron/**/*",
-      "backend/**/*",
-      "!backend/src/database/**/*",
-      "!backend/node_modules/**/*"
+      "!electron/db.cjs",
+      "!backend/**/*"
     ],
     "extraResources": [
       {
@@ -175,22 +180,21 @@
       }
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "nsis": {
       "include": "electron/installer.nsh",
-      "allowElevation": true,
       "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false,
       "runAfterFinish": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "violet-erp",
-        "repo": "violet-erp-releases"
-      }
-    ]
+      "createStartMenuShortcut": true,
+      "shortcutName": "Violet ERP"
+    }
   }
 }

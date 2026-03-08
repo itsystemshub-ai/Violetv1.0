@@ -1,6 +1,14 @@
 import React from "react";
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
-import { Activity, TrendingUp, Zap, Landmark, CreditCard, Download } from "lucide-react";
+import {
+  Activity,
+  TrendingUp,
+  Zap,
+  Landmark,
+  CreditCard,
+  Download,
+} from "lucide-react";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
 interface DashboardKPIsProps {
   data?: {
@@ -13,16 +21,19 @@ interface DashboardKPIsProps {
       pendingReceivables: number;
     };
   };
+  currency?: "USD" | "BS";
+  exchangeRate?: number;
 }
 
 const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ data }) => {
   if (!data) return null;
+  const { formatMoney } = useCurrencyStore();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
       <StandardKPICard
         label="Volumen de Ventas"
-        value={`${data.sales.totalSalesVolume?.toLocaleString() || 0}`}
+        value={formatMoney(data.sales.totalSalesVolume || 0)}
         change={8.2}
         trend="up"
         icon={Activity}
@@ -31,7 +42,7 @@ const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ data }) => {
       />
       <StandardKPICard
         label="Egresos Totales"
-        value={`${data.finance.totalExpenses?.toLocaleString() || 0}`}
+        value={formatMoney(data.finance.totalExpenses || 0)}
         change={5.4}
         trend="down"
         icon={TrendingUp}
@@ -49,7 +60,7 @@ const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ data }) => {
       />
       <StandardKPICard
         label="Liquidez (Activos)"
-        value={`${data.finance.totalAssets?.toLocaleString() || 0}`}
+        value={formatMoney(data.finance.totalAssets || 0)}
         change={2.1}
         trend="up"
         icon={Landmark}
@@ -58,7 +69,7 @@ const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ data }) => {
       />
       <StandardKPICard
         label="Cuentas x Pagar"
-        value={`${data.finance.pendingPayables?.toLocaleString() || 0}`}
+        value={formatMoney(data.finance.pendingPayables || 0)}
         change={15}
         trend="down"
         icon={CreditCard}
@@ -67,7 +78,7 @@ const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ data }) => {
       />
       <StandardKPICard
         label="Cuentas x Cobrar"
-        value={`${data.finance.pendingReceivables?.toLocaleString() || 0}`}
+        value={formatMoney(data.finance.pendingReceivables || 0)}
         change={4.2}
         trend="up"
         icon={Download}

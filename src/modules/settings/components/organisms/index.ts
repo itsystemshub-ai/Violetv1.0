@@ -6,3 +6,5 @@ export * from './SecurityAuditPanel';
 export * from './SystemConfigPanel';
 export * from './SystemMonitorPanel';
 export * from './UserManagementPanel';
+export * from './IntegrationsPanel';
+export * from './NotificationsPanel';

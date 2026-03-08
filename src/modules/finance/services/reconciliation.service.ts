@@ -60,4 +60,17 @@ export class ReconciliationService {
       };
     });
   }
+
+  static async parseCSV(content: string): Promise<BankStatementLine[]> {
+    const lines = content.split('\n').filter(l => l.trim());
+    return lines.slice(1).map(line => {
+      const parts = line.split(',');
+      return {
+        date: parts[0],
+        description: parts[1],
+        amount: parseFloat(parts[2]),
+        reference: parts[3],
+      };
+    });
+  }
 }

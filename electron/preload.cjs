@@ -1,29 +1,32 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// Exponer APIs seguras al proceso de renderizado (el ERP)
+// Exponer APIs seguras al proceso de renderizado
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Identificador de entorno
+  // Identificadores
   isElectron: true,
   platform: process.platform,
   version: process.versions.electron,
 
-  // Configuración persistente (AppData/config.json)
-  getConfig:  ()      => ipcRenderer.invoke('get-config'),
-  saveConfig: (cfg)   => ipcRenderer.invoke('save-config', cfg),
+  // Configuración
+  getConfig: () => ipcRenderer.invoke('get-config'),
+  saveConfig: (cfg) => ipcRenderer.invoke('save-config', cfg),
 
-  // Versión de la app
-  getVersion: ()      => ipcRenderer.invoke('get-version'),
+  // Versión
+  getVersion: () => ipcRenderer.invoke('get-version'),
 
-  // Impresión nativa
-  printPage:  ()      => ipcRenderer.invoke('print-page'),
+  // Impresión
+  printPage: () => ipcRenderer.invoke('print-page'),
+
+  // Base de datos
+  executeSql: (query, params) => ipcRenderer.invoke('execute-sql', { query, params }),
+
+  // Instancia
   getInstanceInfo: () => ipcRenderer.invoke('get-instance-info'),
   setInstanceInfo: (info) => ipcRenderer.invoke('set-instance-info', info),
-  executeSql: (query, params) => ipcRenderer.invoke('execute-sql', { query, params }),
-  mutateRecord: (data) => ipcRenderer.invoke('mutate-record', data),
-  createBackup: () => ipcRenderer.invoke('create-backup'),
-  getSyncLogs: () => ipcRenderer.invoke('get-sync-logs'),
+
+  // Backup
+  createBackup: () => ipcRenderer.invoke('create-backup')
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-  console.log('[Violet ERP] Preload activado — plataforma:', process.platform);
-});
+console.log('[Violet ERP] Preload cargado - Plataforma:', process.platform);
+console.log('[Violet ERP] APIs expuestas:', Object.keys(window.electronAPI || {}));

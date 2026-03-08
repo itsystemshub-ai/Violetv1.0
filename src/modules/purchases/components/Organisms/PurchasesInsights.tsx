@@ -4,19 +4,10 @@ import { Card } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { InsightCard } from "@/shared/components/common/Cards";
-import { formatCurrency } from "@/lib/index";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
-interface PurchasesInsightsProps {
-  suppliers: any[];
-  compras: any[];
-}
-
-const PurchasesInsights: React.FC<PurchasesInsightsProps> = ({
-  suppliers,
-  compras,
-}) => {
-  const processedPurchases = compras.filter((c) => c.estatus === "PROCESADA");
-  const pendingRetentions = processedPurchases.length * 45; // Mock calculation logic
+const PurchasesInsights: React.FC = () => {
+  const { formatMoney } = useCurrencyStore();
 
   return (
     <div className="space-y-6">
@@ -24,11 +15,7 @@ const PurchasesInsights: React.FC<PurchasesInsightsProps> = ({
         title="Proveedores Estratégicos"
         subtitle="Mayor volumen de compra"
         icon={TrendingUp}
-        items={suppliers.slice(0, 4).map((s) => ({
-          label: s.name,
-          value: s.rif,
-          status: s.category,
-        }))}
+        items={[]}
       />
 
       <Card className="bg-linear-to-br from-[#1E2229] to-[#0F1115] border-white/10 rounded-3xl p-6 shadow-xl">
@@ -50,7 +37,7 @@ const PurchasesInsights: React.FC<PurchasesInsightsProps> = ({
               </Badge>
             </div>
             <div className="text-3xl font-black text-white tracking-tighter">
-              {formatCurrency(pendingRetentions, "USD")}
+              {formatMoney(0)}
             </div>
             <Button
               variant="link"

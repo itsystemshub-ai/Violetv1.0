@@ -1,14 +1,4 @@
-/**
- * Core Router Barrel Export
- */
+// Auto-generated barrel export
 
-export { AppRouter } from './AppRouter';
-export { 
-  PUBLIC_ROUTES, 
-  PROTECTED_ROUTES, 
-  NOT_FOUND_ROUTE, 
-  ALL_ROUTES,
-  ROUTE_PATHS,
-  type RouteConfig,
-  type RoutePath
-} from './routes.config';
+export * from './AppRouter';
+export * from './routes.config';

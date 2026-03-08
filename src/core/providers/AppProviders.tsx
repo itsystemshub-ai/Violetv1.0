@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/shared/components/ui/tooltip';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { OnlineStatusProvider } from '@/core/shared/components/OnlineStatusProvider';
+import { GlobalAppProvider } from '@/contexts/GlobalAppContext';
 
 // Query Client Configuration
 const queryClient = new QueryClient({
@@ -46,18 +47,21 @@ interface AppProvidersProps {
  * Orden de providers (de afuera hacia adentro):
  * 1. ThemeProvider - Tema global
  * 2. OnlineStatusProvider - Estado de conectividad
- * 3. QueryClientProvider - React Query
- * 4. TooltipProvider - Tooltips globales
+ * 3. GlobalAppProvider - Estado global integrado (Inventario, Ventas, Compras, Finanzas, CRM)
+ * 4. QueryClientProvider - React Query
+ * 5. TooltipProvider - Tooltips globales
  */
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <ThemeProvider>
       <OnlineStatusProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider delayDuration={300}>
-            {children}
-          </TooltipProvider>
-        </QueryClientProvider>
+        <GlobalAppProvider>
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider delayDuration={300}>
+              {children}
+            </TooltipProvider>
+          </QueryClientProvider>
+        </GlobalAppProvider>
       </OnlineStatusProvider>
     </ThemeProvider>
   );

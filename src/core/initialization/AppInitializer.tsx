@@ -1,16 +1,16 @@
 /**
  * AppInitializer - Maneja la inicialización de la aplicación
- * 
+ *
  * Arquitectura: Initialization Pattern
  * - Separa la lógica de inicialización del componente App
  * - Maneja estados de carga y error
  * - Implementa retry logic
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
-import { NetworkService } from '@/services/LocalNetworkService';
-import { backupService } from '@/services/backup/BackupService';
+import React, { useEffect, useState, useCallback } from "react";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
+import { NetworkService } from "@/services/LocalNetworkService";
+import { backupService } from "@/services/backup/BackupService";
 
 interface AppInitializerProps {
   children: React.ReactNode;
@@ -50,7 +50,10 @@ const DefaultLoadingFallback: React.FC = () => (
 /**
  * Error Fallback Component
  */
-const ErrorFallback: React.FC<{ error: Error; onRetry: () => void }> = ({ error, onRetry }) => (
+const ErrorFallback: React.FC<{ error: Error; onRetry: () => void }> = ({
+  error,
+  onRetry,
+}) => (
   <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background gap-6 p-6">
     <div className="max-w-md w-full bg-destructive/10 border border-destructive/20 rounded-lg p-6 space-y-4">
       <div className="flex items-center gap-3">
@@ -66,11 +69,9 @@ const ErrorFallback: React.FC<{ error: Error; onRetry: () => void }> = ({ error,
           </p>
         </div>
       </div>
-      
+
       <div className="bg-background/50 rounded p-3">
-        <p className="text-sm text-destructive font-mono">
-          {error.message}
-        </p>
+        <p className="text-sm text-destructive font-mono">{error.message}</p>
       </div>
 
       <button
@@ -86,9 +87,9 @@ const ErrorFallback: React.FC<{ error: Error; onRetry: () => void }> = ({ error,
 /**
  * AppInitializer Component
  */
-export const AppInitializer: React.FC<AppInitializerProps> = ({ 
-  children, 
-  fallback = <DefaultLoadingFallback /> 
+export const AppInitializer: React.FC<AppInitializerProps> = ({
+  children,
+  fallback = <DefaultLoadingFallback />,
 }) => {
   const { fetchAllTenants } = useSystemConfig();
   const [state, setState] = useState<InitializationState>({
@@ -103,25 +104,25 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
    */
   const initialize = useCallback(async () => {
     try {
-      console.log('[AppInitializer] 🚀 Iniciando servicios...');
-      
-      setState(prev => ({ ...prev, isLoading: true, error: null }));
+      console.log("[AppInitializer] 🚀 Iniciando servicios...");
+
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       // 1. Fetch tenants configuration
-      console.log('[AppInitializer] 📦 Cargando configuración de tenants...');
+      console.log("[AppInitializer] 📦 Cargando configuración de tenants...");
       await fetchAllTenants();
 
       // 2. Initialize network service
-      console.log('[AppInitializer] 🌐 Inicializando servicio de red...');
-      const configuredIp = localStorage.getItem('master_ip') || 'localhost';
+      console.log("[AppInitializer] 🌐 Inicializando servicio de red...");
+      const configuredIp = localStorage.getItem("master_ip") || "localhost";
       NetworkService.connect(configuredIp);
 
       // 3. Initialize backup service
-      console.log('[AppInitializer] 💾 Inicializando servicio de backup...');
+      console.log("[AppInitializer] 💾 Inicializando servicio de backup...");
       backupService.getConfig();
 
-      console.log('[AppInitializer] ✅ Servicios inicializados correctamente');
-      
+      console.log("[AppInitializer] ✅ Servicios inicializados correctamente");
+
       setState({
         isInitialized: true,
         isLoading: false,
@@ -129,11 +130,12 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
         retryCount: 0,
       });
     } catch (error) {
-      console.error('[AppInitializer] ❌ Error al inicializar:', error);
-      
-      const err = error instanceof Error ? error : new Error('Error desconocido');
-      
-      setState(prev => ({
+      console.error("[AppInitializer] ❌ Error al inicializar:", error);
+
+      const err =
+        error instanceof Error ? error : new Error("Error desconocido");
+
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: err,
@@ -142,7 +144,9 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
 
       // Auto-retry if under max retries
       if (state.retryCount < MAX_RETRIES) {
-        console.log(`[AppInitializer] 🔄 Reintentando en ${RETRY_DELAY}ms... (${state.retryCount + 1}/${MAX_RETRIES})`);
+        console.log(
+          `[AppInitializer] 🔄 Reintentando en ${RETRY_DELAY}ms... (${state.retryCount + 1}/${MAX_RETRIES})`,
+        );
         setTimeout(() => {
           initialize();
         }, RETRY_DELAY);
@@ -153,15 +157,40 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
   /**
    * Initialize on mount
    */
+  /**
+   * Initialize on mount & Handle Branding
+   */
   useEffect(() => {
     initialize();
-  }, []); // Only run once on mount
+
+    // Setup branding subscription
+    const unsubscribe = useSystemConfig.subscribe(
+      (state) => state.tenant,
+      (tenant) => {
+        const root = document.documentElement;
+        if (!tenant) return;
+
+        const color = tenant.primaryColor || "#7c3aed";
+        root.style.setProperty("--primary", color);
+        root.style.setProperty("--ring", color);
+
+        document.title =
+          tenant.id === "none" ? "Violet ERP" : `${tenant.name} | Violet ERP`;
+        console.log(
+          `[Branding] Aplicando identidad: ${tenant.name} (${color})`,
+        );
+      },
+      { fireImmediately: true },
+    );
+
+    return () => unsubscribe();
+  }, [initialize]);
 
   /**
    * Handle retry
    */
   const handleRetry = useCallback(() => {
-    setState(prev => ({ ...prev, retryCount: 0 }));
+    setState((prev) => ({ ...prev, retryCount: 0 }));
     initialize();
   }, [initialize]);
 

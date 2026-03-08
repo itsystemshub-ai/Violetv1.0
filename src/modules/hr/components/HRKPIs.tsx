@@ -1,7 +1,7 @@
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
-import { formatCurrency } from "@/lib/index";
-import { HRLogic } from "@/features/hr/hooks/useHRLogic";
+import { HRLogic } from "@/modules/hr/hooks/useHRLogic";
 import { Users, UserCheck, DollarSign, Wallet } from "lucide-react";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
 interface HRKPIsProps {
   logic: HRLogic;
@@ -9,6 +9,7 @@ interface HRKPIsProps {
 
 export function HRKPIs({ logic }: HRKPIsProps) {
   const { stats } = logic;
+  const { formatMoney } = useCurrencyStore();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -32,7 +33,7 @@ export function HRKPIs({ logic }: HRKPIsProps) {
       />
       <StandardKPICard
         label="Salario Promedio"
-        value={formatCurrency(stats.avgSalary)}
+        value={formatMoney(stats.avgSalary)}
         change={1.5}
         trend="up"
         icon={DollarSign}
@@ -41,7 +42,7 @@ export function HRKPIs({ logic }: HRKPIsProps) {
       />
       <StandardKPICard
         label="Prestaciones Acumuladas"
-        value={formatCurrency(stats.totalPrestaciones)}
+        value={formatMoney(stats.totalPrestaciones)}
         change={0}
         trend="up"
         icon={Wallet}

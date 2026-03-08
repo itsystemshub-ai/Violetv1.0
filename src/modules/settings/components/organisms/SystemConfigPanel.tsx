@@ -8,9 +8,7 @@ import {
   Wifi,
   Clock,
   RefreshCw,
-  Banknote,
   Globe,
-  Percent,
   GitBranch,
   ShieldAlert,
   ShieldCheck,
@@ -65,8 +63,8 @@ const DEFAULT_TAXES = {
   iva_reducido: 8,
   iva_lujo: 31,
   igtf_divisas: 3,
-  rif_mask: 'J-00000000-0',
-  utValue: 90.00,
+  rif_mask: "J-00000000-0",
+  utValue: 90.0,
 };
 
 interface SystemConfigPanelProps {
@@ -113,14 +111,14 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
   const [isCustomFieldsOpen, setIsCustomFieldsOpen] = React.useState(false);
   const [isTabVisibilityOpen, setIsTabVisibilityOpen] = React.useState(false);
   const [newRule, setNewRule] = React.useState({
-    rule_name: '',
-    condition: { field: 'total', operator: '>', value: '1000' },
-    action: { role: 'Gerente' }
+    rule_name: "",
+    condition: { field: "total", operator: ">", value: "1000" },
+    action: { role: "Gerente" },
   });
 
   // Usar taxes de props si existe, sino usar del sistema, sino usar DEFAULT_TAXES
   const taxesConfig = taxes || systemTaxes || DEFAULT_TAXES;
-  
+
   // Asegurar que instances y approvalRules sean arrays
   const safeInstances = instances || [];
   const safeApprovalRules = approvalRules || [];
@@ -162,7 +160,9 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
   const handleSyncInstances = async () => {
     try {
       await syncInstances();
-      toast.success(`${safeInstances.length} instancias sincronizadas correctamente`);
+      toast.success(
+        `${safeInstances.length} instancias sincronizadas correctamente`,
+      );
     } catch (error) {
       toast.error("Error al sincronizar instancias");
       console.error(error);
@@ -174,14 +174,14 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
       toast.error("Por favor ingresa un nombre para la regla");
       return;
     }
-    
+
     // Aquí se guardaría la regla en la base de datos
     toast.success(`Regla "${newRule.rule_name}" creada correctamente`);
     setIsNewRuleOpen(false);
     setNewRule({
-      rule_name: '',
-      condition: { field: 'total', operator: '>', value: '1000' },
-      action: { role: 'Gerente' }
+      rule_name: "",
+      condition: { field: "total", operator: ">", value: "1000" },
+      action: { role: "Gerente" },
     });
   };
 
@@ -201,234 +201,248 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
 
   return (
     <>
-    <div className="space-y-6">
-      {/* Modo Mantenimiento */}
-      <SettingsCard
-        title="Modo Mantenimiento"
-        description="Controla el acceso al sistema durante actualizaciones o mantenimiento."
-        icon={<ShieldAlert className="w-5 h-5" />}
-      >
-        <div className="flex items-center justify-between p-4 rounded-xl border bg-amber-500/5 border-amber-500/20">
-          <div className="space-y-0.5">
-            <Label className="text-amber-700 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4" />
-              Modo Mantenimiento Global
-            </Label>
-            <p className="text-xs text-amber-600/80">
-              Bloquea el acceso a todos los módulos excepto para administradores
-              maestros.
-            </p>
+      <div className="space-y-6">
+        {/* Modo Mantenimiento */}
+        <SettingsCard
+          title="Modo Mantenimiento"
+          description="Controla el acceso al sistema durante actualizaciones o mantenimiento."
+          icon={<ShieldAlert className="w-5 h-5" />}
+        >
+          <div className="flex items-center justify-between p-4 rounded-xl border bg-amber-500/5 border-amber-500/20">
+            <div className="space-y-0.5">
+              <Label className="text-amber-700 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4" />
+                Modo Mantenimiento Global
+              </Label>
+              <p className="text-xs text-amber-600/80">
+                Bloquea el acceso a todos los módulos excepto para
+                administradores maestros.
+              </p>
+            </div>
+            <Switch
+              checked={isMaintenanceMode}
+              onCheckedChange={setMaintenanceMode}
+              className="data-[state=checked]:bg-amber-600"
+            />
           </div>
-          <Switch
-            checked={isMaintenanceMode}
-            onCheckedChange={setMaintenanceMode}
-            className="data-[state=checked]:bg-amber-600"
-          />
-        </div>
-      </SettingsCard>
+        </SettingsCard>
 
-      {/* Feature Flags */}
-      <SettingsCard
-        title="Control de Módulos (Feature Flags)"
-        description="Habilita o deshabilita módulos funcionales a nivel global. Usa el Core ABAC (Attribute-Based Access Control)."
-        icon={<ShieldCheck className="w-5 h-5" />}
-      >
-        <div className="grid gap-4 md:grid-cols-2">
-          <ConfigToggle
-            label="Módulo Financiero (Contabilidad)"
-            description="Activa el motor de Cuentas y Transacciones."
-            checked={true}
-            onCheckedChange={(val) => {
-              updateConfig({ module_finance_enabled: val });
-              toast.success(
-                `Módulo de Finanzas ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-          <ConfigToggle
-            label="Integración de SMS (Notificaciones)"
-            description="Permite el dispatch multicanal de alertas."
-            checked={true}
-            onCheckedChange={(val) => {
-              updateConfig({ module_sms_enabled: val });
-              toast.success(
-                `Canal SMS ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-          <ConfigToggle
-            label="Módulo de Producción (MRP)"
-            description="Acceso a fórmulas y órdenes de ensamblaje."
-            checked={false}
-            onCheckedChange={(val) => {
-              updateConfig({ module_production_enabled: val });
-              toast.success(
-                `Módulo de Producción ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-          <ConfigToggle
-            label="Módulo de Inventario Avanzado"
-            description="Control de lotes, series y ubicaciones."
-            checked={true}
-            onCheckedChange={(val) => {
-              updateConfig({ module_inventory_advanced: val });
-              toast.success(
-                `Inventario Avanzado ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-          <ConfigToggle
-            label="Módulo de RRHH (Nómina)"
-            description="Gestión de empleados y nómina LOTTT."
-            checked={true}
-            onCheckedChange={(val) => {
-              updateConfig({ module_hr_enabled: val });
-              toast.success(
-                `Módulo de RRHH ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-          <ConfigToggle
-            label="Módulo de Compras"
-            description="Órdenes de compra y gestión de proveedores."
-            checked={true}
-            onCheckedChange={(val) => {
-              updateConfig({ module_purchases_enabled: val });
-              toast.success(
-                `Módulo de Compras ${val ? "habilitado" : "deshabilitado"} globalmente.`,
-              );
-            }}
-          />
-        </div>
-      </SettingsCard>
+        {/* Feature Flags */}
+        <SettingsCard
+          title="Control de Módulos (Feature Flags)"
+          description="Habilita o deshabilita módulos funcionales a nivel global. Usa el Core ABAC (Attribute-Based Access Control)."
+          icon={<ShieldCheck className="w-5 h-5" />}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <ConfigToggle
+              label="Módulo Financiero (Contabilidad)"
+              description="Activa el motor de Cuentas y Transacciones."
+              checked={true}
+              onCheckedChange={(val) => {
+                updateConfig({ module_finance_enabled: val });
+                toast.success(
+                  `Módulo de Finanzas ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+            <ConfigToggle
+              label="Integración de SMS (Notificaciones)"
+              description="Permite el dispatch multicanal de alertas."
+              checked={true}
+              onCheckedChange={(val) => {
+                updateConfig({ module_sms_enabled: val });
+                toast.success(
+                  `Canal SMS ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+            <ConfigToggle
+              label="Módulo de Producción (MRP)"
+              description="Acceso a fórmulas y órdenes de ensamblaje."
+              checked={false}
+              onCheckedChange={(val) => {
+                updateConfig({ module_production_enabled: val });
+                toast.success(
+                  `Módulo de Producción ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+            <ConfigToggle
+              label="Módulo de Inventario Avanzado"
+              description="Control de lotes, series y ubicaciones."
+              checked={true}
+              onCheckedChange={(val) => {
+                updateConfig({ module_inventory_advanced: val });
+                toast.success(
+                  `Inventario Avanzado ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+            <ConfigToggle
+              label="Módulo de RRHH (Nómina)"
+              description="Gestión de empleados y nómina LOTTT."
+              checked={true}
+              onCheckedChange={(val) => {
+                updateConfig({ module_hr_enabled: val });
+                toast.success(
+                  `Módulo de RRHH ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+            <ConfigToggle
+              label="Módulo de Compras"
+              description="Órdenes de compra y gestión de proveedores."
+              checked={true}
+              onCheckedChange={(val) => {
+                updateConfig({ module_purchases_enabled: val });
+                toast.success(
+                  `Módulo de Compras ${val ? "habilitado" : "deshabilitado"} globalmente.`,
+                );
+              }}
+            />
+          </div>
+        </SettingsCard>
 
-      {/* Arquitectura de Red */}
-      <SettingsCard
-        title="Arquitectura de Red (Instancia)"
-        description="Información sobre las instancias conectadas al sistema."
-        icon={<Monitor className="w-5 h-5" />}
-      >
-        <div className="space-y-4">
-          <Label className="text-sm font-bold flex items-center gap-2">
-            <Radio className="w-4 h-4 text-emerald-500 animate-pulse" />
-            Monitor de Instancias Conectadas: {safeInstances.length}
-          </Label>
-          {safeInstances.length === 0 ? (
-            <div className="p-4 rounded-xl border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground bg-muted/20">
-              No hay instancias conectadas actualmente.
-            </div>
-          ) : (
-            <div className="grid gap-3">
-              {safeInstances.map((instance: any) => (
-                <div
-                  key={instance.id}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-emerald-500/5"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600">
-                      <Wifi className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">
-                        {instance.name || "Instancia"}
-                      </p>
-                      <p className="text-xs text-muted-foreground font-mono">
-                        {instance.ip || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    {instance.last_sync
-                      ? new Date(instance.last_sync).toLocaleTimeString()
-                      : "Nunca"}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={handleSyncInstances}
-          >
-            <RefreshCw className="w-4 h-4" />
-            Sincronizar Instancias
-          </Button>
-        </div>
-      </SettingsCard>
-
-      {/* Motor de Workflows */}
-      <SettingsCard
-        title="Motor de Workflows (No-Code)"
-        description="Define reglas de aprobación automáticas."
-        icon={<GitBranch className="w-5 h-5" />}
-        accent="amber"
-      >
-        <div className="space-y-3">
-          {safeApprovalRules.map((rule: any, idx: number) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between p-3 rounded-xl border bg-muted/20 text-xs"
-            >
-              <div className="flex flex-col gap-1">
-                <span className="font-bold">{rule.rule_name}</span>
-                <span className="opacity-60 italic">
-                  Si {rule.condition.field} {rule.condition.operator}{" "}
-                  {rule.condition.value} USD → Aprobación {rule.action.role}
-                </span>
+        {/* Arquitectura de Red */}
+        <SettingsCard
+          title="Arquitectura de Red (Instancia)"
+          description="Información sobre las instancias conectadas al sistema."
+          icon={<Monitor className="w-5 h-5" />}
+        >
+          <div className="space-y-4">
+            <Label className="text-sm font-bold flex items-center gap-2">
+              <Radio className="w-4 h-4 text-emerald-500 animate-pulse" />
+              Monitor de Instancias Conectadas: {safeInstances.length}
+            </Label>
+            {safeInstances.length === 0 ? (
+              <div className="p-4 rounded-xl border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground bg-muted/20">
+                No hay instancias conectadas actualmente.
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-destructive/40 hover:text-destructive"
+            ) : (
+              <div className="grid gap-3">
+                {safeInstances.map((instance: any) => (
+                  <div
+                    key={instance.id}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-emerald-500/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600">
+                        <Wifi className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          {instance.name || "Instancia"}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                          {instance.ip || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      {instance.last_sync
+                        ? new Date(instance.last_sync).toLocaleTimeString()
+                        : "Nunca"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              onClick={handleSyncInstances}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Sincronizar Instancias
+            </Button>
+          </div>
+        </SettingsCard>
+
+        {/* Motor de Workflows */}
+        <SettingsCard
+          title="Motor de Workflows (No-Code)"
+          description="Define reglas de aprobación automáticas."
+          icon={<GitBranch className="w-5 h-5" />}
+          accent="amber"
+        >
+          <div className="space-y-3">
+            {safeApprovalRules.map((rule: any, idx: number) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl border bg-muted/20 text-xs"
               >
-                <Trash2 className="h-4 w-4" />
+                <div className="flex flex-col gap-1">
+                  <span className="font-bold">{rule.rule_name}</span>
+                  <span className="opacity-60 italic">
+                    Si {rule.condition.field} {rule.condition.operator}{" "}
+                    {rule.condition.value} USD → Aprobación {rule.action.role}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive/40 hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              className="w-full border-dashed gap-2 text-xs py-5"
+              onClick={() => setIsNewRuleOpen(true)}
+            >
+              <Plus className="h-4 w-4" /> Nueva Regla de Negocio
+            </Button>
+          </div>
+        </SettingsCard>
+
+        {/* Personalización de Tablas */}
+        <SettingsCard
+          title="Personalización Dinámica de Tablas"
+          description="Modifica qué columnas son visibles en tiempo real."
+          icon={<Settings2 className="w-5 h-5" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
+              <span className="text-sm font-medium">Editar Encabezados</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenColumnEditor}
+              >
+                Abrir Editor
               </Button>
             </div>
-          ))}
-          <Button
-            variant="outline"
-            className="w-full border-dashed gap-2 text-xs py-5"
-            onClick={() => setIsNewRuleOpen(true)}
-          >
-            <Plus className="h-4 w-4" /> Nueva Regla de Negocio
-          </Button>
-        </div>
-      </SettingsCard>
+            <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
+              <span className="text-sm font-medium">UDF (Custom Fields)</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenCustomFields}
+              >
+                Añadir Campo
+              </Button>
+            </div>
+            <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
+              <span className="text-sm font-medium">
+                Visibilidad de Pestañas
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpenTabVisibility}
+              >
+                Configurar
+              </Button>
+            </div>
+          </div>
+        </SettingsCard>
+      </div>
 
-      {/* Personalización de Tablas */}
-      <SettingsCard
-        title="Personalización Dinámica de Tablas"
-        description="Modifica qué columnas son visibles en tiempo real."
-        icon={<Settings2 className="w-5 h-5" />}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
-            <span className="text-sm font-medium">Editar Encabezados</span>
-            <Button variant="outline" size="sm" onClick={handleOpenColumnEditor}>
-              Abrir Editor
-            </Button>
-          </div>
-          <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
-            <span className="text-sm font-medium">UDF (Custom Fields)</span>
-            <Button variant="outline" size="sm" onClick={handleOpenCustomFields}>
-              Añadir Campo
-            </Button>
-          </div>
-          <div className="p-4 rounded-xl border bg-muted/30 flex justify-between items-center">
-            <span className="text-sm font-medium">Visibilidad de Pestañas</span>
-            <Button variant="outline" size="sm" onClick={handleOpenTabVisibility}>
-              Configurar
-            </Button>
-          </div>
-        </div>
-      </SettingsCard>
-    </div>
-
-    {/* Dialog para editar empresa */}
-    <Dialog open={isEditTenantOpen} onOpenChange={setIsEditTenantOpen}>
+      {/* Dialog para editar empresa */}
+      <Dialog open={isEditTenantOpen} onOpenChange={setIsEditTenantOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl">
           <DialogHeader>
             <DialogTitle>Editar Empresa</DialogTitle>
@@ -463,7 +477,9 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
               <Input
                 placeholder="Ej: Aprobación de Compras Mayores"
                 value={newRule.rule_name}
-                onChange={(e) => setNewRule({ ...newRule, rule_name: e.target.value })}
+                onChange={(e) =>
+                  setNewRule({ ...newRule, rule_name: e.target.value })
+                }
               />
             </div>
 
@@ -528,7 +544,10 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
                     onChange={(e) =>
                       setNewRule({
                         ...newRule,
-                        condition: { ...newRule.condition, value: e.target.value },
+                        condition: {
+                          ...newRule.condition,
+                          value: e.target.value,
+                        },
                       })
                     }
                   />
@@ -569,8 +588,8 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
                 <span className="font-semibold">Vista previa:</span> Si{" "}
                 <span className="font-mono">{newRule.condition.field}</span>{" "}
                 {newRule.condition.operator}{" "}
-                <span className="font-mono">{newRule.condition.value}</span> USD →
-                Requiere aprobación de{" "}
+                <span className="font-mono">{newRule.condition.value}</span> USD
+                → Requiere aprobación de{" "}
                 <span className="font-semibold">{newRule.action.role}</span>
               </p>
             </div>
@@ -579,7 +598,10 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
             <Button variant="outline" onClick={() => setIsNewRuleOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreateRule} className="bg-amber-600 hover:bg-amber-700">
+            <Button
+              onClick={handleCreateRule}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Crear Regla
             </Button>
@@ -588,17 +610,23 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
       </Dialog>
 
       {/* Dialog para eliminar empresa */}
-      <AlertDialog open={isDeleteTenantOpen} onOpenChange={setIsDeleteTenantOpen}>
+      <AlertDialog
+        open={isDeleteTenantOpen}
+        onOpenChange={setIsDeleteTenantOpen}
+      >
         <AlertDialogContent className="rounded-3xl">
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar empresa?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente la empresa{" "}
-              <span className="font-bold">{selectedTenant?.name}</span> y todos sus datos asociados.
+              Esta acción no se puede deshacer. Se eliminará permanentemente la
+              empresa <span className="font-bold">{selectedTenant?.name}</span>{" "}
+              y todos sus datos asociados.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-full">
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteTenant}
               className="rounded-full bg-destructive hover:bg-destructive/90"

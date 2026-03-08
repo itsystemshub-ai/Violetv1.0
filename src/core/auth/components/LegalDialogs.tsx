@@ -20,8 +20,8 @@ export const LegalDialogs: React.FC<LegalDialogsProps> = ({
       <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {type === "terms" && "T├®rminos de Servicio"}
-            {type === "privacy" && "Pol├¡tica de Privacidad"}
+            {type === "terms" && "Términos de Servicio"}
+            {type === "privacy" && "Política de Privacidad"}
             {type === "help" && "Centro de Ayuda"}
           </DialogTitle>
         </DialogHeader>
@@ -30,13 +30,13 @@ export const LegalDialogs: React.FC<LegalDialogsProps> = ({
             <>
               <p>
                 <strong>1. Uso del Software:</strong> Violet ERP es un software
-                de gesti├│n empresarial proporcionado bajo licencia comercial. Su
-                uso est├í limitado a la organizaci├│n que adquiri├│ la licencia.
+                de gestión empresarial proporcionado bajo licencia comercial. Su
+                uso está limitado a la organización que adquirió la licencia.
               </p>
               <p>
-                <strong>2. Datos:</strong> Toda la informaci├│n almacenada en la
+                <strong>2. Datos:</strong> Toda la información almacenada en la
                 base de datos local es propiedad exclusiva de la empresa
-                licenciataria. Violet ERP no accede a sus datos sin autorizaci├│n
+                licenciataria. Violet ERP no accede a sus datos sin autorización
                 expresa.
               </p>
               <p>
@@ -46,7 +46,7 @@ export const LegalDialogs: React.FC<LegalDialogsProps> = ({
               </p>
               <p>
                 <strong>4. Actualizaciones:</strong> Las actualizaciones de
-                seguridad son distribuidas peri├│dicamente. Se recomienda
+                seguridad son distribuidas periódicamente. Se recomienda
                 mantener el sistema actualizado.
               </p>
             </>
@@ -58,16 +58,16 @@ export const LegalDialogs: React.FC<LegalDialogsProps> = ({
                 modelo Offline-First. Sus datos se almacenan exclusivamente en
                 la computadora local (Servidor Maestro) y no se transmiten a
                 servidores externos a menos que el administrador habilite la
-                sincronizaci├│n con la nube.
+                sincronización con la nube.
               </p>
               <p>
-                <strong>Sincronizaci├│n:</strong> Si la funci├│n de sincronizaci├│n
-                con Supabase est├í activada, los datos se cifran en tr├ínsito
+                <strong>Sincronización:</strong> Si la función de sincronización
+                con Supabase está activada, los datos se cifran en tránsito
                 mediante TLS 1.3. Puede deshabilitarla en cualquier momento
-                desde Configuraci├│n ÔåÆ Seguridad.
+                desde Configuración → Seguridad.
               </p>
               <p>
-                <strong>Credenciales:</strong> Las contrase├▒as del sistema se
+                <strong>Credenciales:</strong> Las contraseñas del sistema se
                 almacenan mediante hash seguro y nunca se transmiten en texto
                 plano.
               </p>
@@ -77,23 +77,23 @@ export const LegalDialogs: React.FC<LegalDialogsProps> = ({
             <>
               <p>
                 <strong>Acceso al Sistema:</strong> Utilice las credenciales
-                proporcionadas por su administrador de sistemas. Si olvid├│ su
-                contrase├▒a, use la opci├│n "Olvid├® mi contrase├▒a".
+                proporcionadas por su administrador de sistemas. Si olvidó su
+                contraseña, use la opción "Olvidé mi contraseña".
               </p>
               <p>
-                <strong>Configuraci├│n de Red:</strong> Si este equipo es un nodo
+                <strong>Configuración de Red:</strong> Si este equipo es un nodo
                 cliente, configure la IP del servidor maestro usando el enlace
                 "Configurar Red LAN" en la parte inferior de esta pantalla.
               </p>
               <p>
-                <strong>M├│dulos Disponibles:</strong> Inventario, Ventas,
-                Compras, Finanzas, Recursos Humanos, y Configuraci├│n avanzada
+                <strong>Módulos Disponibles:</strong> Inventario, Ventas,
+                Compras, Finanzas, Recursos Humanos, y Configuración avanzada
                 del sistema.
               </p>
               <p>
-                <strong>Soporte T├®cnico:</strong> Para asistencia t├®cnica,
-                contacte al departamento de Administraci├│n / IT de su
-                organizaci├│n.
+                <strong>Soporte Técnico:</strong> Para asistencia técnica,
+                contacte al departamento de Administración / IT de su
+                organización.
               </p>
             </>
           )}

@@ -1,5 +1,3 @@
-/**
- * Core Initialization Barrel Export
- */
+// Auto-generated barrel export
 
-export { AppInitializer } from './AppInitializer';
+export * from './AppInitializer';

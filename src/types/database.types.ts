@@ -28,14 +28,16 @@ export interface ProductDB {
   aplicacion?: string;
   descripcion_manguera?: string;
   aplicaciones_diesel?: string;
-  is_nuevo?: boolean;
+  is_nuevo?: boolean | string;
   ventas_history?: any;
   ranking_history?: any;
   precio_fca?: number;
-  status: 'active' | 'inactive' | 'discontinued';
+  status: "disponible" | "poco_stock" | "agotado" | "descontinuado" | "active" | "inactive";
   is_combo?: boolean;
   components?: Array<{ productId: string; quantity: number }>;
-  warehouse_stocks?: Record<string, number>;
+  warehouse_stocks?: any;
+  row_number?: number;
+  deactivation_reason?: string;
   created_at?: string;
   updated_at?: string;
 }

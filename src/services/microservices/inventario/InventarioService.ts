@@ -215,9 +215,9 @@ export class InventarioService {
    */
   public async exportStockSummary(tenantId: string): Promise<string> {
     const products = await this.getInventory(tenantId);
-    const headers = "ID,Nombre,Cauplas,Stock,Precio\n";
+    const headers = "ID,Descripcion,Cauplas,Stock,PrecioFCA\n";
     const rows = products.map(p => 
-      `${p.id},"${p.name}",${p.cauplas || ""},${p.stock},${p.price}`
+      `${p.id},"${p.descripcionManguera || p.name || ''}",${p.cauplas || ""},${p.stock},${p.precioFCA || p.price || 0}`
     ).join("\n");
     
     return headers + rows;

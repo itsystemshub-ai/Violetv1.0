@@ -1,29 +1,24 @@
 import React from "react";
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
-import { formatCurrency } from "@/lib/index";
 import { TrendingUp, CreditCard, DollarSign, Users } from "lucide-react";
+import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
-interface PurchasesStatsProps {
-  stats: {
-    totalUSD: number;
-    totalBS: number;
-    pendingUSD: number;
-    supplierCount: number;
-    purchaseCount: number;
+const PurchasesStats: React.FC = () => {
+  const { formatMoney, exchangeRate } = useCurrencyStore();
+
+  // Self-contained stats with default values
+  const stats = {
+    totalUSD: 0,
+    pendingUSD: 0,
+    supplierCount: 0,
   };
-  exchangeRate: number;
-}
 
-const PurchasesStats: React.FC<PurchasesStatsProps> = ({
-  stats,
-  exchangeRate,
-}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       <StandardKPICard
         label="Total Adquisiciones"
-        value={formatCurrency(stats.totalUSD, "USD")}
-        change={12.5}
+        value={formatMoney(stats.totalUSD)}
+        change={0}
         trend="up"
         icon={TrendingUp}
         accentColor="violet-400"
@@ -31,9 +26,9 @@ const PurchasesStats: React.FC<PurchasesStatsProps> = ({
       />
       <StandardKPICard
         label="Cuentas por Pagar"
-        value={formatCurrency(stats.pendingUSD, "USD")}
+        value={formatMoney(stats.pendingUSD)}
         icon={CreditCard}
-        change={3.2}
+        change={0}
         trend="down"
         accentColor="amber-400"
         glowColor="amber-500/50"
@@ -48,7 +43,7 @@ const PurchasesStats: React.FC<PurchasesStatsProps> = ({
         glowColor="emerald-500/50"
       />
       <StandardKPICard
-        label="Suministros"
+        label="Proveedores"
         value={stats.supplierCount}
         icon={Users}
         change={0}

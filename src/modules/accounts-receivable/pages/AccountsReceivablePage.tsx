@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
+import { useAccountsReceivable } from "../hooks/useAccountsReceivable";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -24,11 +25,19 @@ import { toast } from "sonner";
 import { PaymentDialog } from "@/modules/accounts-receivable/components/PaymentDialog";
 
 const AccountsReceivable = () => {
+  const { 
+    accounts: filteredAccountsFromHook,
+    loading: isLoading,
+    stats,
+    agingReport,
+    searchQuery,
+    setSearchQuery,
+    statusFilter: filterStatus,
+    setStatusFilter,
+  } = useAccountsReceivable();
+  
   const { activeTenantId, exchangeRate } = useSystemConfig();
   const [accounts, setAccounts] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "partial" | "paid" | "overdue">("all");
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
@@ -39,80 +48,34 @@ const AccountsReceivable = () => {
   const loadAccounts = async () => {
     if (!activeTenantId) return;
     
-    setIsLoading(true);
     try {
       const data = await cuentasPorCobrarService.getAllAccounts(activeTenantId);
       setAccounts(data);
     } catch (error) {
       toast.error("Error al cargar cuentas por cobrar");
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const stats = useMemo(() => {
-    const total = accounts.reduce((sum, acc) => sum + acc.total_amount, 0);
-    const paid = accounts.reduce((sum, acc) => sum + acc.paid_amount, 0);
-    const pending = total - paid;
-    const overdue = accounts.filter(acc => 
-      acc.status !== 'paid' && 
-      acc.due_date && 
-      new Date(acc.due_date) < new Date()
-    ).reduce((sum, acc) => sum + acc.balance, 0);
-    
-    const pendingCount = accounts.filter(acc => acc.status === 'pending').length;
-    const partialCount = accounts.filter(acc => acc.status === 'partial').length;
-    const paidCount = accounts.filter(acc => acc.status === 'paid').length;
-    const overdueCount = accounts.filter(acc => 
-      acc.status !== 'paid' && 
-      acc.due_date && 
-      new Date(acc.due_date) < new Date()
-    ).length;
+  // Usar cuentas del servicio si existen, sino usar del hook
+  const filteredAccounts = accounts.length > 0 ? accounts.filter((acc: any) => {
+    const matchesSearch = searchQuery ? (
+      acc.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      acc.customer_rif?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      acc.invoice_number?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true;
 
-    return {
-      total,
-      paid,
-      pending,
-      overdue,
-      pendingCount,
-      partialCount,
-      paidCount,
-      overdueCount
-    };
-  }, [accounts]);
+    const matchesStatus = filterStatus === "all" || (
+      filterStatus === "overdue" 
+        ? (acc.status !== 'paid' && acc.due_date && new Date(acc.due_date) < new Date())
+        : acc.status === filterStatus
+    );
 
-  const filteredAccounts = useMemo(() => {
-    let filtered = accounts;
-
-    // Filtrar por búsqueda
-    if (searchTerm) {
-      filtered = filtered.filter(acc =>
-        acc.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        acc.customer_rif?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        acc.invoice_number?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filtrar por estado
-    if (filterStatus !== "all") {
-      if (filterStatus === "overdue") {
-        filtered = filtered.filter(acc =>
-          acc.status !== 'paid' &&
-          acc.due_date &&
-          new Date(acc.due_date) < new Date()
-        );
-      } else {
-        filtered = filtered.filter(acc => acc.status === filterStatus);
-      }
-    }
-
-    // Ordenar por fecha de vencimiento (más próximas primero)
-    return filtered.sort((a, b) => {
-      if (!a.due_date) return 1;
-      if (!b.due_date) return -1;
-      return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
-    });
-  }, [accounts, searchTerm, filterStatus]);
+    return matchesSearch && matchesStatus;
+  }).sort((a: any, b: any) => {
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+  }) : filteredAccountsFromHook;
 
   const getStatusBadge = (account: any) => {
     const isOverdue = account.status !== 'paid' && 
@@ -261,6 +224,69 @@ const AccountsReceivable = () => {
           </Card>
         </div>
 
+        {/* Aging Report - Análisis de Antigüedad */}
+        <Card className="border-none shadow-xl bg-card rounded-3xl">
+          <CardHeader>
+            <CardTitle className="text-xl font-black italic tracking-tighter uppercase">
+              Análisis de Antigüedad de Saldos
+            </CardTitle>
+            <CardDescription>
+              Distribución de cuentas por cobrar según días de vencimiento
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-200 dark:border-emerald-800">
+                <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400 mb-1">
+                  Corriente (0-30 días)
+                </div>
+                <div className="text-2xl font-black italic text-emerald-600 dark:text-emerald-400">
+                  {formatCurrency(agingReport.current, "USD")}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {((agingReport.current / agingReport.total) * 100 || 0).toFixed(1)}% del total
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-800">
+                <div className="text-sm font-bold text-amber-700 dark:text-amber-400 mb-1">
+                  31-60 días
+                </div>
+                <div className="text-2xl font-black italic text-amber-600 dark:text-amber-400">
+                  {formatCurrency(agingReport.days30, "USD")}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {((agingReport.days30 / agingReport.total) * 100 || 0).toFixed(1)}% del total
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/20 border-2 border-orange-200 dark:border-orange-800">
+                <div className="text-sm font-bold text-orange-700 dark:text-orange-400 mb-1">
+                  61-90 días
+                </div>
+                <div className="text-2xl font-black italic text-orange-600 dark:text-orange-400">
+                  {formatCurrency(agingReport.days60, "USD")}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {((agingReport.days60 / agingReport.total) * 100 || 0).toFixed(1)}% del total
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-800">
+                <div className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">
+                  Más de 90 días
+                </div>
+                <div className="text-2xl font-black italic text-red-600 dark:text-red-400">
+                  {formatCurrency(agingReport.days90, "USD")}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {((agingReport.days90 / agingReport.total) * 100 || 0).toFixed(1)}% del total
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Filters */}
         <Card className="border-none shadow-xl bg-card rounded-3xl">
           <CardContent className="p-6">
@@ -269,8 +295,8 @@ const AccountsReceivable = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar por cliente, RIF o factura..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-12 rounded-2xl"
                 />
               </div>
