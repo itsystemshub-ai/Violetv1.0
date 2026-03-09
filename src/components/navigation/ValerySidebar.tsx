@@ -140,6 +140,12 @@ const menuItems: MenuItem[] = [
     icon: Package,
     children: [
       {
+        id: "inventario-dash",
+        label: "Dashboard",
+        icon: BarChart3,
+        path: "/inventory",
+      },
+      {
         id: "productos",
         label: "Productos",
         icon: Package,
@@ -149,8 +155,27 @@ const menuItems: MenuItem[] = [
         id: "lista-precios",
         label: "Lista de Precios",
         icon: FileText,
-        path: "/inventory/pricelists",
+        path: "/inventory/catalog",
       },
+      {
+        id: "stats-inv",
+        label: "Estadísticas",
+        icon: BarChart3,
+        path: "/inventory/stats",
+      },
+      {
+        id: "analitica-inv",
+        label: "Analítica IA",
+        icon: Sparkles,
+        path: "/inventory/analytics",
+      },
+    ],
+  },
+  {
+    id: "inventario-extra",
+    label: "Operaciones",
+    icon: Database,
+    children: [
       {
         id: "kardex",
         label: "Kardex",
@@ -184,6 +209,12 @@ const menuItems: MenuItem[] = [
     icon: ShoppingBag,
     children: [
       {
+        id: "compras-dash",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/purchases/dashboard",
+      },
+      {
         id: "ordenes",
         label: "Órdenes de Compra",
         icon: ShoppingBag,
@@ -202,10 +233,10 @@ const menuItems: MenuItem[] = [
         path: "/purchases/suppliers",
       },
       {
-        id: "gestion",
-        label: "Gestión Completa",
-        icon: ShoppingBag,
-        path: "/purchases/management",
+        id: "compras-analisis",
+        label: "Análisis",
+        icon: BarChart3,
+        path: "/purchases/analytics",
       },
     ],
   },
@@ -247,12 +278,6 @@ const menuItems: MenuItem[] = [
         path: "/accounting",
         badge: "Nuevo",
       },
-      {
-        id: "gestion",
-        label: "Gestión Completa",
-        icon: DollarSign,
-        path: "/finance/management",
-      },
     ],
   },
   {
@@ -272,12 +297,6 @@ const menuItems: MenuItem[] = [
         label: "Asistencia",
         icon: UserCog,
         path: "/hr/attendance",
-      },
-      {
-        id: "gestion",
-        label: "Gestión Completa",
-        icon: UserCog,
-        path: "/hr/management",
       },
     ],
   },

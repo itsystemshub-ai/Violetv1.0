@@ -20,7 +20,12 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Switch } from "@/shared/components/ui/switch";
 import { Separator } from "@/shared/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -57,9 +62,13 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
   refreshAudit,
   isMaster,
 }) => {
-  const [securityAnalysis, setSecurityAnalysis] = React.useState<string | null>(null);
+  const [securityAnalysis, setSecurityAnalysis] = React.useState<string | null>(
+    null,
+  );
   const [isAIAnalyzing, setIsAIAnalyzing] = React.useState(false);
   const [isBackingUp, setIsBackingUp] = React.useState(false);
+  const [isNotifyingMaintenance, setIsNotifyingMaintenance] =
+    React.useState(false);
 
   const pendingSyncCount = syncLogs.filter(
     (l) => l.sync_status === "PENDING",
@@ -75,7 +84,7 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
     setIsAIAnalyzing(true);
     setTimeout(() => {
       setSecurityAnalysis(
-        `✅ Sistema seguro. Análisis completado:\n• ${dbStats?.products || 0} productos en inventario\n• ${dbStats?.invoices || 0} facturas registradas\n• ${dbStats?.auditLogs || 0} registros de auditoría\n• No se detectaron anomalías en los registros.\n• Base de datos local operativa.`
+        `✅ Sistema seguro. Análisis completado:\n• ${dbStats?.products || 0} productos en inventario\n• ${dbStats?.invoices || 0} facturas registradas\n• ${dbStats?.auditLogs || 0} registros de auditoría\n• No se detectaron anomalías en los registros.\n• Base de datos local operativa.`,
       );
       setIsAIAnalyzing(false);
     }, 1500);
@@ -85,9 +94,9 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
     setIsBackingUp(true);
     try {
       await backupService.createBackup(true);
-      toast.success('Backup creado exitosamente');
+      toast.success("Backup creado exitosamente");
     } catch {
-      toast.error('Error al crear backup');
+      toast.error("Error al crear backup");
     } finally {
       setIsBackingUp(false);
     }
@@ -99,7 +108,36 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
       const count = await purgeAuditLogs();
       toast.success(`${count} registros de auditoría eliminados`);
     } catch {
-      toast.error('Error al purgar logs');
+      toast.error("Error al purgar logs");
+    }
+  };
+
+  const handleNotifyMaintenance = async () => {
+    setIsNotifyingMaintenance(true);
+    try {
+      const response = await fetch("/api/maintenance/notify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          message:
+            "Atención: El sistema entrará en mantenimiento en 30 minutos.",
+          duration: 30,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Alerta de mantenimiento enviada a todos los usuarios");
+      } else {
+        toast.error("Error al enviar alerta de mantenimiento");
+      }
+    } catch (error) {
+      console.error("Error al notificar mantenimiento:", error);
+      toast.error("Error de red al enviar alerta");
+    } finally {
+      setIsNotifyingMaintenance(false);
     }
   };
 
@@ -428,7 +466,7 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
                 onClick={handleCreateBackup}
                 disabled={isBackingUp}
               >
-                {isBackingUp ? 'Creando...' : 'Generar DB'}
+                {isBackingUp ? "Creando..." : "Generar DB"}
               </Button>
             </CardContent>
           </Card>
@@ -463,6 +501,29 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
                 onClick={handlePurgeLogs}
               >
                 Eliminar Logs
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="border-orange-500/20 bg-orange-500/5 hover:border-orange-500/40 transition-all cursor-default lg:col-span-3 mt-4">
+            <CardContent className="p-4 pt-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <ShieldAlert className="w-5 h-5 text-orange-500" />
+                <div>
+                  <p className="text-sm font-bold text-orange-600">
+                    Alerta de Mantenimiento Global
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Notifica a todos los usuarios una desconexión en 30 min.
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="default"
+                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8"
+                onClick={handleNotifyMaintenance}
+                disabled={isNotifyingMaintenance}
+              >
+                {isNotifyingMaintenance ? "Enviando..." : "Emitir Alerta"}
               </Button>
             </CardContent>
           </Card>

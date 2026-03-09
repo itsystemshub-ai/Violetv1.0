@@ -185,11 +185,13 @@ export function TenantSetupForm({
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(tenantSchema),
     defaultValues: initialData || {
       currency: "USD",
+      slug: "",
     },
   });
 
@@ -425,18 +427,38 @@ export function TenantSetupForm({
             <div className="space-y-2">
               <Label>Ciudad</Label>
               <Input {...register("city")} placeholder="Valencia" />
+              {errors.city && (
+                <p className="text-xs text-destructive">
+                  {errors.city.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Estado / Provincia</Label>
               <Input {...register("state")} placeholder="Carabobo" />
+              {errors.state && (
+                <p className="text-xs text-destructive">
+                  {errors.state.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Código Postal</Label>
               <Input {...register("postalCode")} placeholder="2115" />
+              {errors.postalCode && (
+                <p className="text-xs text-destructive">
+                  {errors.postalCode.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Teléfono de Contacto</Label>
               <Input {...register("phone")} placeholder="+58 212 000 0000" />
+              {errors.phone && (
+                <p className="text-xs text-destructive">
+                  {errors.phone.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Email (Opcional)</Label>
@@ -445,30 +467,51 @@ export function TenantSetupForm({
                 type="email"
                 placeholder="contacto@empresa.com"
               />
+              {errors.email && (
+                <p className="text-xs text-destructive">
+                  {errors.email.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Sitio Web (Opcional)</Label>
               <Input {...register("website")} placeholder="www.empresa.com" />
+              {errors.website && (
+                <p className="text-xs text-destructive">
+                  {errors.website.message as string}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Moneda Principal</Label>
-              <Select
-                defaultValue={initialData?.currency || "USD"}
-                onValueChange={(value) =>
-                  register("currency").onChange({ target: { value } })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar moneda" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">
-                    USD - Dólar Estadounidense
-                  </SelectItem>
-                  <SelectItem value="VES">VES - Bolívar Venezolano</SelectItem>
-                  <SelectItem value="EUR">EUR - Euro</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="currency"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value || "USD"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar moneda" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">
+                        USD - Dólar Estadounidense
+                      </SelectItem>
+                      <SelectItem value="VES">
+                        VES - Bolívar Venezolano
+                      </SelectItem>
+                      <SelectItem value="EUR">EUR - Euro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.currency && (
+                <p className="text-xs text-destructive">
+                  {errors.currency.message as string}
+                </p>
+              )}
             </div>
           </div>
           <Button type="submit" className="w-full">

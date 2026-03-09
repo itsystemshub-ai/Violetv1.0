@@ -2,23 +2,28 @@ import React from "react";
 import { StandardKPICard } from "@/shared/components/common/StandardKPICard";
 import { TrendingUp, CreditCard, DollarSign, Users } from "lucide-react";
 import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
+import { usePurchaseOrders } from "../../hooks/usePurchaseOrders";
+import { useSuppliers } from "../../hooks/useSuppliers";
 
 const PurchasesStats: React.FC = () => {
   const { formatMoney, exchangeRate } = useCurrencyStore();
+  const { stats: orderStats, loading: ordersLoading } = usePurchaseOrders();
+  const { stats: supplierStats, loading: suppliersLoading } = useSuppliers();
 
-  // Self-contained stats with default values
-  const stats = {
-    totalUSD: 0,
-    pendingUSD: 0,
-    supplierCount: 0,
-  };
+  if (ordersLoading || suppliersLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 animate-pulse">
+        {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-muted rounded-2xl" />)}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       <StandardKPICard
         label="Total Adquisiciones"
-        value={formatMoney(stats.totalUSD)}
-        change={0}
+        value={formatMoney(orderStats.totalAmount)}
+        change={orderStats.thisMonthCount}
         trend="up"
         icon={TrendingUp}
         accentColor="violet-400"
@@ -26,9 +31,9 @@ const PurchasesStats: React.FC = () => {
       />
       <StandardKPICard
         label="Cuentas por Pagar"
-        value={formatMoney(stats.pendingUSD)}
+        value={formatMoney(supplierStats.totalBalance)}
         icon={CreditCard}
-        change={0}
+        change={orderStats.pendingOrders}
         trend="down"
         accentColor="amber-400"
         glowColor="amber-500/50"
@@ -43,10 +48,10 @@ const PurchasesStats: React.FC = () => {
         glowColor="emerald-500/50"
       />
       <StandardKPICard
-        label="Proveedores"
-        value={stats.supplierCount}
+        label="Proveedores Activos"
+        value={supplierStats.activeSuppliers}
         icon={Users}
-        change={0}
+        change={supplierStats.totalSuppliers - supplierStats.activeSuppliers}
         trend="up"
         accentColor="blue-400"
         glowColor="blue-500/50"

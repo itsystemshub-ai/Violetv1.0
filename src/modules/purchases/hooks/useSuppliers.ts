@@ -1,8 +1,8 @@
-/**
- * useSuppliers - Hook para gestión de proveedores (Modular)
- */
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { SyncService } from '@/core/sync/SyncService';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
+import { toast } from 'sonner';
 
 export interface Supplier {
   id: string;
@@ -24,85 +24,41 @@ export interface Supplier {
   totalPurchases: number;
   category?: string;
   notes?: string;
+  tenant_id: string;
 }
 
 export const useSuppliers = () => {
+  const { tenant } = useSystemConfig();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
-    const mockSuppliers: Supplier[] = [
-      {
-        id: 'SUP-001',
-        code: 'S001',
-        name: 'Dell Inc.',
-        email: 'ventas@dell.com.mx',
-        phone: '+52 55 5000 0000',
-        address: 'Corporativo Dell',
-        city: 'Ciudad de México',
-        country: 'México',
-        taxId: 'DEL123456789',
-        contactPerson: 'Roberto Martínez',
-        paymentTerms: 30,
-        balance: 120000,
-        status: 'active',
-        rating: 5,
-        createdAt: '2024-01-10',
-        lastPurchase: '2026-03-05',
-        totalPurchases: 850000,
-        category: 'Electrónica',
-        notes: 'Proveedor principal de laptops',
-      },
-      {
-        id: 'SUP-002',
-        code: 'S002',
-        name: 'Logitech',
-        email: 'b2b@logitech.com',
-        phone: '+52 33 4000 0000',
-        address: 'Oficinas Logitech',
-        city: 'Guadalajara',
-        country: 'México',
-        taxId: 'LOG987654321',
-        contactPerson: 'Ana López',
-        paymentTerms: 15,
-        balance: 35000,
-        status: 'active',
-        rating: 4,
-        createdAt: '2024-02-15',
-        lastPurchase: '2026-03-04',
-        totalPurchases: 250000,
-        category: 'Accesorios',
-      },
-      {
-        id: 'SUP-003',
-        code: 'S003',
-        name: 'Samsung Electronics',
-        email: 'corporate@samsung.com.mx',
-        phone: '+52 81 8000 0000',
-        address: 'Samsung Plaza',
-        city: 'Monterrey',
-        country: 'México',
-        taxId: 'SAM456789123',
-        contactPerson: 'Luis Hernández',
-        paymentTerms: 45,
-        balance: 180000,
-        status: 'active',
-        rating: 5,
-        createdAt: '2023-11-20',
-        lastPurchase: '2026-03-06',
-        totalPurchases: 1200000,
-        category: 'Electrónica',
-        notes: 'Proveedor de monitores y pantallas',
-      },
-    ];
-
-    setTimeout(() => {
-      setSuppliers(mockSuppliers);
+  const fetchSuppliers = useCallback(async () => {
+    if (!tenant.id || tenant.id === 'none') {
+      setSuppliers([]);
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await localDb.suppliers
+        .where('tenant_id')
+        .equals(tenant.id)
+        .toArray();
+      setSuppliers(data || []);
+    } catch (error) {
+      console.error("[useSuppliers] Error fetching suppliers:", error);
+      toast.error("Error al cargar proveedores.");
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant.id]);
+
+  useEffect(() => {
+    fetchSuppliers();
+  }, [fetchSuppliers]);
 
   const filteredSuppliers = suppliers.filter((supplier) => {
     const matchesSearch = 
@@ -127,24 +83,52 @@ export const useSuppliers = () => {
       : "0.0",
   };
 
-  const createSupplier = (supplier: Omit<Supplier, 'id' | 'createdAt' | 'totalPurchases'>) => {
+  const createSupplier = async (data: Omit<Supplier, 'id' | 'createdAt' | 'totalPurchases' | 'tenant_id' | 'balance'>) => {
+    if (!tenant.id) return;
+    
+    const id = crypto.randomUUID();
     const newSupplier: Supplier = {
-      ...supplier,
-      id: `SUP-${String(suppliers.length + 1).padStart(3, '0')}`,
-      createdAt: new Date().toISOString().split('T')[0],
+      ...data,
+      id,
+      tenant_id: tenant.id,
+      createdAt: new Date().toISOString(),
       totalPurchases: 0,
+      balance: 0,
     };
-    setSuppliers([newSupplier, ...suppliers]);
+
+    try {
+      await SyncService.mutate('suppliers', 'INSERT', newSupplier, id);
+      await localDb.suppliers.add(newSupplier);
+      setSuppliers([newSupplier, ...suppliers]);
+      toast.success("Proveedor creado exitosamente.");
+    } catch (error) {
+      console.error("[useSuppliers] Error creating supplier:", error);
+      toast.error("Error al crear proveedor.");
+    }
   };
 
-  const updateSupplier = (id: string, updates: Partial<Supplier>) => {
-    setSuppliers(suppliers.map(s => 
-      s.id === id ? { ...s, ...updates } : s
-    ));
+  const updateSupplier = async (id: string, updates: Partial<Supplier>) => {
+    try {
+      await SyncService.mutate('suppliers', 'UPDATE', updates, id);
+      await localDb.suppliers.update(id, updates);
+      setSuppliers(suppliers.map(s => s.id === id ? { ...s, ...updates } : s));
+      toast.success("Proveedor actualizado.");
+    } catch (error) {
+      console.error("[useSuppliers] Error updating supplier:", error);
+      toast.error("Error al actualizar proveedor.");
+    }
   };
 
-  const deleteSupplier = (id: string) => {
-    setSuppliers(suppliers.filter(s => s.id !== id));
+  const deleteSupplier = async (id: string) => {
+    try {
+      await SyncService.mutate('suppliers', 'DELETE', {}, id);
+      await localDb.suppliers.delete(id);
+      setSuppliers(suppliers.filter(s => s.id !== id));
+      toast.success("Proveedor eliminado.");
+    } catch (error) {
+      console.error("[useSuppliers] Error deleting supplier:", error);
+      toast.error("Error al eliminar proveedor.");
+    }
   };
 
   const suspendSupplier = (id: string) => {

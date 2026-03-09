@@ -136,9 +136,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               <CardFooter className="px-0 justify-center">
                 <p className="text-sm text-muted-foreground">
                   No tienes una cuenta?{" "}
-                  <span className="text-primary font-medium cursor-pointer">
+                  <button 
+                    type="button"
+                    className="text-primary font-medium hover:underline focus:outline-none"
+                    onClick={() => onLegalClick("help")}
+                  >
                     Contacta a ventas
-                  </span>
+                  </button>
                 </p>
               </CardFooter>
             </Card>
@@ -185,12 +189,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Label htmlFor="password">Contraseña</Label>
-                      <span
-                        className="text-xs text-primary hover:underline cursor-pointer"
+                      <button
+                        type="button"
+                        className="text-xs text-primary hover:underline focus:outline-none"
                         onClick={() => setStep("forgot-password")}
                       >
                         Olvidé mi contraseña
-                      </span>
+                      </button>
                     </div>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -285,9 +290,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">
                       ¿No recibiste el código?{" "}
-                      <span className="text-primary font-medium cursor-pointer">
+                      <button 
+                        type="button"
+                        className="text-primary font-medium hover:underline focus:outline-none"
+                      >
                         Reenviar
-                      </span>
+                      </button>
                     </p>
                     <Button
                       variant="ghost"
@@ -437,30 +445,34 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
       {/* Footer Links (Responsive) */}
       <div className="mt-12 flex flex-wrap justify-center gap-4 text-xs text-muted-foreground sm:text-sm">
-        <span
-          className="hover:text-primary cursor-pointer transition-colors flex items-center gap-1"
+        <button
+          type="button"
+          className="hover:text-primary transition-colors flex items-center gap-1 focus:outline-none"
           onClick={() => setStep("network-setup")}
         >
           <Wifi className="w-3 h-3 sm:w-4 sm:h-4" /> Configurar Red
-        </span>
-        <span
-          className="hover:text-primary cursor-pointer transition-colors"
+        </button>
+        <button
+          type="button"
+          className="hover:text-primary transition-colors focus:outline-none"
           onClick={() => onLegalClick("help")}
         >
           Centro de ayuda
-        </span>
-        <span
-          className="hover:text-primary cursor-pointer transition-colors"
+        </button>
+        <button
+          type="button"
+          className="hover:text-primary transition-colors focus:outline-none"
           onClick={() => onLegalClick("terms")}
         >
           Términos
-        </span>
-        <span
-          className="hover:text-primary cursor-pointer transition-colors"
+        </button>
+        <button
+          type="button"
+          className="hover:text-primary transition-colors focus:outline-none"
           onClick={() => onLegalClick("privacy")}
         >
           Privacidad
-        </span>
+        </button>
       </div>
     </div>
   );

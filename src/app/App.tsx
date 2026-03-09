@@ -1,11 +1,11 @@
 /**
  * App Component - Punto de entrada principal de la aplicación
- * 
+ *
  * Arquitectura Mejorada:
  * - Separation of Concerns: Providers, Router, Initialization separados
  * - Composition Pattern: Componentes componibles y reutilizables
  * - Clean Architecture: Dependencias claras y unidireccionales
- * 
+ *
  * Mejoras aplicadas:
  * ✅ Providers extraídos a AppProviders
  * ✅ Router extraído a AppRouter
@@ -15,21 +15,22 @@
  * ✅ Más fácil de testear y mantener
  */
 
-import React from 'react';
-import { HashRouter } from 'react-router-dom';
-import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
-import { AppProviders } from '@/core/providers/AppProviders';
-import { AppRouter } from '@/core/router/AppRouter';
-import { AppInitializer } from '@/core/initialization/AppInitializer';
-import { NotificationManager } from '@/core/notifications/NotificationManager';
-import { OfflineBanner } from '@/shared/components/feedback/OfflineBanner';
-import { RealtimeBootstrap } from '@/core/shared/components/RealtimeBootstrap';
-import { AIFloatingButton } from '@/shared/components/ai';
-import { IdleTimer } from '@/core/auth/components/IdleTimer';
+import React from "react";
+import { HashRouter } from "react-router-dom";
+import { ErrorBoundary } from "@/shared/components/feedback/ErrorBoundary";
+import { AppProviders } from "@/core/providers/AppProviders";
+import { AppRouter } from "@/core/router/AppRouter";
+import { AppInitializer } from "@/core/initialization/AppInitializer";
+import { NotificationManager } from "@/core/notifications/NotificationManager";
+import { OfflineBanner } from "@/shared/components/feedback/OfflineBanner";
+import { RealtimeBootstrap } from "@/core/shared/components/RealtimeBootstrap";
+import { AIFloatingButton } from "@/shared/components/ai";
+import { IdleTimer } from "@/core/auth/components/IdleTimer";
+import { MaintenanceResponder } from "@/components/shared/MaintenanceResponder";
 
 /**
  * App Component
- * 
+ *
  * Estructura:
  * 1. ErrorBoundary - Captura errores globales
  * 2. AppProviders - Providers de contexto (Theme, Query, etc.)
@@ -52,6 +53,7 @@ const App: React.FC = () => {
             <RealtimeBootstrap />
             <AIFloatingButton />
             <IdleTimer />
+            <MaintenanceResponder />
           </HashRouter>
         </AppInitializer>
       </AppProviders>

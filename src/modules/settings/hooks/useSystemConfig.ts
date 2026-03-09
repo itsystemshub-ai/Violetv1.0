@@ -396,6 +396,7 @@ export const useSystemConfig = create<SystemConfigState>()(
               updated_at: new Date().toISOString(),
             };
 
+            console.log(`[SystemConfig:Sync] Enviando mutación a SyncService: ${key}`, dbPayload);
             const { error } = await SyncService.mutate(
               "sys_config",
               "INSERT",
@@ -418,6 +419,7 @@ export const useSystemConfig = create<SystemConfigState>()(
                 isMaintenanceMode: (value as { enabled: boolean }).enabled,
               });
 
+            console.log(`[SystemConfig] Guardando config localmente en Dexie: ${tenantId}_${module}_${key}`);
             // Persistir localmente
             await localDb.sys_config.put({
               id: `${tenantId}_${module}_${key}`,
@@ -430,7 +432,7 @@ export const useSystemConfig = create<SystemConfigState>()(
 
             toast.success(`Configuración '${key}' actualizada exitosamente.`);
           } catch (err) {
-            console.error("Error updating config:", err);
+            console.error("[SystemConfig] Error al actualizar la configuración:", err);
             toast.error("Error al guardar la configuración.");
           }
         },
@@ -531,6 +533,7 @@ export const useSystemConfig = create<SystemConfigState>()(
               updated_at: new Date().toISOString(),
             };
 
+            console.log("[SystemConfig:Tenant] Creando empresa en la nube...", dbPayload);
             const mutationResult = await SyncService.mutate(
               "tenants",
               "INSERT",
@@ -556,7 +559,16 @@ export const useSystemConfig = create<SystemConfigState>()(
             };
 
             set((state) => ({ allTenants: [...state.allTenants, newTenant] }));
+            console.log("[SystemConfig:Local] Guardando empresa en Dexie:", newTenant.name);
             await localDb.tenants.put(newTenant);
+
+            // AUTO-ACTIVACIÓN: Si no hay tenant activo, o es el primer tenant real
+            const currentActive = get().activeTenantId;
+            if (!currentActive || currentActive === "none") {
+              console.log(`[SystemConfig] Auto-activando empresa recién creada: ${newTenant.name}`);
+              get().setActiveTenant(newTenant.id);
+            }
+
             toast.success(`Empresa "${data.name}" creada exitosamente.`);
           } catch (err: any) {
             console.error("Error creating tenant:", err);

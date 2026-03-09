@@ -13,7 +13,6 @@ import { lazy, ComponentType } from "react";
 import ExecutiveDashboard from "@/modules/dashboard/pages/DashboardPage";
 const FinancePage = lazy(() => import("@/modules/finance/pages/FinancePage"));
 const Finance = FinancePage;
-const FinanceManagementPage = FinancePage;
 const AccountsPayable = FinancePage;
 const Banks = FinancePage;
 const Accounting = FinancePage;
@@ -30,11 +29,9 @@ const PurchasesPage = lazy(
 const PurchaseOrdersPage = PurchasesPage;
 const ReceiptsPage = PurchasesPage;
 const SuppliersPage = PurchasesPage;
-const PurchasesManagementPage = PurchasesPage;
 const Purchases = PurchasesPage;
 const HRPage = lazy(() => import("@/modules/hr/pages/HRPage"));
 const HR = HRPage;
-const HRManagementPage = HRPage;
 const AI = lazy(() => import("@/modules/ai/pages/AIPage"));
 const AIManagementPage = lazy(
   () => import("@/modules/ai/pages/AIManagementPage"),
@@ -190,15 +187,6 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     description: "Gestión financiera y contabilidad",
   },
   {
-    path: "/finance/management",
-    component: FinanceManagementPage,
-    protected: true,
-    permission: "view:finance",
-    title: "Gestión Completa de Finanzas",
-    description:
-      "Dashboard, CxC, libros, IGTF, contabilidad, conciliación y reportes",
-  },
-  {
     path: "/inventory",
     component: Inventory,
     protected: true,
@@ -343,29 +331,12 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     description: "Gestión de compras y proveedores",
   },
   {
-    path: "/purchases/management",
-    component: PurchasesManagementPage,
-    protected: true,
-    permission: "view:purchases",
-    title: "Gestión Completa de Compras",
-    description: "Dashboard, historial, proveedores, órdenes y reportes",
-  },
-  {
     path: "/hr",
     component: HR,
     protected: true,
     permission: "view:hr",
     title: "Recursos Humanos",
     description: "Gestión de empleados y nómina",
-  },
-  {
-    path: "/hr/management",
-    component: HRManagementPage,
-    protected: true,
-    permission: "view:hr",
-    title: "Gestión Completa de RRHH",
-    description:
-      "Dashboard, directorio, nómina, prestaciones, vacaciones y reportes",
   },
   // Sales Sub-pages
   {
@@ -460,6 +431,14 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
   },
   // Purchases Sub-pages
   {
+    path: "/purchases/dashboard",
+    component: PurchaseOrdersPage,
+    protected: true,
+    permission: "view:purchases",
+    title: "Dashboard de Compras",
+    description: "Métricas y KPIs de adquisiciones",
+  },
+  {
     path: "/purchases/orders",
     component: PurchaseOrdersPage,
     protected: true,
@@ -482,6 +461,14 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     permission: "view:purchases",
     title: "Proveedores",
     description: "Directorio de proveedores",
+  },
+  {
+    path: "/purchases/analytics",
+    component: PurchasesPage,
+    protected: true,
+    permission: "view:purchases",
+    title: "Análisis de Compras",
+    description: "Análisis detallado de compras",
   },
   // HR Sub-pages
   {
@@ -685,13 +672,13 @@ export const ROUTE_PATHS = {
   ACCOUNTS_RECEIVABLE: "/accounts-receivable",
   BANKS: "/finance/banks",
   ACCOUNTING: "/finance/accounting",
-  FINANCE_MANAGEMENT: "/finance/management",
   ACCOUNTS_PAYABLE: "/finance/payable",
   PURCHASES: "/purchases",
-  PURCHASES_MANAGEMENT: "/purchases/management",
+  PURCHASES_DASHBOARD: "/purchases/dashboard",
   PURCHASES_ORDERS: "/purchases/orders",
   PURCHASES_RECEIPTS: "/purchases/receipts",
   PURCHASES_SUPPLIERS: "/purchases/suppliers",
+  PURCHASES_ANALYTICS: "/purchases/analytics",
   HR: "/hr",
   AI: "/ai",
   SETTINGS: "/settings",

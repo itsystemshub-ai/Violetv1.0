@@ -1,8 +1,7 @@
-/**
- * usePurchaseOrders - Hook para gestión de órdenes de compra (Modular)
- */
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
+import { toast } from 'sonner';
 
 export interface PurchaseOrderItem {
   id: string;
@@ -33,62 +32,63 @@ export interface PurchaseOrder {
   approvedDate?: string;
   receivedDate?: string;
   notes?: string;
+  tenant_id: string;
 }
 
 export const usePurchaseOrders = () => {
+  const { tenant } = useSystemConfig();
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
-    const mockOrders: PurchaseOrder[] = [
-      {
-        id: 'PO-001',
-        date: '2026-03-06',
-        supplier: 'Dell Inc.',
-        supplierId: 'SUP-001',
-        deliveryDate: '2026-03-20',
-        items: [
-          {
-            id: 'ITEM-001',
-            productId: 'PROD-001',
-            productName: 'Laptop Dell Inspiron 15',
-            sku: 'SKU-001',
-            quantity: 20,
-            price: 12000,
-            subtotal: 240000,
-          },
-          {
-            id: 'ITEM-002',
-            productId: 'PROD-003',
-            productName: 'Monitor Samsung 27" 4K',
-            sku: 'SKU-003',
-            quantity: 10,
-            price: 6500,
-            subtotal: 65000,
-          },
-        ],
-        subtotal: 305000,
-        tax: 48800,
-        total: 353800,
-        status: 'approved',
-        paymentTerms: 30,
-        warehouse: 'Almacén Principal',
-        warehouseId: 'WH-001',
-        createdBy: 'Juan Pérez',
-        approvedBy: 'Director de Compras',
-        approvedDate: '2026-03-06',
-        notes: 'Orden urgente para reabastecimiento',
-      },
-      // ... (rest of mock data can be truncated for brevity or kept)
-    ];
-
-    setTimeout(() => {
-      setOrders(mockOrders);
+  const fetchOrders = useCallback(async () => {
+    if (!tenant.id || tenant.id === 'none') {
+      setOrders([]);
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await localDb.compras_maestro
+        .where('tenant_id')
+        .equals(tenant.id)
+        .toArray();
+      
+      const fullOrders = await Promise.all(
+        data.map(async (o) => {
+          const items = await localDb.compras_detalle
+            .where('compra_id')
+            .equals(o.id)
+            .toArray();
+          return {
+            ...o,
+            items: items.map(i => ({
+              id: i.id,
+              productId: i.producto_id,
+              productName: i.product_name,
+              sku: i.sku,
+              quantity: i.cantidad,
+              price: i.precio_unitario,
+              subtotal: i.subtotal
+            }))
+          };
+        })
+      );
+
+      setOrders(fullOrders as unknown as PurchaseOrder[]);
+    } catch (error) {
+      console.error("[usePurchaseOrders] Error fetching orders:", error);
+      toast.error("Error al cargar órdenes de compra.");
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant.id]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch = 
@@ -116,22 +116,70 @@ export const usePurchaseOrders = () => {
     }).length,
   };
 
-  const createOrder = (order: Omit<PurchaseOrder, 'id'>) => {
+  const createOrder = async (data: Omit<PurchaseOrder, 'id' | 'tenant_id'>) => {
+    if (!tenant.id) return;
+
+    const id = crypto.randomUUID();
     const newOrder: PurchaseOrder = {
-      ...order,
-      id: `PO-${String(orders.length + 1).padStart(3, '0')}`,
+      ...data,
+      id,
+      tenant_id: tenant.id,
     };
-    setOrders([newOrder, ...orders]);
+
+    try {
+      // Guardar maestro
+      await localDb.compras_maestro.add({
+        id,
+        tenant_id: tenant.id,
+        date: newOrder.date,
+        supplier_id: newOrder.supplierId,
+        supplier_name: newOrder.supplier,
+        num_factura: id, // O un correlativo
+        total: newOrder.total,
+        status: newOrder.status,
+        created_at: new Date().toISOString()
+      });
+
+      // Guardar detalles
+      const details = newOrder.items.map(item => ({
+        id: crypto.randomUUID(),
+        compra_id: id,
+        tenant_id: tenant.id!,
+        producto_id: item.productId,
+        product_name: item.productName,
+        sku: item.sku,
+        cantidad: item.quantity,
+        precio_unitario: item.price,
+        subtotal: item.subtotal
+      }));
+      await localDb.compras_detalle.bulkAdd(details);
+
+      setOrders([newOrder, ...orders]);
+      toast.success("Orden de compra creada.");
+    } catch (error) {
+      console.error("[usePurchaseOrders] Error creating order:", error);
+      toast.error("Error al crear la orden.");
+    }
   };
 
-  const updateOrder = (id: string, updates: Partial<PurchaseOrder>) => {
-    setOrders(orders.map(o => 
-      o.id === id ? { ...o, ...updates } : o
-    ));
+  const updateOrder = async (id: string, updates: Partial<PurchaseOrder>) => {
+    try {
+      await localDb.compras_maestro.update(id, updates);
+      setOrders(orders.map(o => o.id === id ? { ...o, ...updates } : o));
+    } catch (error) {
+       console.error("[usePurchaseOrders] Error updating order:", error);
+    }
   };
 
-  const deleteOrder = (id: string) => {
-    setOrders(orders.filter(o => o.id !== id));
+  const deleteOrder = async (id: string) => {
+    try {
+      await localDb.compras_maestro.delete(id);
+      await localDb.compras_detalle.where('compra_id').equals(id).delete();
+      setOrders(orders.filter(o => o.id !== id));
+      toast.success("Orden eliminada.");
+    } catch (error) {
+      console.error("[usePurchaseOrders] Error deleting order:", error);
+    }
   };
 
   const approveOrder = (id: string, approvedBy: string) => {

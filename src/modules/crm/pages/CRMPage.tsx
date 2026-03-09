@@ -23,10 +23,15 @@ import {
   CommunicationsPanel,
   AnalyticsPanel,
   AutomationPanel,
+  CRMDashboard,
 } from "../components";
 
 export default function CRMPage() {
   const { activeTab, setTab } = useCRMStore();
+
+  // Set default tab to dashboard if not set or if it's new
+  // We'll handle this in a useEffect to avoid render loop if necessary, 
+  // but for now let's just ensure dashboard exists in the store logic or here.
 
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
@@ -48,16 +53,26 @@ export default function CRMPage() {
 
         {/* Tabs */}
         <Tabs
-          value={activeTab}
-          onValueChange={(val) => setTab(val as any)}
+          value={activeTab === "pipeline" && !localStorage.getItem('crm_dashboard_visited') ? "dashboard" : activeTab}
+          onValueChange={(val) => {
+            if (val === "dashboard") localStorage.setItem('crm_dashboard_visited', 'true');
+            setTab(val as any);
+          }}
           className="space-y-6"
         >
           <TabsList className="backdrop-blur-xl bg-card/80 border border-border p-1 rounded-full w-fit shadow-lg overflow-x-auto max-w-full flex-nowrap">
             <TabsTrigger
-              value="pipeline"
+              value="dashboard"
               className="rounded-full px-6 whitespace-nowrap"
             >
               <TrendingUp className="w-4 h-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger
+              value="pipeline"
+              className="rounded-full px-6 whitespace-nowrap"
+            >
+              <Zap className="w-4 h-4 mr-2" />
               Pipeline
             </TabsTrigger>
             <TabsTrigger
@@ -96,6 +111,13 @@ export default function CRMPage() {
               Automatización
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent
+            value="dashboard"
+            className="m-0 focus-visible:outline-none"
+          >
+            <CRMDashboard />
+          </TabsContent>
 
           <TabsContent
             value="pipeline"

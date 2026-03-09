@@ -238,8 +238,27 @@ export default function SettingsPage() {
         );
       case "ai":
         return <AIChatPanel isMaster={isMaster} />;
-      case "security":
       case "system":
+        return (
+          <SystemConfigPanel
+            activeTenantId={activeTenantId}
+            allTenants={allTenants}
+            setActiveTenant={setActiveTenant}
+            updateTenantById={updateTenantById}
+            deleteTenant={deleteTenant}
+            isMaintenanceMode={isMaintenanceMode}
+            setMaintenanceMode={setMaintenanceMode}
+            exchangeRate={exchangeRate}
+            setExchangeRate={setExchangeRate}
+            syncBcvRate={syncBcvRate}
+            isLoading={isLoadingConfig}
+            taxes={taxes}
+            instances={instances}
+            syncInstances={syncInstances}
+            isMaster={isMaster}
+          />
+        );
+      case "security":
         return (
           <SystemSecurityPanel
             auditLogs={auditLogs}

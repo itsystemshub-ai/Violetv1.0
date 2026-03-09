@@ -2,7 +2,10 @@
  * PipelinePanel - Gestión visual del pipeline de ventas con drag & drop
  */
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { localDb } from "@/core/database/localDb";
+import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -109,7 +112,77 @@ const MOCK_DEALS: Deal[] = [
 ];
 
 export default function PipelinePanel() {
-  const [deals] = useState<Deal[]>(MOCK_DEALS);
+  const { tenant } = useSystemConfig();
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDeals = useCallback(async () => {
+    if (!tenant.id || tenant.id === "none") return;
+    setLoading(true);
+    try {
+      // Usaremos localDb.sys_config para guardar el pipeline si no hay tabla específica,
+      // pero v15 tiene crm_chats. Podríamos usar una tabla genérica o sys_config.
+      // Basado en localDb.ts v15, no hay 'crm_deals'. Crearemos una lógica de persistencia en sys_config o localDb.tenants metadata.
+      // MEJOR: Usar una tabla dedicada si existe o sys_config para el estado del pipeline.
+      const data = await localDb.sys_config.get(`${tenant.id}_crm_pipeline`);
+      if (data && data.value_json) {
+        setDeals(data.value_json as Deal[]);
+      } else {
+        setDeals([]);
+      }
+    } catch (error) {
+      console.error("[PipelinePanel] Error fetching deals:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant.id]);
+
+  useEffect(() => {
+    fetchDeals();
+  }, [fetchDeals]);
+
+  const saveDeals = async (newDeals: Deal[]) => {
+    if (!tenant.id) return;
+    try {
+      await localDb.sys_config.put({
+        id: `${tenant.id}_crm_pipeline`,
+        tenant_id: tenant.id,
+        module: "crm",
+        key: "pipeline",
+        value_json: newDeals,
+        updated_at: new Date().toISOString(),
+      });
+      setDeals(newDeals);
+    } catch (error) {
+      console.error("[PipelinePanel] Error saving deals:", error);
+      toast.error("Error al guardar cambios en el pipeline.");
+    }
+  };
+
+  const handleUpdateStage = async (dealId: string, newStage: string) => {
+    const newDeals = deals.map((d) =>
+      d.id === dealId ? { ...d, stage: newStage } : d,
+    );
+    await saveDeals(newDeals);
+  };
+
+  const handleAddDeal = async () => {
+    const newDeal: Deal = {
+      id: crypto.randomUUID(),
+      title: "Nueva Oportunidad",
+      company: "Cliente Nuevo",
+      contact: "Contacto",
+      value: 0,
+      probability: 10,
+      stage: "lead",
+      expectedCloseDate: new Date().toISOString().split("T")[0],
+      assignedTo: "Sin asignar",
+      lastActivity: "Creado ahora",
+      tags: [],
+    };
+    await saveDeals([newDeal, ...deals]);
+    toast.success("Nueva oportunidad añadida.");
+  };
 
   const getDealsByStage = (stageId: string) => {
     return deals.filter((deal) => deal.stage === stageId);
@@ -120,6 +193,9 @@ export default function PipelinePanel() {
   };
 
   const totalPipelineValue = deals.reduce((sum, deal) => sum + deal.value, 0);
+
+  if (loading)
+    return <div className="p-10 text-center">Cargando Pipeline...</div>;
 
   return (
     <div className="space-y-6">
@@ -132,7 +208,7 @@ export default function PipelinePanel() {
             </div>
           </Card>
         </div>
-        <Button>
+        <Button onClick={handleAddDeal}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva Oportunidad
         </Button>
