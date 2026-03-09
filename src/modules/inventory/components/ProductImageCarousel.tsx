@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/core/shared/utils/utils";
 import { useImageConverter } from "@/shared/hooks/useImageConverter";
+import { ImageZoomHover } from "./ImageZoomHover";
 
 /**
  * ImagePreviewModal - A premium lightbox for product photos
@@ -64,7 +65,7 @@ const ImagePreviewModal = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 select-none"
+      className="fixed inset-0 z-100 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 select-none"
       onClick={handleBackdropClick}
     >
       {/* Top Bar */}
@@ -87,16 +88,22 @@ const ImagePreviewModal = ({
       {/* Main Image Container */}
       <div className="relative w-full h-full flex items-center justify-center">
         <AnimatePresence mode="wait">
-          <motion.img
+          <motion.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 1.1, y: -20 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            src={images[currentIndex]}
-            alt={`${productName} - ${currentIndex + 1}`}
-            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-black/20"
-          />
+            className="max-w-full max-h-[85vh] rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+          >
+            <ImageZoomHover
+              src={images[currentIndex]}
+              alt={`${productName} - ${currentIndex + 1}`}
+              className="max-w-full max-h-[85vh]"
+              zoomLevel={2.5}
+              showZoomIndicator={false}
+            />
+          </motion.div>
         </AnimatePresence>
 
         {/* Navigation Overlays */}

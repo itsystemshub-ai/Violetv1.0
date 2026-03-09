@@ -3,6 +3,8 @@
  * Incluye: silenciamiento de warnings, configuración de CORS, flags de React Router
  */
 
+import React, { useEffect } from 'react';
+
 export class DevConfig {
   private static instance: DevConfig;
   private suppressedWarnings: Set<string> = new Set();
@@ -189,8 +191,6 @@ export function initializeDevConfig(): void {
 }
 
 // Componente React para manejar configuración de desarrollo
-import React, { useEffect } from 'react';
-
 export interface DevConfigProviderProps {
   children: React.ReactNode;
   enableStrictMode?: boolean;
