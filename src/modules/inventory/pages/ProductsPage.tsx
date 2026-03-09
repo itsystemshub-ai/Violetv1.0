@@ -17,7 +17,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Badge } from "@/shared/components/ui/badge";
 import { Label } from "@/shared/components/ui/label";
 import { InventoryTable } from "@/modules/inventory/components/InventoryTable";
-import { InventoryDashboard } from "@/modules/inventory/components/InventoryDashboard";
 import {
   Tabs,
   TabsContent,

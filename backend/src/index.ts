@@ -15,7 +15,9 @@ import { usersRouter } from './routes/users.js';
 import { productsRouter } from './routes/products.js';
 import { invoicesRouter } from './routes/invoices.js';
 import { tenantsRouter } from './routes/tenants.js';
+import { databaseRouter } from './routes/database.js';
 import { initDatabase } from './database/init.js';
+import { initDatabaseCleanupJobs } from './jobs/database-cleanup.job.js';
 import https from 'https';
 import http from 'http';
 import fs from 'fs';
@@ -60,6 +62,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/invoices', invoicesRouter);
 app.use('/api/tenants', tenantsRouter);
+app.use('/api/database', databaseRouter);
 
 // 404 handler
 app.use((req, res) => {
@@ -74,6 +77,9 @@ app.use(errorHandler);
 
 // Initialize database
 await initDatabase();
+
+// Initialize database cleanup jobs
+initDatabaseCleanupJobs();
 
 // Start server
 const startServer = () => {

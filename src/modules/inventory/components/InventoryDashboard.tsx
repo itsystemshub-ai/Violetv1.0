@@ -1,293 +1,202 @@
-import React from "react";
-import {
+/**
+ * InventoryDashboard - Dashboard moderno con vista de mapa de calor
+ */
+
+import { useMemo } from "react";
+import { useInventoryLogic } from "@/modules/inventory/hooks/useInventoryLogic";
+import { formatCurrency } from "@/lib";
+import { 
+  Boxes, 
+  Flame, 
+  Snowflake, 
+  Zap,
   TrendingUp,
-  Package,
-  AlertTriangle,
-  ShoppingCart,
-  DollarSign,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Calendar,
-  Layers,
-  Sparkles,
-  BarChart3,
-  Clock,
-  History,
-  Activity,
-  Box,
+  TrendingDown,
+  Minus,
+  ArrowRight,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from "recharts";
-import { useInventoryLogic } from "../hooks/useInventoryLogic";
-import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 
-export const InventoryDashboard: React.FC = () => {
-  const { products, whStats, lowStockCount, totalInventoryValue } =
-    useInventoryLogic();
-  const { formatMoney } = useCurrencyStore();
+export function InventoryDashboard() {
+  const logic = useInventoryLogic();
 
-  const stats = [
-    {
-      label: "Total Productos",
-      value: products.length.toString(),
-      icon: Package,
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-500/10",
-      trend: "+4.5%",
-    },
-    {
-      label: "Stock Bajo",
-      value: lowStockCount.toString(),
-      icon: AlertTriangle,
-      color: "text-amber-600",
-      bg: "bg-amber-50 dark:bg-amber-500/10",
-      trend: "-2 hoy",
-    },
-    {
-      label: "Valor Total",
-      value: formatMoney(totalInventoryValue),
-      icon: DollarSign,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50 dark:bg-emerald-500/10",
-      trend: "+12.2k",
-    },
-    {
-      label: "Categorías",
-      value: Array.from(
-        new Set(products.map((p) => p.category)),
-      ).length.toString(),
-      icon: Layers,
-      color: "text-violet-600",
-      bg: "bg-violet-50 dark:bg-violet-500/10",
-      trend: "Estable",
-    },
-  ];
+  const analysis = useMemo(() => {
+    const products = logic.allFilteredProducts || [];
+    
+    // Análisis de rotación
+    const highRotation = products.filter((p: any) => {
+      const sales = p.ventasHistory ? Object.values(p.ventasHistory).reduce((a: any, b: any) => a + b, 0) : 0;
+      return sales > 50;
+    });
+    
+    const mediumRotation = products.filter((p: any) => {
+      const sales = p.ventasHistory ? Object.values(p.ventasHistory).reduce((a: any, b: any) => a + b, 0) : 0;
+      return sales > 10 && sales <= 50;
+    });
+    
+    const lowRotation = products.filter((p: any) => {
+      const sales = p.ventasHistory ? Object.values(p.ventasHistory).reduce((a: any, b: any) => a + b, 0) : 0;
+      return sales <= 10;
+    });
+    
+    // Análisis de valor
+    const totalValue = products.reduce((sum: number, p: any) => sum + (p.stock * p.price), 0);
+    const avgValue = totalValue / (products.length || 1);
+    
+    // Productos críticos
+    const critical = products.filter((p: any) => p.stock === 0);
+    const warning = products.filter((p: any) => p.stock > 0 && p.stock <= p.minStock);
+    const healthy = products.filter((p: any) => p.stock > p.minStock);
+    
+    return {
+      highRotation,
+      mediumRotation,
+      lowRotation,
+      totalValue,
+      avgValue,
+      critical,
+      warning,
+      healthy,
+      total: products.length,
+    };
+  }, [logic.allFilteredProducts]);
 
-  // Sample data for charts
-  const categoryData = Array.from(new Set(products.map((p) => p.category)))
-    .slice(0, 5)
-    .map((cat) => ({
-      name: cat || "General",
-      value: products.filter((p) => p.category === cat).length,
-    }));
-
-  const stockHistory = [
-    { name: "Lun", value: 400 },
-    { name: "Mar", value: 300 },
-    { name: "Mie", value: 600 },
-    { name: "Jue", value: 800 },
-    { name: "Vie", value: 500 },
-    { name: "Sab", value: 200 },
-    { name: "Dom", value: 300 },
-  ];
+  const healthScore = useMemo(() => {
+    const total = analysis.total || 1;
+    const score = (
+      (analysis.healthy.length / total) * 60 +
+      (analysis.warning.length / total) * 30 +
+      (analysis.highRotation.length / total) * 10
+    );
+    return Math.round(score);
+  }, [analysis]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <Card
-            key={i}
-            className="rounded-3xl border-none shadow-premium hover:scale-[1.02] transition-all bg-card/40 backdrop-blur-xl"
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 italic">
-                    {stat.label}
-                  </p>
-                  <p className="text-3xl font-black tracking-tighter text-foreground">
-                    {stat.value}
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className="rounded-full text-[10px] font-bold bg-white/50 dark:bg-black/20 border-border/40"
-                  >
-                    <TrendingUp className="w-3 h-3 mr-1 text-primary" />
-                    {stat.trend}
-                  </Badge>
-                </div>
-                <div className={stat.bg + " p-3 rounded-2xl"}>
-                  <stat.icon className={stat.color + " w-6 h-6"} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Distritbution */}
-        <Card className="rounded-[2.5rem] border-none shadow-premium bg-card/40 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-black flex items-center gap-3">
-              <BarChart3 className="w-6 h-6 text-primary" />
-              DISTRIBUCIÓN POR CATEGORÍA
-            </CardTitle>
-            <CardDescription className="italic font-medium">
-              Análisis de volumen por familia de producto
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  strokeOpacity={0.1}
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    fill: "var(--muted-foreground)",
-                  }}
-                />
-                <YAxis hide />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "16px",
-                    border: "none",
-                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
-                  }}
-                  cursor={{ fill: "rgba(var(--primary-rgb), 0.05)" }}
-                />
-                <Bar
-                  dataKey="value"
-                  fill="hsl(var(--primary))"
-                  radius={[12, 12, 0, 0]}
-                  barSize={40}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Movements History */}
-        <Card className="rounded-[2.5rem] border-none shadow-premium bg-card/40 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-black flex items-center gap-3">
-              <History className="w-6 h-6 text-indigo-500" />
-              FLUJO DE STOCK
-            </CardTitle>
-            <CardDescription className="italic font-medium">
-              Movimientos detectados en los últimos 7 días
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px] pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={stockHistory}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  strokeOpacity={0.1}
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    fill: "var(--muted-foreground)",
-                  }}
-                />
-                <YAxis hide />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "16px",
-                    border: "none",
-                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={4}
-                  dot={{ r: 6, fill: "hsl(var(--primary))", strokeWidth: 0 }}
-                  activeDot={{ r: 8, strokeWidth: 0 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Advanced Alerts / Critical Items */}
-      <Card className="rounded-[2.5rem] border-none shadow-premium bg-linear-to-br from-rose-500/5 to-amber-500/5 backdrop-blur-xl border border-rose-500/10">
-        <CardHeader>
-          <CardTitle className="text-xl font-black flex items-center gap-3">
-            <Sparkles className="w-6 h-6 text-rose-500" />
-            ALERTAS Y RECOMENDACIONES DE IA
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {lowStockCount > 0 ? (
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/50 dark:bg-black/20 border border-rose-500/20">
-              <div className="p-3 bg-rose-500/10 rounded-xl">
-                <AlertTriangle className="w-6 h-6 text-rose-500" />
-              </div>
-              <div className="flex-1">
-                <p className="font-bold">Stock Crítico Detectado</p>
-                <p className="text-xs text-muted-foreground">
-                  {lowStockCount} mangueras están por debajo del mínimo de
-                  seguridad.
-                </p>
-              </div>
-              <Badge className="bg-rose-500">Urgente</Badge>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/50 dark:bg-black/20 border border-emerald-500/20">
-              <div className="p-3 bg-emerald-500/10 rounded-xl">
-                <Sparkles className="w-6 h-6 text-emerald-500" />
-              </div>
-              <div className="flex-1">
-                <p className="font-bold">Niveles de Stock Óptimos</p>
-                <p className="text-xs text-muted-foreground">
-                  La IA no detecta quiebres de stock inminentes.
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/50 dark:bg-black/20 border border-blue-500/20">
-            <div className="p-3 bg-blue-500/10 rounded-xl">
-              <Activity className="w-6 h-6 text-blue-500" />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold">Predicción de Demanda</p>
-              <p className="text-xs text-muted-foreground">
-                Se estima un incremento del 15% en la categoría Cauplas para el
-                próximo mes.
-              </p>
-            </div>
-            <Badge variant="outline" className="text-blue-600 border-blue-200">
-              Info
-            </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-amber-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-6">
+      {/* Hero Section */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-4xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+              Control de Inventario
+            </h1>
+            <p className="text-muted-foreground mt-1">Vista ejecutiva en tiempo real</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-right">
+            <div className="text-5xl font-black text-orange-600">{healthScore}%</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wider">Salud del Sistema</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mapa de Calor de Rotación */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-500 to-orange-500 p-6 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <Flame className="w-12 h-12 mb-4 opacity-90" />
+          <div className="text-5xl font-black mb-2">{analysis.highRotation.length}</div>
+          <div className="text-sm font-medium opacity-90">Alta Rotación</div>
+          <div className="text-xs opacity-75 mt-1">Productos estrella</div>
+          <div className="mt-4 flex items-center gap-2 text-xs">
+            <TrendingUp className="w-4 h-4" />
+            <span>+{Math.round((analysis.highRotation.length / analysis.total) * 100)}% del catálogo</span>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 to-yellow-500 p-6 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <Zap className="w-12 h-12 mb-4 opacity-90" />
+          <div className="text-5xl font-black mb-2">{analysis.mediumRotation.length}</div>
+          <div className="text-sm font-medium opacity-90">Rotación Media</div>
+          <div className="text-xs opacity-75 mt-1">Productos estables</div>
+          <div className="mt-4 flex items-center gap-2 text-xs">
+            <Minus className="w-4 h-4" />
+            <span>{Math.round((analysis.mediumRotation.length / analysis.total) * 100)}% del catálogo</span>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 to-cyan-500 p-6 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+          <Snowflake className="w-12 h-12 mb-4 opacity-90" />
+          <div className="text-5xl font-black mb-2">{analysis.lowRotation.length}</div>
+          <div className="text-sm font-medium opacity-90">Baja Rotación</div>
+          <div className="text-xs opacity-75 mt-1">Requieren atención</div>
+          <div className="mt-4 flex items-center gap-2 text-xs">
+            <TrendingDown className="w-4 h-4" />
+            <span>{Math.round((analysis.lowRotation.length / analysis.total) * 100)}% del catálogo</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Estado del Stock */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-200 dark:border-emerald-800 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+              <Boxes className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div className="text-3xl font-black text-emerald-600">{analysis.healthy.length}</div>
+          </div>
+          <div className="text-sm font-bold text-emerald-900 dark:text-emerald-100">Stock Saludable</div>
+          <div className="text-xs text-muted-foreground mt-1">Por encima del mínimo</div>
+          <div className="mt-4 h-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-500"
+              style={{ width: `${(analysis.healthy.length / analysis.total) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-800 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+              <Boxes className="w-6 h-6 text-orange-600" />
+            </div>
+            <div className="text-3xl font-black text-orange-600">{analysis.warning.length}</div>
+          </div>
+          <div className="text-sm font-bold text-orange-900 dark:text-orange-100">Stock Bajo</div>
+          <div className="text-xs text-muted-foreground mt-1">Requiere reabastecimiento</div>
+          <div className="mt-4 h-2 bg-orange-100 dark:bg-orange-900/30 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500"
+              style={{ width: `${(analysis.warning.length / analysis.total) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-800 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+              <Boxes className="w-6 h-6 text-red-600" />
+            </div>
+            <div className="text-3xl font-black text-red-600">{analysis.critical.length}</div>
+          </div>
+          <div className="text-sm font-bold text-red-900 dark:text-red-100">Sin Stock</div>
+          <div className="text-xs text-muted-foreground mt-1">Acción inmediata</div>
+          <div className="mt-4 h-2 bg-red-100 dark:bg-red-900/30 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-red-500 to-pink-500 transition-all duration-500"
+              style={{ width: `${(analysis.critical.length / analysis.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Valor del Inventario */}
+      <div className="rounded-3xl bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 p-8 text-white shadow-2xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium opacity-90 mb-2">Valor Total del Inventario</div>
+            <div className="text-6xl font-black mb-2">{formatCurrency(analysis.totalValue)}</div>
+            <div className="text-sm opacity-75">Promedio por producto: {formatCurrency(analysis.avgValue)}</div>
+          </div>
+          <div className="text-right">
+            <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2">
+              <TrendingUp className="w-12 h-12" />
+            </div>
+            <div className="text-xs opacity-75">Actualizado ahora</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
+}

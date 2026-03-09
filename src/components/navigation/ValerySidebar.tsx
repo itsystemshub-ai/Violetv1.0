@@ -169,7 +169,7 @@ const menuItems: MenuItem[] = [
       },
       {
         id: "analitica-inv",
-        label: "Analítica IA",
+        label: "Análisis",
         icon: Sparkles,
         path: "/inventory/analytics",
       },

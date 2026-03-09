@@ -425,13 +425,15 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     protected: true,
     permission: "view:inventory",
     title: "Estadísticas de Inventario",
+    description: "Métricas y análisis estadístico",
   },
   {
     path: "/inventory/analytics",
     component: Inventory,
     protected: true,
     permission: "view:inventory",
-    title: "Analítica IA de Inventario",
+    title: "Análisis de Inventario",
+    description: "Análisis avanzado y predicciones",
   },
   // Purchases Sub-pages
   {
