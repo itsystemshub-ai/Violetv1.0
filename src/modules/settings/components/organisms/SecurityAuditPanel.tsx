@@ -115,13 +115,14 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
   const handleNotifyMaintenance = async () => {
     setIsNotifyingMaintenance(true);
     try {
-      const { sendBroadcastNotification } = await import("@/shared/hooks/useBroadcastNotifications");
-      
+      const { sendBroadcastNotification } =
+        await import("@/shared/hooks/useBroadcastNotifications");
+
       sendBroadcastNotification({
-        type: 'maintenance',
-        title: 'Mantenimiento Programado',
-        message: 'Atención: El sistema entrará en mantenimiento en 30 minutos.',
-        data: { duration: 30 }
+        type: "maintenance",
+        title: "Mantenimiento Programado",
+        message: "Atención: El sistema entrará en mantenimiento en 30 minutos.",
+        data: { duration: 30 },
       });
 
       toast.success("Alerta de mantenimiento enviada a todos los usuarios");
@@ -138,11 +139,11 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
       {/* Security Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="text-page-title flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-primary" />
             Centro de Seguridad
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-subtitle text-muted-foreground">
             Monitoreo y auditoría de integridad para Violet ERP.
           </p>
         </div>
@@ -176,14 +177,16 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border-none shadow-sm bg-card hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <CardTitle className="text-card-title text-muted-foreground uppercase tracking-wider">
               Auditoría
             </CardTitle>
             <ShieldCheck className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{auditLogs.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-numeric-large text-3xl">
+              {auditLogs.length}
+            </div>
+            <p className="text-caption text-muted-foreground">
               Cambios críticos registrados
             </p>
           </CardContent>
@@ -191,14 +194,16 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
 
         <Card className="border-none shadow-sm bg-card hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <CardTitle className="text-card-title text-muted-foreground uppercase tracking-wider">
               Pendientes Sinc
             </CardTitle>
             <Database className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingSyncCount}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-numeric-large text-3xl">
+              {pendingSyncCount}
+            </div>
+            <p className="text-caption text-muted-foreground">
               Esperando conexión al servidor
             </p>
           </CardContent>
@@ -206,14 +211,14 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
 
         <Card className="border-none shadow-sm bg-card hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <CardTitle className="text-card-title text-muted-foreground uppercase tracking-wider">
               Salud DB
             </CardTitle>
             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Óptima</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-numeric-large text-3xl">Óptima</div>
+            <p className="text-caption text-muted-foreground">
               Dexie + Supabase en armonía
             </p>
           </CardContent>
@@ -221,14 +226,16 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
 
         <Card className="border-none shadow-sm bg-card hover:shadow-md transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <CardTitle className="text-card-title text-muted-foreground uppercase tracking-wider">
               Último Sync
             </CardTitle>
             <Clock className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold truncate">{lastSyncTime}</div>
-            <p className="text-xs text-muted-foreground">Actividad reciente</p>
+            <p className="text-caption text-muted-foreground">
+              Actividad reciente
+            </p>
           </CardContent>
         </Card>
       </div>

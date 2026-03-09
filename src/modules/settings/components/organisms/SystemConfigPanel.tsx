@@ -232,13 +232,18 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
                 variant="outline"
                 className="w-full border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 gap-2 font-bold h-11 rounded-xl shadow-sm border-dashed"
                 onClick={() => {
-                  const { sendBroadcastNotification } = require("@/shared/hooks/useBroadcastNotifications");
+                  const {
+                    sendBroadcastNotification,
+                  } = require("@/shared/hooks/useBroadcastNotifications");
                   sendBroadcastNotification({
-                    type: 'maintenance',
-                    title: 'Mantenimiento Programado',
-                    message: 'Se está haciendo mantenimiento y actualizaciones en estos próximos 30 min',
+                    type: "maintenance",
+                    title: "Mantenimiento Programado",
+                    message:
+                      "Se está haciendo mantenimiento y actualizaciones en estos próximos 30 min",
                   });
-                  toast.success("Notificación de mantenimiento enviada a todos los usuarios.");
+                  toast.success(
+                    "Notificación de mantenimiento enviada a todos los usuarios.",
+                  );
                 }}
               >
                 <Radio className="w-4 h-4 animate-pulse" />
@@ -331,12 +336,12 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
           icon={<Monitor className="w-5 h-5" />}
         >
           <div className="space-y-4">
-            <Label className="text-sm font-bold flex items-center gap-2">
+            <Label className="text-card-title flex items-center gap-2">
               <Radio className="w-4 h-4 text-emerald-500 animate-pulse" />
               Monitor de Instancias Conectadas: {safeInstances.length}
             </Label>
             {safeInstances.length === 0 ? (
-              <div className="p-4 rounded-xl border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground bg-muted/20">
+              <div className="p-4 rounded-xl border border-dashed border-border flex items-center justify-center text-body text-muted-foreground bg-muted/20">
                 No hay instancias conectadas actualmente.
               </div>
             ) : (

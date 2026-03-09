@@ -100,7 +100,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           >
             <Card className="border-none shadow-none bg-transparent">
               <CardHeader className="px-0">
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-page-title">
                   Acceso al Sistema
                 </CardTitle>
                 <CardDescription>
@@ -126,7 +126,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <Button
                     onClick={onNextStep}
-                    className="w-full h-12 text-base font-semibold"
+                    className="w-full h-12 text-button"
                   >
                     Continuar
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -134,9 +134,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 </div>
               </CardContent>
               <CardFooter className="px-0 justify-center">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-body text-muted-foreground">
                   No tienes una cuenta?{" "}
-                  <button 
+                  <button
                     type="button"
                     className="text-primary font-medium hover:underline focus:outline-none"
                     onClick={() => onLegalClick("help")}
@@ -159,7 +159,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           >
             <Card className="border-none shadow-none bg-transparent">
               <CardHeader className="px-0">
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-page-title">
                   Bienvenido de nuevo
                 </CardTitle>
                 <CardDescription>
@@ -226,7 +226,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold"
+                    className="w-full h-12 text-button"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -254,7 +254,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                   <ShieldCheck className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-page-title">
                   Verificación 2FA
                 </CardTitle>
                 <CardDescription>
@@ -278,7 +278,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold"
+                    className="w-full h-12 text-button"
                     disabled={isLoading || formData.mfaCode.length < 6}
                   >
                     {isLoading ? (
@@ -288,9 +288,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     )}
                   </Button>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-body text-muted-foreground">
                       ¿No recibiste el código?{" "}
-                      <button 
+                      <button
                         type="button"
                         className="text-primary font-medium hover:underline focus:outline-none"
                       >
@@ -331,7 +331,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     Volver
                   </span>
                 </div>
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-page-title">
                   Recuperar acceso
                 </CardTitle>
                 <CardDescription>
@@ -365,7 +365,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold"
+                    className="w-full h-12 text-button"
                     disabled={isLoading || !recoveryEmail}
                   >
                     {isLoading ? (
@@ -399,7 +399,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     Volver
                   </span>
                 </div>
-                <CardTitle className="text-3xl font-bold flex items-center gap-2">
+                <CardTitle className="text-page-title flex items-center gap-2">
                   <Wifi className="w-8 h-8 text-primary" /> Red Local
                 </CardTitle>
                 <CardDescription>
@@ -431,7 +431,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   </div>
                   <Button
                     type="submit"
-                    className="w-full h-12 text-base font-semibold"
+                    className="w-full h-12 text-button"
                     disabled={isLoading}
                   >
                     Guardar Configuración y Conectar
