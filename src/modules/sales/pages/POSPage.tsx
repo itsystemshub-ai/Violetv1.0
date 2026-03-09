@@ -74,9 +74,6 @@ const POSPage: React.FC = () => {
     cart,
     searchQuery,
     setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
-    categories,
     paymentMethod,
     setPaymentMethod,
     loading,
@@ -165,7 +162,7 @@ const POSPage: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, categoryFilter]);
+  }, [searchQuery]);
 
   const totalPages = Math.ceil((products || []).length / ITEMS_PER_PAGE);
   const currentProducts = (products || []).slice(
@@ -482,36 +479,7 @@ const POSPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Categories Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
-          <Button
-            variant={categoryFilter === "all" ? "default" : "outline"}
-            className={cn(
-              "rounded-full px-6 transition-all shrink-0 h-10 font-bold",
-              categoryFilter === "all"
-                ? "shadow-lg shadow-primary/30"
-                : "border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-primary/50",
-            )}
-            onClick={() => setCategoryFilter("all")}
-          >
-            Todos los Productos
-          </Button>
-          {(categories || []).map((cat) => (
-            <Button
-              key={cat}
-              variant={categoryFilter === cat ? "default" : "outline"}
-              className={cn(
-                "rounded-full px-6 transition-all shrink-0 h-10 font-bold",
-                categoryFilter === cat
-                  ? "shadow-lg shadow-primary/30"
-                  : "border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-primary/50",
-              )}
-              onClick={() => setCategoryFilter(cat)}
-            >
-              {cat}
-            </Button>
-          ))}
-        </div>
+
       </div>
 
       <div className="space-y-6 h-[calc(100vh-210px)]">

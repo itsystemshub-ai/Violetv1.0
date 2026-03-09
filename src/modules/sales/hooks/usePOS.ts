@@ -41,7 +41,6 @@ export const usePOS = () => {
   
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [paymentMethod, setPaymentMethod] = useState<string>('efectivo');
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [taxRate] = useState(0.16); // 16% IVA
@@ -90,8 +89,8 @@ export const usePOS = () => {
       const query = searchQuery.toLowerCase().trim();
       
       if (!query) {
-        // Si no hay búsqueda, solo filtrar por categoría
-        return categoryFilter === 'all' || product.categoria === categoryFilter;
+        // Si no hay búsqueda, mostrar todos los productos
+        return true;
       }
       
       // Búsqueda inteligente en TODOS los campos del inventario
@@ -118,14 +117,11 @@ export const usePOS = () => {
         String(product.precio).includes(query) ||
         String(product.stock).includes(query);
       
-      const matchesCategory = categoryFilter === 'all' || product.categoria === categoryFilter;
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
-  }, [products, searchQuery, categoryFilter]);
+  }, [products, searchQuery]);
 
-  const categories = useMemo(() => {
-    return Array.from(new Set((products || []).map(p => p.categoria)));
-  }, [products]);
+
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find((item) => item.id === product.id);
@@ -235,9 +231,6 @@ export const usePOS = () => {
     cart,
     searchQuery,
     setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
-    categories,
     paymentMethod,
     setPaymentMethod,
     loading,
