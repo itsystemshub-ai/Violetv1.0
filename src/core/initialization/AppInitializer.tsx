@@ -113,14 +113,14 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
 
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      // 0. Configuración de desarrollo
+      // 0. Configuración de desarrollo (no bloqueante)
       if (process.env.NODE_ENV === 'development') {
         console.log("[AppInitializer] 🔧 Configurando modo desarrollo...");
         devConfig.logDevelopmentInfo();
         initializeDevConfig();
       }
 
-      // 1. Inicializar sistema de manejo de errores
+      // 1. Inicializar sistema de manejo de errores (síncrono, rápido)
       console.log("[AppInitializer] 🛡️  Inicializando manejo de errores...");
       errorHandler.enableErrorReporting();
       
@@ -135,37 +135,63 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
         }
       });
 
-      // 2. Inicializar seguridad
-      console.log("[AppInitializer] 🔐 Inicializando seguridad...");
-      try {
-        await securityService.initializeEncryption();
-        console.log("[AppInitializer] ✅ Seguridad inicializada");
-      } catch (securityError) {
-        console.warn("[AppInitializer] ⚠️  Error inicializando seguridad:", securityError);
-        // Continuar sin seguridad en modo desarrollo
-        if (process.env.NODE_ENV === 'production') {
-          throw securityError;
-        }
-      }
+      // 2-6. Ejecutar inicializaciones en paralelo (más rápido)
+      console.log("[AppInitializer] ⚡ Inicializando servicios en paralelo...");
+      
+      await Promise.allSettled([
+        // Seguridad
+        (async () => {
+          console.log("[AppInitializer] 🔐 Inicializando seguridad...");
+          try {
+            await securityService.initializeEncryption();
+            console.log("[AppInitializer] ✅ Seguridad inicializada");
+          } catch (securityError) {
+            console.warn("[AppInitializer] ⚠️  Error inicializando seguridad:", securityError);
+            // Continuar sin seguridad en modo desarrollo
+            if (process.env.NODE_ENV === 'production') {
+              throw securityError;
+            }
+          }
+        })(),
+        
+        // Tenants configuration (crítico)
+        (async () => {
+          console.log("[AppInitializer] 📦 Cargando configuración de tenants...");
+          await fetchAllTenants();
+        })(),
+        
+        // Network service (no bloqueante)
+        (async () => {
+          console.log("[AppInitializer] 🌐 Inicializando servicio de red...");
+          const configuredIp = localStorage.getItem("master_ip") || "localhost";
+          NetworkService.connect(configuredIp);
+        })(),
+        
+        // Backup service (no bloqueante)
+        (async () => {
+          console.log("[AppInitializer] 💾 Inicializando servicio de backup...");
+          backupService.getConfig();
+        })(),
+        
+        // Database optimization (no bloqueante)
+        (async () => {
+          console.log("[AppInitializer] 🔍 Optimizando base de datos...");
+          const { IndexOptimizer } = await import('@/infrastructure/database/indexOptimizer');
+          await IndexOptimizer.optimizeAll();
+        })(),
+        
+        // Schedule data cleanup (no bloqueante)
+        (async () => {
+          console.log("[AppInitializer] 🧹 Programando limpieza automática...");
+          const { DataCleanup } = await import('@/infrastructure/database/dataCleanup');
+          DataCleanup.scheduleAutoCleanup();
+        })(),
+      ]);
 
-      // 3. Inicializar validaciones
-      console.log("[AppInitializer] 📋 Inicializando sistema de validaciones...");
-      // El validador ya está inicializado como singleton
+      // 3. Validaciones (síncrono, ya inicializado)
+      console.log("[AppInitializer] 📋 Sistema de validaciones listo");
 
-      // 4. Fetch tenants configuration
-      console.log("[AppInitializer] 📦 Cargando configuración de tenants...");
-      await fetchAllTenants();
-
-      // 5. Initialize network service
-      console.log("[AppInitializer] 🌐 Inicializando servicio de red...");
-      const configuredIp = localStorage.getItem("master_ip") || "localhost";
-      NetworkService.connect(configuredIp);
-
-      // 6. Initialize backup service
-      console.log("[AppInitializer] 💾 Inicializando servicio de backup...");
-      backupService.getConfig();
-
-      // 7. Verificar compatibilidad del navegador
+      // 7. Verificar compatibilidad del navegador (síncrono, rápido)
       console.log("[AppInitializer] 🌍 Verificando compatibilidad del navegador...");
       checkBrowserCompatibility();
 

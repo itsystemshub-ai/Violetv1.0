@@ -5,12 +5,13 @@
  * - Centraliza todas las rutas de la aplicación
  * - Type-safe route definitions
  * - Facilita refactoring y mantenimiento
+ * - TODAS las páginas usan lazy loading para mejor performance
  */
 
 import { lazy, ComponentType } from "react";
 
-// Lazy-loaded Pages
-import ExecutiveDashboard from "@/modules/dashboard/pages/DashboardPage";
+// Lazy-loaded Pages - TODAS las páginas usan lazy loading
+const ExecutiveDashboard = lazy(() => import("@/modules/dashboard/pages/DashboardPage"));
 const FinancePage = lazy(() => import("@/modules/finance/pages/FinancePage"));
 const Finance = FinancePage;
 const AccountsPayable = FinancePage;

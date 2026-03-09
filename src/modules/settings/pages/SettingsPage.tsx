@@ -109,16 +109,19 @@ const LoadingFallback = () => (
  * Determine which section to show based on the URL path
  */
 function getActiveSection(pathname: string): string {
+  if (pathname.includes("/settings/company")) return "company";
   if (pathname.includes("/settings/users")) return "users";
   if (pathname.includes("/settings/security")) return "security";
-  if (pathname.includes("/settings/monitor")) return "monitor";
-  if (pathname.includes("/settings/activity")) return "activity";
-  if (pathname.includes("/settings/audit")) return "audit";
-  if (pathname.includes("/settings/connectivity")) return "connectivity";
   if (pathname.includes("/settings/ai")) return "ai";
-  if (pathname.includes("/settings/password-requests"))
-    return "password-requests";
-  if (pathname.includes("/settings/automation")) return "automation";
+  if (pathname.includes("/settings/connectivity")) return "connectivity";
+  if (pathname.includes("/settings/monitor")) return "monitor";
+  
+  // Redirecciones de rutas antiguas eliminadas
+  if (pathname.includes("/settings/activity")) return "monitor"; // Redirigir a monitor
+  if (pathname.includes("/settings/audit")) return "security"; // Redirigir a seguridad
+  if (pathname.includes("/settings/password-requests")) return "security"; // Redirigir a seguridad
+  if (pathname.includes("/settings/automation")) return "ai"; // Redirigir a IA
+  
   return "company"; // default for /settings
 }
 
@@ -275,13 +278,49 @@ export default function SettingsPage() {
           </Tabs>
         );
       case "security":
-        return <SystemSecurityPanel />;
+        return (
+          <Tabs defaultValue="security" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1 rounded-full border">
+              <TabsTrigger value="security" className="rounded-full px-6">
+                Seguridad
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="rounded-full px-6">
+                Auditoría
+              </TabsTrigger>
+              <TabsTrigger value="passwords" className="rounded-full px-6">
+                Solicitudes de Clave
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="security">
+              <SystemSecurityPanel />
+            </TabsContent>
+            <TabsContent value="audit">
+              <SecurityAuditPanel />
+            </TabsContent>
+            <TabsContent value="passwords">
+              <PasswordRequestsPanel />
+            </TabsContent>
+          </Tabs>
+        );
       case "monitor":
-        return <SystemMonitorPanel />;
-      case "activity":
-        return <ActivityLogPanel />;
-      case "audit":
-        return <SecurityAuditPanel />;
+        return (
+          <Tabs defaultValue="monitor" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1 rounded-full border">
+              <TabsTrigger value="monitor" className="rounded-full px-6">
+                Monitoreo
+              </TabsTrigger>
+              <TabsTrigger value="activity" className="rounded-full px-6">
+                Actividad
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="monitor">
+              <SystemMonitorPanel />
+            </TabsContent>
+            <TabsContent value="activity">
+              <ActivityLogPanel />
+            </TabsContent>
+          </Tabs>
+        );
       case "connectivity":
         return (
           <Tabs defaultValue="notifications" className="space-y-6">
@@ -302,11 +341,24 @@ export default function SettingsPage() {
           </Tabs>
         );
       case "ai":
-        return <AIChatPanel isMaster={isMaster} />;
-      case "password-requests":
-        return <PasswordRequestsPanel />;
-      case "automation":
-        return <AutomationHubPanel />;
+        return (
+          <Tabs defaultValue="config" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1 rounded-full border">
+              <TabsTrigger value="config" className="rounded-full px-6">
+                Configuración IA
+              </TabsTrigger>
+              <TabsTrigger value="automation" className="rounded-full px-6">
+                Automatización
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="config">
+              <AIChatPanel isMaster={isMaster} />
+            </TabsContent>
+            <TabsContent value="automation">
+              <AutomationHubPanel />
+            </TabsContent>
+          </Tabs>
+        );
       default:
         return null;
     }

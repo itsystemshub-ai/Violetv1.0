@@ -1,21 +1,4 @@
-/**
- * App Component - Punto de entrada principal de la aplicación
- *
- * Arquitectura Mejorada:
- * - Separation of Concerns: Providers, Router, Initialization separados
- * - Composition Pattern: Componentes componibles y reutilizables
- * - Clean Architecture: Dependencias claras y unidireccionales
- *
- * Mejoras aplicadas:
- * ✅ Providers extraídos a AppProviders
- * ✅ Router extraído a AppRouter
- * ✅ Inicialización extraída a AppInitializer
- * ✅ Notificaciones extraídas a NotificationManager
- * ✅ Mejor separación de responsabilidades
- * ✅ Más fácil de testear y mantener
- */
-
-import React from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { HashRouter } from "react-router-dom";
 import { ErrorBoundary } from "@/shared/components/feedback/ErrorBoundary";
 import { AppProviders } from "@/core/providers/AppProviders";
@@ -23,10 +6,13 @@ import { AppRouter } from "@/core/router/AppRouter";
 import { AppInitializer } from "@/core/initialization/AppInitializer";
 import { NotificationManager } from "@/core/notifications/NotificationManager";
 import { OfflineBanner } from "@/shared/components/feedback/OfflineBanner";
-import { RealtimeBootstrap } from "@/core/shared/components/RealtimeBootstrap";
 import { AIFloatingButton } from "@/shared/components/ai";
 import { IdleTimer } from "@/core/auth/components/IdleTimer";
 import { MaintenanceResponder } from "@/components/shared/MaintenanceResponder";
+import { initializeRoutePreloading } from "@/core/performance/RoutePreloader";
+
+// Lazy load heavy components that aren't needed immediately
+const RealtimeBootstrap = lazy(() => import("@/core/shared/components/RealtimeBootstrap").then(m => ({ default: m.RealtimeBootstrap })));
 
 /**
  * App Component
@@ -39,9 +25,19 @@ import { MaintenanceResponder } from "@/components/shared/MaintenanceResponder";
  * 5. AppRouter - Configuración de rutas
  * 6. NotificationManager - Sistema de notificaciones
  * 7. OfflineBanner - Banner de estado offline
- * 8. RealtimeBootstrap - Inicialización de realtime
+ * 8. RealtimeBootstrap - Inicialización de realtime (lazy loaded)
+ * 
+ * Optimizaciones:
+ * - Lazy loading de componentes pesados
+ * - Precarga de rutas críticas en idle time
+ * - Inicialización paralela de servicios
  */
 const App: React.FC = () => {
+  // Initialize route preloading after app is mounted
+  useEffect(() => {
+    initializeRoutePreloading();
+  }, []);
+
   return (
     <ErrorBoundary>
       <AppProviders>
@@ -50,7 +46,9 @@ const App: React.FC = () => {
             <AppRouter />
             <NotificationManager />
             <OfflineBanner />
-            <RealtimeBootstrap />
+            <Suspense fallback={null}>
+              <RealtimeBootstrap />
+            </Suspense>
             <AIFloatingButton />
             <IdleTimer />
             <MaintenanceResponder />

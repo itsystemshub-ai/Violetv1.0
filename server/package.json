@@ -1,16 +1,24 @@
 {
-  "name": "violet-groq-proxy",
+  "name": "violet-erp-socket-server",
   "version": "1.0.0",
-  "description": "Proxy server for Groq API to avoid CORS issues",
-  "main": "groq-proxy.cjs",
+  "description": "Socket.IO server para sincronización en red local de Violet ERP",
+  "main": "socket-server.js",
   "scripts": {
-    "start": "node groq-proxy.cjs",
-    "dev": "nodemon groq-proxy.cjs"
+    "start": "node socket-server.js",
+    "dev": "nodemon socket-server.js"
   },
+  "keywords": [
+    "socket.io",
+    "real-time",
+    "sync",
+    "erp"
+  ],
+  "author": "Violet ERP",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "express-rate-limit": "^7.1.5"
+    "socket.io": "^4.6.1",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
