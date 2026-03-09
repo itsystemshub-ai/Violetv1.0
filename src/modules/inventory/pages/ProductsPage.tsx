@@ -95,7 +95,6 @@ import { cn } from "@/core/shared/utils/utils";
 import { ProductForm as RawProductForm } from "@/shared/components/common/Forms";
 import { ProductImageCarousel } from "@/modules/inventory/components/ProductImageCarousel";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
-import { BiometricScanner } from "@/shared/components/stitch/BiometricScanner";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import { useTenant } from "@/shared/hooks/useTenant";
 import { toast } from "sonner";
@@ -400,7 +399,6 @@ export default function ProductsPage() {
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
       <PremiumHUD>
-        <BiometricScanner scanning={invLogic.isLoading} />
         <div className="p-6 space-y-6">
           <div className="bg-card/50 dark:bg-slate-900/50 backdrop-blur-xl border border-border/50 rounded-[2.5rem] p-8 shadow-2xl space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -447,20 +445,82 @@ export default function ProductsPage() {
                   multiple
                 />
                 {invLogic.statusFilter === "all" && (
-                  <Button
-                    variant="outline"
-                    className="rounded-full shadow-sm gap-2"
-                    onClick={() => invLogic.fileInputRef.current?.click()}
-                    disabled={invLogic.isImporting}
-                  >
-                    <Upload
-                      className={cn(
-                        "w-4 h-4 text-primary",
-                        invLogic.isImporting && "animate-pulse",
-                      )}
-                    />
-                    {invLogic.isImporting ? "Procesando..." : "Importar Excel"}
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      className="rounded-full shadow-sm gap-2"
+                      onClick={() => invLogic.fileInputRef.current?.click()}
+                      disabled={invLogic.isImporting}
+                    >
+                      <Upload
+                        className={cn(
+                          "w-4 h-4 text-primary",
+                          invLogic.isImporting && "animate-pulse",
+                        )}
+                      />
+                      {invLogic.isImporting
+                        ? "Procesando..."
+                        : "Importar Excel"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-full shadow-sm gap-2 border-violet-500/30 bg-violet-500/5 text-violet-600 hover:bg-violet-500/10"
+                      onClick={() => {
+                        automationHub.trigger("/inventory/sync", {
+                          tenantId: tenant?.id,
+                          productCount: invLogic.products.length,
+                          timestamp: new Date().toISOString(),
+                        });
+                        toast.success("Sincronización masiva enviada a n8n");
+                      }}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Sincronizar IA
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                          title="Reiniciar Inventario"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            ¿Estás completamente seguro?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción eliminará todos los productos
+                            permanentemente.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={invLogic.handleClear}
+                            className="bg-destructive hover:bg-destructive/90 text-white"
+                          >
+                            Eliminar Todo
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                    <Button
+                      className="gap-2 ml-2"
+                      onClick={() => {
+                        setForm({ ...emptyForm });
+                        setCreateDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="w-4 h-4" />
+                      NUEVO PRODUCTO
+                    </Button>
+                  </>
                 )}
                 {invLogic.statusFilter === "photos" && (
                   <DropdownMenu>
@@ -497,64 +557,6 @@ export default function ProductsPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
-                <Button
-                  variant="outline"
-                  className="rounded-full shadow-sm gap-2 border-violet-500/30 bg-violet-500/5 text-violet-600 hover:bg-violet-500/10"
-                  onClick={() => {
-                    automationHub.trigger("/inventory/sync", {
-                      tenantId: tenant?.id,
-                      productCount: invLogic.products.length,
-                      timestamp: new Date().toISOString(),
-                    });
-                    toast.success("Sincronización masiva enviada a n8n");
-                  }}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Sincronizar IA
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                      title="Reiniciar Inventario"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        ¿Estás completamente seguro?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción eliminará todos los productos
-                        permanentemente.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={invLogic.handleClear}
-                        className="bg-destructive hover:bg-destructive/90 text-white"
-                      >
-                        Eliminar Todo
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-
-                <Button
-                  className="gap-2 ml-2"
-                  onClick={() => {
-                    setForm({ ...emptyForm });
-                    setCreateDialogOpen(true);
-                  }}
-                >
-                  <Plus className="w-4 h-4" />
-                  NUEVO PRODUCTO
-                </Button>
               </div>
             </div>
 

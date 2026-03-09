@@ -29,7 +29,11 @@ import {
   Sparkles,
   Headphones,
   Database,
+  Activity,
+  History,
+  ShieldCheck,
   Smartphone,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -102,6 +106,12 @@ const menuItems: MenuItem[] = [
     badge: "Nuevo",
     children: [
       {
+        id: "crm-dash",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/crm/analytics",
+      },
+      {
         id: "pipeline",
         label: "Pipeline",
         icon: BarChart3,
@@ -119,12 +129,6 @@ const menuItems: MenuItem[] = [
         label: "Comunicaciones",
         icon: FileText,
         path: "/crm/communications",
-      },
-      {
-        id: "analisis",
-        label: "Análisis",
-        icon: BarChart3,
-        path: "/crm/analytics",
       },
       {
         id: "automatizacion",
@@ -246,6 +250,12 @@ const menuItems: MenuItem[] = [
     icon: DollarSign,
     children: [
       {
+        id: "finanzas-dash",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/finance/dashboard",
+      },
+      {
         id: "monedas",
         label: "Monedas",
         icon: DollarSign,
@@ -278,6 +288,12 @@ const menuItems: MenuItem[] = [
         path: "/accounting",
         badge: "Nuevo",
       },
+      {
+        id: "config-impuestos",
+        label: "Impuestos",
+        icon: DollarSign,
+        path: "/finance/taxes",
+      },
     ],
   },
   {
@@ -285,6 +301,12 @@ const menuItems: MenuItem[] = [
     label: "Recursos Humanos",
     icon: UserCog,
     children: [
+      {
+        id: "hr-dash",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/hr/dashboard",
+      },
       {
         id: "empleados",
         label: "Empleados",
@@ -349,41 +371,46 @@ const menuItems: MenuItem[] = [
         path: "/settings/security",
       },
       {
+        id: "config-monitor",
+        label: "Monitoreo",
+        icon: Activity,
+        path: "/settings/monitor",
+      },
+      {
+        id: "config-activity",
+        label: "Actividad",
+        icon: History,
+        path: "/settings/activity",
+      },
+      {
+        id: "config-audit",
+        label: "Auditoría",
+        icon: ShieldCheck,
+        path: "/settings/audit",
+      },
+      {
         id: "config-empresa",
         label: "Empresa",
         icon: Building2,
         path: "/settings/company",
       },
       {
-        id: "config-impuestos",
-        label: "Impuestos",
-        icon: DollarSign,
-        path: "/settings/taxes",
-      },
-      {
         id: "config-usuarios",
-        label: "Usuarios",
+        label: "Usuarios y Roles",
         icon: Users,
         path: "/settings/users",
       },
       {
-        id: "config-notificaciones",
-        label: "Notificaciones",
-        icon: Bell,
-        path: "/settings/notifications",
+        id: "config-connectivity",
+        label: "Conectividad",
+        icon: Share2,
+        path: "/settings/connectivity",
       },
       {
-        id: "config-integraciones",
-        label: "Integraciones",
-        icon: Plug,
-        path: "/settings/integrations",
-      },
-      { id: "config-ia", label: "IA", icon: Sparkles, path: "/settings/ai" },
-      {
-        id: "roles-permisos",
-        label: "Roles y Permisos",
-        icon: Shield,
-        path: "/settings/roles",
+        id: "config-ai",
+        label: "Configuración IA",
+        icon: Sparkles,
+        path: "/settings/ai",
       },
       {
         id: "password-requests",
@@ -396,13 +423,6 @@ const menuItems: MenuItem[] = [
         label: "Base de Datos",
         icon: Database,
         path: "/database",
-      },
-      {
-        id: "config-automation",
-        label: "Centro de Automatización",
-        icon: Sparkles,
-        path: "/settings/automation",
-        badge: "Pro",
       },
     ],
   },

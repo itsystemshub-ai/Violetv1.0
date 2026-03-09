@@ -115,27 +115,19 @@ const SecurityAuditPanel: React.FC<SecurityAuditPanelProps> = ({
   const handleNotifyMaintenance = async () => {
     setIsNotifyingMaintenance(true);
     try {
-      const response = await fetch("/api/maintenance/notify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          message:
-            "Atención: El sistema entrará en mantenimiento en 30 minutos.",
-          duration: 30,
-        }),
+      const { sendBroadcastNotification } = await import("@/shared/hooks/useBroadcastNotifications");
+      
+      sendBroadcastNotification({
+        type: 'maintenance',
+        title: 'Mantenimiento Programado',
+        message: 'Atención: El sistema entrará en mantenimiento en 30 minutos.',
+        data: { duration: 30 }
       });
 
-      if (response.ok) {
-        toast.success("Alerta de mantenimiento enviada a todos los usuarios");
-      } else {
-        toast.error("Error al enviar alerta de mantenimiento");
-      }
+      toast.success("Alerta de mantenimiento enviada a todos los usuarios");
     } catch (error) {
       console.error("Error al notificar mantenimiento:", error);
-      toast.error("Error de red al enviar alerta");
+      toast.error("Error al enviar alerta de mantenimiento");
     } finally {
       setIsNotifyingMaintenance(false);
     }

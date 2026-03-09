@@ -208,22 +208,43 @@ const SystemConfigPanel: React.FC<SystemConfigPanelProps> = ({
           description="Controla el acceso al sistema durante actualizaciones o mantenimiento."
           icon={<ShieldAlert className="w-5 h-5" />}
         >
-          <div className="flex items-center justify-between p-4 rounded-xl border bg-amber-500/5 border-amber-500/20">
-            <div className="space-y-0.5">
-              <Label className="text-amber-700 flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4" />
-                Modo Mantenimiento Global
-              </Label>
-              <p className="text-xs text-amber-600/80">
-                Bloquea el acceso a todos los módulos excepto para
-                administradores maestros.
-              </p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-xl border bg-amber-500/5 border-amber-500/20">
+              <div className="space-y-0.5">
+                <Label className="text-amber-700 flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4" />
+                  Modo Mantenimiento Global
+                </Label>
+                <p className="text-xs text-amber-600/80">
+                  Bloquea el acceso a todos los módulos excepto para
+                  administradores maestros.
+                </p>
+              </div>
+              <Switch
+                checked={isMaintenanceMode}
+                onCheckedChange={setMaintenanceMode}
+                className="data-[state=checked]:bg-amber-600"
+              />
             </div>
-            <Switch
-              checked={isMaintenanceMode}
-              onCheckedChange={setMaintenanceMode}
-              className="data-[state=checked]:bg-amber-600"
-            />
+
+            {isMaster && (
+              <Button
+                variant="outline"
+                className="w-full border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 gap-2 font-bold h-11 rounded-xl shadow-sm border-dashed"
+                onClick={() => {
+                  const { sendBroadcastNotification } = require("@/shared/hooks/useBroadcastNotifications");
+                  sendBroadcastNotification({
+                    type: 'maintenance',
+                    title: 'Mantenimiento Programado',
+                    message: 'Se está haciendo mantenimiento y actualizaciones en estos próximos 30 min',
+                  });
+                  toast.success("Notificación de mantenimiento enviada a todos los usuarios.");
+                }}
+              >
+                <Radio className="w-4 h-4 animate-pulse" />
+                Notificar Mantenimiento (Próximos 30 min)
+              </Button>
+            )}
           </div>
         </SettingsCard>
 

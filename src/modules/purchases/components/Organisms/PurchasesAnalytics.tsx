@@ -27,29 +27,20 @@ import {
 import { usePurchaseOrders } from "../../hooks/usePurchaseOrders";
 import { useSuppliers } from "../../hooks/useSuppliers";
 
-const COLORS = [
-  "bg-blue-500",
-  "bg-violet-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-  "bg-rose-500",
-];
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
-const COLOR_TEXT = [
-  "text-blue-600",
-  "text-violet-600",
-  "text-emerald-600",
-  "text-amber-600",
-  "text-rose-600",
-];
-
-const COLOR_BG = [
-  "bg-blue-50 dark:bg-blue-500/10",
-  "bg-violet-50 dark:bg-violet-500/10",
-  "bg-emerald-50 dark:bg-emerald-500/10",
-  "bg-amber-50 dark:bg-amber-500/10",
-  "bg-rose-50 dark:bg-rose-500/10",
-];
+const COLORS_HEX = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#f43f5e"];
 
 export const PurchasesAnalytics: React.FC = () => {
   const { allOrders } = usePurchaseOrders();
@@ -86,8 +77,6 @@ export const PurchasesAnalytics: React.FC = () => {
     }
     return months;
   }, [allOrders]);
-
-  const maxMonthSpend = Math.max(...spendingByMonth.map((m) => m.total), 1);
 
   // Gasto por proveedor (top 5)
   const spendingBySupplier = useMemo(() => {
@@ -241,32 +230,29 @@ export const PurchasesAnalytics: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-[220px] flex items-end justify-between gap-3 px-2 mt-4">
-              {spendingByMonth.map((m, i) => {
-                const h = Math.max((m.total / maxMonthSpend) * 100, 3);
-                const isLast = i === spendingByMonth.length - 1;
-                return (
-                  <div
-                    key={i}
-                    className="flex-1 flex flex-col items-center gap-2"
-                  >
-                    <span
-                      className={`text-[10px] font-black ${isLast ? "text-primary" : "text-muted-foreground/50"}`}
-                    >
-                      {m.total > 0 ? formatCurrency(m.total) : "—"}
-                    </span>
-                    <div
-                      className={`w-full max-w-[48px] rounded-t-xl transition-all duration-700 ${isLast ? "bg-primary" : "bg-primary/20 hover:bg-primary/40"}`}
-                      style={{ height: `${h}%` }}
-                    />
-                    <span
-                      className={`text-[10px] font-black uppercase ${isLast ? "text-primary" : "text-muted-foreground/60"}`}
-                    >
-                      {m.name}
-                    </span>
-                  </div>
-                );
-              })}
+            <div className="h-[250px] w-full mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={spendingByMonth}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} 
+                  />
+                  <YAxis hide />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                    formatter={(value: number) => [formatCurrency(value), 'Gasto']}
+                  />
+                  <Bar 
+                    dataKey="total" 
+                    fill="hsl(var(--primary))" 
+                    radius={[10, 10, 0, 0]} 
+                    barSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -286,44 +272,46 @@ export const PurchasesAnalytics: React.FC = () => {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="h-[250px] space-y-4">
             {spendingBySupplier.length === 0 ? (
               <p className="text-center text-muted-foreground text-xs py-8">
                 Sin datos de proveedores aún.
               </p>
             ) : (
-              spendingBySupplier.map((s, i) => (
-                <div key={i} className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${COLORS[i % 5]}`}
-                      />
-                      <span
-                        className={`text-[11px] font-black truncate max-w-[110px] ${COLOR_TEXT[i % 5]}`}
-                      >
-                        {s.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        className={`${COLOR_BG[i % 5]} ${COLOR_TEXT[i % 5]} border-0 text-[9px] font-black`}
-                      >
-                        {s.pct}%
-                      </Badge>
-                      <span className="text-[10px] font-bold text-muted-foreground">
-                        {formatCurrency(s.amount)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${COLORS[i % 5]} rounded-full transition-all duration-700`}
-                      style={{ width: `${s.pct}%` }}
+              <div className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={spendingBySupplier}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={70}
+                      paddingAngle={5}
+                      dataKey="amount"
+                    >
+                      {spendingBySupplier.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS_HEX[index % COLORS_HEX.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '12px' }}
+                      formatter={(value: number) => formatCurrency(value)}
                     />
-                  </div>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-2 space-y-1">
+                  {spendingBySupplier.slice(0, 3).map((s, i) => (
+                    <div key={i} className="flex justify-between items-center text-[10px] font-bold">
+                       <div className="flex items-center gap-1.5 ">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS_HEX[i] }} />
+                          <span className="truncate max-w-[100px] uppercase italic text-muted-foreground">{s.name}</span>
+                       </div>
+                       <span>{s.pct}%</span>
+                    </div>
+                  ))}
                 </div>
-              ))
+              </div>
             )}
           </CardContent>
         </Card>

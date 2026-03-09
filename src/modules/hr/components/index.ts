@@ -8,3 +8,4 @@ export * from './HRReports';
 export * from './PayrollManager';
 export * from './PrestacionesManager';
 export * from './VacacionesManager';
+export * from './HRDashboard';

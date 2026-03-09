@@ -42,7 +42,6 @@ import {
 import { hapticFeedback } from "@/shared/utils/haptics";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
-import { BiometricScanner } from "@/shared/components/stitch/BiometricScanner";
 import { cn } from "@core/shared/utils/utils";
 import ValeryLayout from "@/layouts/ValeryLayout";
 import ValerySidebar from "@/components/navigation/ValerySidebar";
@@ -252,7 +251,6 @@ const POSPage: React.FC = () => {
     return (
       <ValeryLayout sidebar={!isMobile ? <ValerySidebar /> : null}>
         <PremiumHUD>
-          <BiometricScanner scanning={loading} />
           <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-950">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
           </div>

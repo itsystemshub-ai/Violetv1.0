@@ -10,7 +10,6 @@ import { ModuleAIAssistant } from "@/core/ai/components";
 import ValeryLayout from "@/layouts/ValeryLayout";
 import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
-import { BiometricScanner } from "@/shared/components/stitch/BiometricScanner";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import { useTenant } from "@/shared/hooks/useTenant";
 import { toast } from "sonner";
@@ -83,6 +82,9 @@ const PaymentQueueManager = lazy(() =>
     default: m.PaymentQueueManager,
   })),
 );
+const TaxesConfigPanel = lazy(
+  () => import("@/modules/settings/components/organisms/TaxesConfigPanel"),
+);
 
 const LoadingTab = () => (
   <div className="flex items-center justify-center p-12 h-[400px]">
@@ -97,7 +99,6 @@ export default function FinancePage() {
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
       <PremiumHUD>
-        <BiometricScanner scanning={false} />
         {/* Animated Background */}
         <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
         <div className="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
@@ -196,6 +197,12 @@ export default function FinancePage() {
                   >
                     Cola de Pagos
                   </TabsTrigger>
+                  <TabsTrigger
+                    value="taxes"
+                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                  >
+                    Impuestos
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -255,6 +262,10 @@ export default function FinancePage() {
                   onApprove={logic.handleApproveReportedPayment}
                   onReject={logic.handleRejectReportedPayment}
                 />
+              </TabsContent>
+
+              <TabsContent value="taxes" className="space-y-6">
+                <TaxesConfigPanel />
               </TabsContent>
             </Tabs>
           </Suspense>

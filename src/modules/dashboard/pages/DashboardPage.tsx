@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
-import { BiometricScanner } from "@/shared/components/stitch/BiometricScanner";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import {
   startOfDay,
@@ -43,14 +42,12 @@ export default function DashboardPage() {
   const { products, fetchProducts } = useInventoryStore();
 
   const [accounts, setAccounts] = useState<any[]>([]);
-  const [isScanning, setIsScanning] = useState(false);
 
   // Cargar datos reales al montar
   useEffect(() => {
     const tenantId = tenant?.id;
     if (!tenantId || tenantId === "none") return;
 
-    setIsScanning(true);
     fetchInvoices(tenantId);
     fetchProducts(tenantId);
 
@@ -286,10 +283,6 @@ export default function DashboardPage() {
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
       <PremiumHUD>
-        <BiometricScanner
-          scanning={isScanning}
-          onComplete={() => setIsScanning(false)}
-        />
         <div className="p-6">
           <div className="max-w-[1800px] mx-auto space-y-6">
             {/* Header */}

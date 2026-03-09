@@ -16,6 +16,12 @@ import { useInstanceStore } from "@/shared/hooks/useInstanceStore";
 import { useAudit } from "@/modules/settings/hooks/useAudit";
 import { Button } from "@/shared/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -33,6 +39,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
 import { USER_ROLES, DEPARTMENTS, Tenant, User } from "@/lib";
 import { NetworkService } from "@/services/LocalNetworkService";
 import ValeryLayout from "@/layouts/ValeryLayout";
@@ -53,6 +65,15 @@ const AIChatPanel = lazy(
 );
 const SystemSecurityPanel = lazy(
   () => import("@/modules/settings/components/organisms/SystemSecurityPanel"),
+);
+const SystemMonitorPanel = lazy(
+  () => import("@/modules/settings/components/organisms/SystemMonitorPanel"),
+);
+const SecurityAuditPanel = lazy(
+  () => import("@/modules/settings/components/organisms/SecurityAuditPanel"),
+);
+const ActivityLogPanel = lazy(
+  () => import("@/modules/settings/components/organisms/ActivityLogPanel"),
 );
 const IntegrationsPanel = lazy(
   () => import("@/modules/settings/components/organisms/IntegrationsPanel"),
@@ -88,18 +109,16 @@ const LoadingFallback = () => (
  * Determine which section to show based on the URL path
  */
 function getActiveSection(pathname: string): string {
-  if (pathname.includes("/settings/company")) return "company";
-  if (pathname.includes("/settings/taxes")) return "taxes";
   if (pathname.includes("/settings/users")) return "users";
-  if (pathname.includes("/settings/ai")) return "ai";
   if (pathname.includes("/settings/security")) return "security";
-  if (pathname.includes("/settings/integrations")) return "integrations";
-  if (pathname.includes("/settings/notifications")) return "notifications";
-  if (pathname.includes("/settings/roles")) return "roles";
+  if (pathname.includes("/settings/monitor")) return "monitor";
+  if (pathname.includes("/settings/activity")) return "activity";
+  if (pathname.includes("/settings/audit")) return "audit";
+  if (pathname.includes("/settings/connectivity")) return "connectivity";
+  if (pathname.includes("/settings/ai")) return "ai";
   if (pathname.includes("/settings/password-requests"))
     return "password-requests";
   if (pathname.includes("/settings/automation")) return "automation";
-  if (pathname.includes("/settings/system")) return "system";
   return "company"; // default for /settings
 }
 
@@ -219,62 +238,65 @@ export default function SettingsPage() {
             deleteTenant={deleteTenant}
           />
         );
-      case "taxes":
-        return <TaxesConfigPanel />;
       case "users":
         return (
-          <UserManagementPanel
-            users={users}
-            isLoading={isLoadingUsers}
-            onUpdate={updateUser}
-            onDelete={deleteUser}
-            isMaster={isMaster}
-            isAddUserOpen={isAddUserOpen}
-            setIsAddUserOpen={setIsAddUserOpen}
-            newUser={newUser}
-            setNewUser={setNewUser}
-            handleAddUser={handleAddUser}
-          />
+          <Tabs defaultValue="users" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1 rounded-full border">
+              <TabsTrigger value="users" className="rounded-full px-6">
+                Usuarios
+              </TabsTrigger>
+              <TabsTrigger value="roles" className="rounded-full px-6">
+                Roles y Permisos
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="users">
+              <UserManagementPanel
+                users={users}
+                isLoading={isLoadingUsers}
+                onUpdate={updateUser}
+                onDelete={deleteUser}
+                isMaster={isMaster}
+                isAddUserOpen={isAddUserOpen}
+                setIsAddUserOpen={setIsAddUserOpen}
+                newUser={newUser}
+                setNewUser={setNewUser}
+                handleAddUser={handleAddUser}
+              />
+            </TabsContent>
+            <TabsContent value="roles">
+              <RolesPermissionsPage />
+            </TabsContent>
+          </Tabs>
+        );
+      case "security":
+        return <SystemSecurityPanel />;
+      case "monitor":
+        return <SystemMonitorPanel />;
+      case "activity":
+        return <ActivityLogPanel />;
+      case "audit":
+        return <SecurityAuditPanel />;
+      case "connectivity":
+        return (
+          <Tabs defaultValue="notifications" className="space-y-6">
+            <TabsList className="bg-muted/50 p-1 rounded-full border">
+              <TabsTrigger value="notifications" className="rounded-full px-6">
+                Notificaciones
+              </TabsTrigger>
+              <TabsTrigger value="integrations" className="rounded-full px-6">
+                Integraciones
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="notifications">
+              <NotificationsPanel />
+            </TabsContent>
+            <TabsContent value="integrations">
+              <IntegrationsPanel />
+            </TabsContent>
+          </Tabs>
         );
       case "ai":
         return <AIChatPanel isMaster={isMaster} />;
-      case "system":
-        return (
-          <SystemConfigPanel
-            activeTenantId={activeTenantId}
-            allTenants={allTenants}
-            setActiveTenant={setActiveTenant}
-            updateTenantById={updateTenantById}
-            deleteTenant={deleteTenant}
-            isMaintenanceMode={isMaintenanceMode}
-            setMaintenanceMode={setMaintenanceMode}
-            exchangeRate={exchangeRate}
-            setExchangeRate={setExchangeRate}
-            syncBcvRate={syncBcvRate}
-            isLoading={isLoadingConfig}
-            taxes={taxes}
-            instances={instances}
-            syncInstances={syncInstances}
-            isMaster={isMaster}
-          />
-        );
-      case "security":
-        return (
-          <SystemSecurityPanel
-            auditLogs={auditLogs}
-            syncLogs={syncLogs}
-            dbStats={dbStats}
-            purgeAuditLogs={purgeAuditLogs}
-            refreshAudit={refreshAudit}
-            isMaster={isMaster}
-          />
-        );
-      case "integrations":
-        return <IntegrationsPanel />;
-      case "notifications":
-        return <NotificationsPanel />;
-      case "roles":
-        return <RolesPermissionsPage />;
       case "password-requests":
         return <PasswordRequestsPanel />;
       case "automation":

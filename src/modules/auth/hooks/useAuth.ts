@@ -58,6 +58,14 @@ const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'violet-auth-context',
+      storage: {
+        getItem: (name) => {
+          const str = sessionStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => sessionStorage.setItem(name, JSON.stringify(value)),
+        removeItem: (name) => sessionStorage.removeItem(name),
+      },
     }
   )
 );

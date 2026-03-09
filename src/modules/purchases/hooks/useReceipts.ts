@@ -181,6 +181,43 @@ export const useReceipts = () => {
     }
   };
 
+  const verifyReceipt = async (id: string, verifiedBy: string) => {
+    try {
+      await updateReceipt(id, {
+        status: 'pending', // Keeps pending or updates metadata
+        verifiedBy,
+        verifiedDate: new Date().toISOString(),
+      });
+      toast.success("Recepción verificada.");
+    } catch (error) {
+      console.error("[useReceipts] Error verifying receipt:", error);
+    }
+  };
+
+  const rejectReceipt = async (id: string, notes: string) => {
+    try {
+      await updateReceipt(id, {
+        status: 'rejected',
+        discrepancyNotes: notes,
+      });
+      toast.error("Recepción rechazada.");
+    } catch (error) {
+      console.error("[useReceipts] Error rejecting receipt:", error);
+    }
+  };
+
+  const markAsPartial = async (id: string, notes: string) => {
+    try {
+      await updateReceipt(id, {
+        status: 'partial',
+        discrepancyNotes: notes,
+      });
+      toast.warning("Recepción marcada como parcial.");
+    } catch (error) {
+      console.error("[useReceipts] Error marking receipt as partial:", error);
+    }
+  };
+
   return {
     receipts: filteredReceipts,
     allReceipts: receipts,

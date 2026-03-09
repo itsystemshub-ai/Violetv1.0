@@ -76,6 +76,14 @@ export const ReceiptsManager: React.FC = () => {
 
   const selectedReceipt = receipts.find((r) => r.id === selectedReceiptId);
 
+  const handleDelete = async () => {
+    if (selectedReceiptId) {
+      await deleteReceipt(selectedReceiptId);
+      setDeleteDialogOpen(false);
+      setSelectedReceiptId(null);
+    }
+  };
+
   const kpiStats = [
     {
       label: "Total Recepciones",

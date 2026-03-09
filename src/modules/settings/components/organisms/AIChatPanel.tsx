@@ -23,7 +23,13 @@ import { Label } from "@/shared/components/ui/label";
 import { Badge } from "@/shared/components/ui/badge";
 import { Switch } from "@/shared/components/ui/switch";
 import { Slider } from "@/shared/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
 import {
   Card,
   CardContent,
@@ -33,8 +39,6 @@ import {
 } from "@/shared/components/ui/card";
 import { toast } from "sonner";
 import { useAIStore } from "@/services/ai/AIService";
-import AIToggle from "@/components/settings/AIToggle";
-import CloudToggle from "@/components/settings/CloudToggle";
 
 interface AIChatPanelProps {
   aiConfig?: any;
@@ -42,11 +46,15 @@ interface AIChatPanelProps {
   isMaster?: boolean;
 }
 
-const AIChatPanel: React.FC<AIChatPanelProps> = ({
-  isMaster,
-}) => {
-  const { config, capabilities, updateConfig: updateAIStoreConfig, toggleCapability, getDecryptedApiKey } = useAIStore();
-  const [apiKey, setApiKey] = useState('');
+const AIChatPanel: React.FC<AIChatPanelProps> = ({ isMaster }) => {
+  const {
+    config,
+    capabilities,
+    updateConfig: updateAIStoreConfig,
+    toggleCapability,
+    getDecryptedApiKey,
+  } = useAIStore();
+  const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [temperature, setTemperature] = useState(config.temperature);
   const [maxTokens, setMaxTokens] = useState(config.maxTokens);
@@ -71,8 +79,8 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
       enabled,
     });
 
-    toast.success('Configuración de IA guardada correctamente');
-    setApiKey(''); // Limpiar el campo por seguridad
+    toast.success("Configuración de IA guardada correctamente");
+    setApiKey(""); // Limpiar el campo por seguridad
     setShowApiKey(false);
   };
 
@@ -81,17 +89,17 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
     if (decrypted) {
       setApiKey(decrypted);
       setShowApiKey(true);
-      toast.success('API Key cargada');
+      toast.success("API Key cargada");
     } else {
-      toast.error('No hay API Key guardada');
+      toast.error("No hay API Key guardada");
     }
   };
 
   const models = [
-    { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B (Recomendado)' },
-    { value: 'llama-3.1-70b-versatile', label: 'Llama 3.1 70B' },
-    { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B' },
-    { value: 'gemma2-9b-it', label: 'Gemma 2 9B' },
+    { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B (Recomendado)" },
+    { value: "llama-3.1-70b-versatile", label: "Llama 3.1 70B" },
+    { value: "mixtral-8x7b-32768", label: "Mixtral 8x7B" },
+    { value: "gemma2-9b-it", label: "Gemma 2 9B" },
   ];
 
   const categoryIcons = {
@@ -102,30 +110,28 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
   };
 
   const categoryColors = {
-    analysis: 'text-cyan-500 bg-cyan-500/10',
-    automation: 'text-magenta-500 bg-magenta-500/10',
-    suggestion: 'text-purple-500 bg-purple-500/10',
-    chat: 'text-blue-500 bg-blue-500/10',
+    analysis: "text-cyan-500 bg-cyan-500/10",
+    automation: "text-magenta-500 bg-magenta-500/10",
+    suggestion: "text-purple-500 bg-purple-500/10",
+    chat: "text-blue-500 bg-blue-500/10",
   };
 
-  const enabledCapabilities = capabilities.filter(c => c.enabled).length;
+  const enabledCapabilities = capabilities.filter((c) => c.enabled).length;
 
   return (
     <div className="space-y-6">
-      {/* Toggles de IA y Cloud */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AIToggle />
-        <CloudToggle />
-      </div>
-
       {/* Header Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="border-border/50 bg-linear-to-br from-cyan-500/10 to-magenta-500/10">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Estado</p>
-                <p className="text-2xl font-bold mt-1">{enabled ? 'Activa' : 'Inactiva'}</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Estado
+                </p>
+                <p className="text-2xl font-bold mt-1">
+                  {enabled ? "Activa" : "Inactiva"}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
                 <Bot className="h-6 w-6 text-cyan-500" />
@@ -138,8 +144,12 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Skills Activas</p>
-                <p className="text-2xl font-bold mt-1">{enabledCapabilities}/21</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Skills Activas
+                </p>
+                <p className="text-2xl font-bold mt-1">
+                  {enabledCapabilities}/21
+                </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
                 <Sparkles className="h-6 w-6 text-purple-500" />
@@ -152,7 +162,9 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Modelo</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Modelo
+                </p>
                 <p className="text-sm font-bold mt-1">Llama 3.3 70B</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-magenta-500/20 flex items-center justify-center">
@@ -184,10 +196,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                   Activa o desactiva el asistente
                 </p>
               </div>
-              <Switch
-                checked={enabled}
-                onCheckedChange={setEnabled}
-              />
+              <Switch checked={enabled} onCheckedChange={setEnabled} />
             </div>
 
             {/* Model Selection */}
@@ -211,7 +220,9 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Temperatura</Label>
-                <span className="text-sm text-muted-foreground">{temperature}</span>
+                <span className="text-sm text-muted-foreground">
+                  {temperature}
+                </span>
               </div>
               <Slider
                 value={[temperature]}
@@ -230,7 +241,9 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Tokens Máximos</Label>
-                <span className="text-sm text-muted-foreground">{maxTokens}</span>
+                <span className="text-sm text-muted-foreground">
+                  {maxTokens}
+                </span>
               </div>
               <Slider
                 value={[maxTokens]}
@@ -261,7 +274,7 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Input
-                    type={showApiKey ? 'text' : 'password'}
+                    type={showApiKey ? "text" : "password"}
                     placeholder="gsk_..."
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
@@ -273,18 +286,19 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
                     className="absolute right-0 top-0 h-full px-3"
                     onClick={() => setShowApiKey(!showApiKey)}
                   >
-                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showApiKey ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={handleLoadApiKey}
-                >
+                <Button variant="outline" onClick={handleLoadApiKey}>
                   Cargar
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Obtén tu API key en{' '}
+                Obtén tu API key en{" "}
                 <a
                   href="https://console.groq.com/keys"
                   target="_blank"
@@ -317,7 +331,10 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
               </div>
             </div>
 
-            <Button onClick={handleSaveConfig} className="w-full bg-linear-to-r from-cyan-500 to-magenta-600">
+            <Button
+              onClick={handleSaveConfig}
+              className="w-full bg-linear-to-r from-cyan-500 to-magenta-600"
+            >
               <Save className="w-4 h-4 mr-2" /> Guardar Configuración
             </Button>
           </CardContent>
@@ -338,20 +355,30 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {capabilities.map((capability) => {
-              const Icon = categoryIcons[capability.category as keyof typeof categoryIcons] || Code;
-              const colorClass = categoryColors[capability.category as keyof typeof categoryColors];
-              
+              const Icon =
+                categoryIcons[
+                  capability.category as keyof typeof categoryIcons
+                ] || Code;
+              const colorClass =
+                categoryColors[
+                  capability.category as keyof typeof categoryColors
+                ];
+
               return (
                 <div
                   key={capability.id}
                   className="flex items-start justify-between gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-start gap-3 flex-1">
-                    <div className={`h-8 w-8 rounded-lg ${colorClass} flex items-center justify-center shrink-0`}>
+                    <div
+                      className={`h-8 w-8 rounded-lg ${colorClass} flex items-center justify-center shrink-0`}
+                    >
                       <Icon className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm">{capability.name}</h4>
+                      <h4 className="font-semibold text-sm">
+                        {capability.name}
+                      </h4>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {capability.description}
                       </p>

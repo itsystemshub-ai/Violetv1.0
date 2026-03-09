@@ -8,8 +8,30 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { formatCurrency } from "@/lib/index";
 import { WithholdingService } from "@/modules/finance/services/withholding.service";
-import { FileText, FileSpreadsheet, Download, Calendar, ArrowUpRight, ArrowDownLeft, Landmark } from "lucide-react";
+import { 
+  FileText, 
+  FileSpreadsheet, 
+  Download, 
+  Calendar, 
+  ArrowUpRight, 
+  ArrowDownLeft, 
+  Landmark,
+  PieChart as PieChartIcon,
+  Activity
+} from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+} from "recharts";
 
 interface FinanceDashboardProps {
   logic: any;
@@ -22,67 +44,114 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
     {
       label: "Al día (0-30d)",
       value: logic.ageingData.current,
-      color: "bg-emerald-500",
+      color: "#10b981", // emerald-500
     },
     {
       label: "Vencido (31-60d)",
       value: logic.ageingData.pastDue30,
-      color: "bg-amber-500",
+      color: "#f59e0b", // amber-500
     },
     {
       label: "Crítico (90d+)",
       value: logic.ageingData.pastDue90,
-      color: "bg-rose-500",
+      color: "#f43f5e", // rose-500
     },
+  ];
+
+  const cashFlowData = [
+    { name: 'Ingresos', value: logic.kpis.totalAssets || 4500, color: '#10b981' },
+    { name: 'Egresos', value: logic.kpis.totalExpenses || 2100, color: '#f43f5e' },
   ];
 
   const maxVal = Math.max(...ageingItems.map((i) => i.value), 1);
 
   return (
     <div className="space-y-6">
+      {/* Visual KPIs Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+         <Card className="rounded-3xl border-none shadow-sm bg-linear-to-br from-emerald-500/10 to-emerald-500/5">
+            <CardContent className="p-5 flex items-center justify-between">
+               <div>
+                  <p className="text-[10px] font-black uppercase text-emerald-600/70 tracking-widest leading-none mb-1">Disponibilidad</p>
+                  <p className="text-2xl font-black italic tracking-tighter text-emerald-700">
+                     {formatCurrency(logic.kpis.cashFlow, "USD")}
+                  </p>
+               </div>
+               <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-600">
+                  <Activity className="w-5 h-5" />
+               </div>
+            </CardContent>
+         </Card>
+         <Card className="rounded-3xl border-none shadow-sm bg-linear-to-br from-blue-500/10 to-blue-500/5">
+            <CardContent className="p-5 flex items-center justify-between">
+               <div>
+                  <p className="text-[10px] font-black uppercase text-blue-600/70 tracking-widest leading-none mb-1">Total Activos</p>
+                  <p className="text-2xl font-black italic tracking-tighter text-blue-700">
+                     {formatCurrency(logic.kpis.totalAssets, "USD")}
+                  </p>
+               </div>
+               <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-600">
+                  <ArrowUpRight className="w-5 h-5" />
+               </div>
+            </CardContent>
+         </Card>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cartera */}
-        <Card className="rounded-4xl shadow-xl overflow-hidden border-none ring-1 ring-border/5">
+        {/* Cartera (Advanced Visual) */}
+        <Card className="rounded-4xl shadow-xl overflow-hidden border-none ring-1 ring-border/5 bg-white/50 backdrop-blur-md">
           <CardHeader className="bg-muted/10 border-b border-border/40 pb-4">
-            <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-lg font-black italic uppercase text-primary leading-none mb-1">
                   Cuentas por Cobrar
                 </CardTitle>
                 <CardDescription className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
-                  Análisis de vencimiento de cartera
+                  Distribución de vencimientos
                 </CardDescription>
               </div>
-            </div>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="space-y-6">
+            <div className="h-[200px] w-full mb-6">
+               <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                     <Pie
+                        data={ageingItems}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                     >
+                        {ageingItems.map((entry, index) => (
+                           <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                     </Pie>
+                     <RechartsTooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', fontSize: '12px' }}
+                     />
+                  </PieChart>
+               </ResponsiveContainer>
+            </div>
+            <div className="space-y-4">
               {ageingItems.map((item, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex justify-between items-end">
+                <div key={i} className="space-y-1">
+                  <div className="flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase text-muted-foreground/60">
                       {item.label}
                     </span>
-                    <span className="font-black italic text-sm tabular-nums text-foreground">
+                    <span className="font-bold text-xs tabular-nums">
                       {formatCurrency(item.value, "USD")}
                     </span>
                   </div>
-                  <div className="h-2 w-full bg-muted/20 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-muted/20 rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-1000 ${item.color}`}
-                      style={{ width: `${(item.value / maxVal) * 100}%` }}
+                      className="h-full transition-all duration-1000"
+                      style={{ width: `${(item.value / maxVal) * 100}%`, backgroundColor: item.color }}
                     />
                   </div>
                 </div>
               ))}
-              <div className="pt-4 border-t border-dashed border-border/60 flex justify-between items-center">
-                <span className="text-xs font-black uppercase text-primary">
-                  Total Cartera:
-                </span>
-                <span className="text-lg font-black italic text-primary tabular-nums">
-                  {formatCurrency(logic.ageingData.total, "USD")}
-                </span>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -90,12 +159,17 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
         {/* Transacciones Recientes */}
         <Card className="lg:col-span-2 rounded-4xl shadow-xl overflow-hidden border-none ring-1 ring-border/5">
           <CardHeader className="bg-muted/10 border-b border-border/40 pb-4">
-            <CardTitle className="text-lg font-black italic uppercase text-primary leading-none mb-1">
-              Últimos Movimientos
-            </CardTitle>
-            <CardDescription className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
-              Actividad financiera reciente
-            </CardDescription>
+            <div className="flex items-center justify-between">
+               <div>
+                  <CardTitle className="text-lg font-black italic uppercase text-primary leading-none mb-1">
+                     Últimos Movimientos
+                  </CardTitle>
+                  <CardDescription className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+                     Actividad financiera reciente
+                  </CardDescription>
+               </div>
+               <Badge variant="outline" className="border-primary/20 text-primary">Real-time</Badge>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -108,9 +182,9 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/20">
-                  {logic.igtfRecords?.slice(0, 5).map((record: any) => (
+                  {logic.igtfRecords?.slice(0, 8).map((record: any) => (
                     <tr key={record.id} className="hover:bg-muted/5 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-foreground">
+                      <td className="px-4 py-3 font-semibold text-foreground italic uppercase">
                         {record.metodo_pago.toUpperCase()} - Pago Factura
                       </td>
                       <td className="px-4 py-3">
@@ -151,15 +225,15 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {logic.accounts?.filter((acc: any) => acc.type === "activo").slice(0, 4).map((acc: any) => (
-                <div key={acc.id} className="p-4 rounded-2xl bg-muted/10 border border-border/40 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <Landmark className="w-5 h-5" />
+                <div key={acc.id} className="p-4 rounded-3xl bg-muted/10 border border-border/40 flex items-center gap-4 hover:shadow-md transition-all group">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <Landmark className="w-6 h-6" />
                   </div>
                   <div>
                     <p className="text-[9px] font-black uppercase text-muted-foreground/60 leading-tight">
                       {acc.name}
                     </p>
-                    <p className="text-sm font-black italic tabular-nums">
+                    <p className="text-lg font-black italic tabular-nums">
                       {formatCurrency(acc.balance, acc.currency || "USD")}
                     </p>
                   </div>
@@ -173,47 +247,47 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
         <Card className="rounded-4xl shadow-xl overflow-hidden border-none ring-1 ring-border/5">
           <CardHeader className="bg-muted/10 border-b border-border/40 pb-4">
             <CardTitle className="text-lg font-black italic uppercase text-primary leading-none mb-1">
-              Acciones y Reportes
+              Centro Fiscal
             </CardTitle>
             <CardDescription className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
-              Generación de documentos fiscales
+              Generación de documentos y exportaciones
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="ghost"
-                className="h-20 rounded-2xl flex-col items-start p-4 hover:bg-primary/5 border border-border/40 group relative overflow-hidden"
+                className="h-24 rounded-3xl flex-col items-start p-5 hover:bg-primary/5 border border-border/40 group relative overflow-hidden transition-all shadow-sm"
                 onClick={logic.handleExportLibroVentas}
               >
-                <div className="p-2 rounded-xl bg-primary/5 mb-1 group-hover:scale-110 transition-transform">
-                  <FileSpreadsheet className="h-4 w-4 text-primary" />
+                <div className="p-2.5 rounded-2xl bg-primary/5 mb-1 group-hover:scale-110 transition-transform">
+                  <FileSpreadsheet className="h-5 w-5 text-primary" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary/80">
-                  Libro Ventas
+                   Ventas
                 </span>
                 <div className="absolute right-0 bottom-0 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                  <FileSpreadsheet className="h-12 w-12 -mr-2 -mb-2" />
+                  <FileSpreadsheet className="h-16 w-16 -mr-4 -mb-4" />
                 </div>
               </Button>
               <Button
                 variant="ghost"
-                className="h-20 rounded-2xl flex-col items-start p-4 hover:bg-primary/5 border border-border/40 group relative overflow-hidden"
+                className="h-24 rounded-3xl flex-col items-start p-5 hover:bg-primary/5 border border-border/40 group relative overflow-hidden transition-all shadow-sm"
                 onClick={logic.handleExportLibroCompras}
               >
-                <div className="p-2 rounded-xl bg-primary/5 mb-1 group-hover:scale-110 transition-transform">
-                  <FileSpreadsheet className="h-4 w-4 text-primary" />
+                <div className="p-2.5 rounded-2xl bg-primary/5 mb-1 group-hover:scale-110 transition-transform">
+                  <FileSpreadsheet className="h-5 w-5 text-primary" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary/80">
-                  Libro Compras
+                   Compras
                 </span>
                 <div className="absolute right-0 bottom-0 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                  <FileSpreadsheet className="h-12 w-12 -mr-2 -mb-2" />
+                  <FileSpreadsheet className="h-16 w-16 -mr-4 -mb-4" />
                 </div>
               </Button>
               <Button
                 variant="ghost"
-                className="h-20 rounded-2xl flex-col items-start p-4 hover:bg-emerald-500/5 border border-border/40 group relative overflow-hidden"
+                className="h-24 rounded-3xl flex-col items-start p-5 hover:bg-emerald-500/5 border border-border/40 group relative overflow-hidden transition-all shadow-sm"
                 onClick={() =>
                   WithholdingService.downloadIvaXML(
                     logic.invoices,
@@ -222,29 +296,29 @@ export const FinanceDashboard = ({ logic }: FinanceDashboardProps) => {
                   )
                 }
               >
-                <div className="p-2 rounded-xl bg-emerald-500/5 mb-1 group-hover:scale-110 transition-transform">
-                  <Download className="h-4 w-4 text-emerald-600" />
+                <div className="p-2.5 rounded-2xl bg-emerald-500/5 mb-1 group-hover:scale-110 transition-transform">
+                  <Download className="h-5 w-5 text-emerald-600" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/80">
-                  XML Retenciones
+                   XML Ret.
                 </span>
                 <div className="absolute right-0 bottom-0 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                  <Download className="h-12 w-12 -mr-2 -mb-2" />
+                  <Download className="h-16 w-16 -mr-4 -mb-4" />
                 </div>
               </Button>
               <Button
                 variant="ghost"
-                className="h-20 rounded-2xl flex-col items-start p-4 hover:bg-amber-500/5 border border-border/40 group relative overflow-hidden"
+                className="h-24 rounded-3xl flex-col items-start p-5 hover:bg-amber-500/5 border border-border/40 group relative overflow-hidden transition-all shadow-sm"
                 onClick={logic.handleExportARC}
               >
-                <div className="p-2 rounded-xl bg-amber-500/5 mb-1 group-hover:scale-110 transition-transform">
-                  <Calendar className="h-4 w-4 text-amber-600" />
+                <div className="p-2.5 rounded-2xl bg-amber-500/5 mb-1 group-hover:scale-110 transition-transform">
+                  <Calendar className="h-5 w-5 text-amber-600" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-amber-600/80">
-                  ARC Anual
+                   ARC Anual
                 </span>
                 <div className="absolute right-0 bottom-0 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                  <Calendar className="h-12 w-12 -mr-2 -mb-2" />
+                  <Calendar className="h-16 w-16 -mr-4 -mb-4" />
                 </div>
               </Button>
             </div>

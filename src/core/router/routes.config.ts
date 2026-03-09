@@ -46,16 +46,6 @@ const CommunicationsPage = lazy(
 const AnalyticsPage = lazy(() => import("@/modules/crm/pages/AnalyticsPage"));
 const AutomationPage = lazy(() => import("@/modules/crm/pages/AutomationPage"));
 const Settings = lazy(() => import("@/modules/settings/pages/SettingsPage"));
-const RolesPermissionsPage = Settings;
-const SystemSettingsPage = Settings;
-const CompanySettingsPage = Settings;
-const TaxesSettingsPage = Settings;
-const UsersSettingsPage = Settings;
-const NotificationsSettingsPage = Settings;
-const IntegrationsSettingsPage = Settings;
-const AISettingsPage = Settings;
-const SecuritySettingsPage = Settings;
-const PasswordRequestsSettingsPage = Settings;
 const Login = lazy(() => import("@/modules/auth/pages/Login"));
 const InvoicePreview = lazy(
   () => import("@/modules/sales/pages/InvoicePreviewPage"),
@@ -543,80 +533,85 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     description: "Configuración del sistema",
   },
   {
+    path: "/finance/dashboard",
+    component: Finance,
+    protected: true,
+    permission: "view:finance",
+    title: "Dashboard de Finanzas",
+    description: "Métricas y análisis financiero",
+  },
+  {
+    path: "/crm/analytics",
+    component: CRMPage,
+    protected: true,
+    permission: "view:crm",
+    title: "Dashboard CRM",
+    description: "Análisis y métricas de clientes",
+  },
+  {
+    path: "/hr/dashboard",
+    component: HR,
+    protected: true,
+    permission: "view:hr",
+    title: "Dashboard de RRHH",
+    description: "Análisis visual de capital humano",
+  },
+  {
     path: "/settings/system",
-    component: SystemSettingsPage,
+    component: Settings,
     protected: true,
     permission: "view:settings",
     title: "Configuración del Sistema",
     description: "Gestión avanzada del sistema",
   },
   {
+    path: "/finance/dashboard",
+    component: Finance,
+    protected: true,
+    title: "Dashboard Financiero",
+  },
+  {
+    path: "/finance/taxes",
+    component: Finance,
+    protected: true,
+    title: "Configuración de Impuestos",
+    description: "Tasas de cambio e impuestos",
+  },
+  {
     path: "/settings/company",
-    component: CompanySettingsPage,
+    component: Settings,
     protected: true,
     permission: "view:settings",
     title: "Configuración de Empresa",
     description: "Datos fiscales y de contacto",
   },
   {
-    path: "/settings/taxes",
-    component: TaxesSettingsPage,
-    protected: true,
-    permission: "view:settings",
-    title: "Configuración de Impuestos",
-    description: "Tasas de cambio e impuestos",
-  },
-  {
     path: "/settings/users",
-    component: UsersSettingsPage,
+    component: Settings,
     protected: true,
     permission: "view:settings",
-    title: "Gestión de Usuarios",
-    description: "Administración de usuarios",
+    title: "Gestión de Usuarios y Roles",
+    description: "Administración de usuarios y sus permisos",
   },
   {
-    path: "/settings/notifications",
-    component: NotificationsSettingsPage,
+    path: "/settings/connectivity",
+    component: Settings,
     protected: true,
     permission: "view:settings",
-    title: "Configuración de Notificaciones",
-    description: "Preferencias de notificaciones",
-  },
-  {
-    path: "/settings/integrations",
-    component: IntegrationsSettingsPage,
-    protected: true,
-    permission: "view:settings",
-    title: "Configuración de Integraciones",
-    description: "Servicios externos",
+    title: "Conectividad",
+    description: "Notificaciones e Integraciones",
   },
   {
     path: "/settings/ai",
-    component: AISettingsPage,
+    component: Settings,
     protected: true,
     permission: "view:settings",
     title: "Configuración de IA",
     description: "Asistente de inteligencia artificial",
   },
   {
-    path: "/settings/security",
-    component: SecuritySettingsPage,
-    protected: true,
-    permission: "view:settings",
-    title: "Configuración de Seguridad",
-    description: "Seguridad, backups y auditoría",
-  },
-  {
-    path: "/settings/roles",
-    component: RolesPermissionsPage,
-    protected: true,
-    permission: "settings:write",
-    title: "Roles y Permisos",
-    description: "Gestión de roles y permisos de usuarios",
-  },
-  {
     path: "/settings/password-requests",
-    component: PasswordRequestsSettingsPage,
+    component: Settings,
     protected: true,
     permission: "settings:write",
     title: "Solicitudes de Contraseña",

@@ -42,7 +42,6 @@ import {
 import { ModuleAIAssistant } from "@/core/ai/components";
 import { useEmployees } from "../hooks/useEmployees";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
-import { BiometricScanner } from "@/shared/components/stitch/BiometricScanner";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import { useTenant } from "@/shared/hooks/useTenant";
 import { toast } from "sonner";
@@ -166,7 +165,6 @@ export default function EmployeesPage() {
   if (loading) {
     return (
       <ValeryLayout sidebar={<ValerySidebar />}>
-        <BiometricScanner scanning={true} />
         <div className="flex items-center justify-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
@@ -177,7 +175,6 @@ export default function EmployeesPage() {
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
       <PremiumHUD>
-        <BiometricScanner scanning={loading} />
         <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
 
         <div className="p-6 space-y-6">

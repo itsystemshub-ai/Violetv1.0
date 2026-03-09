@@ -33,6 +33,9 @@ import ValeryLayout from "@/layouts/ValeryLayout";
 import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { localDb } from "@/core/database/localDb";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { BackupSettings } from "@/modules/settings/components/BackupSettings";
+
 interface TableInfo {
   name: string;
   count: number;
@@ -70,6 +73,7 @@ const TABLE_LABELS: Record<string, { label: string; icon: string }> = {
 };
 
 export default function DatabasePage() {
+  const [activeTab, setActiveTab] = useState("explorer");
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [tableData, setTableData] = useState<any[]>([]);
@@ -227,7 +231,21 @@ export default function DatabasePage() {
                 </div>
               </div>
             </div>
+            
             <div className="flex gap-2">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-muted/50 p-1 rounded-full border">
+                <TabsList className="bg-transparent border-none">
+                  <TabsTrigger value="explorer" className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    Explorador
+                  </TabsTrigger>
+                  <TabsTrigger value="backup" className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    Backup
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              
+              <div className="h-10 w-[1px] bg-border/50 mx-2" />
+              
               <Button
                 variant="outline"
                 size="sm"
@@ -246,8 +264,10 @@ export default function DatabasePage() {
             </div>
           </div>
 
-          {/* MAIN GRID */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsContent value="explorer" className="mt-0">
+              {/* MAIN GRID */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* LEFT - Table List */}
             <div className="lg:col-span-1 space-y-2">
               <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
@@ -446,8 +466,16 @@ export default function DatabasePage() {
               )}
             </div>
           </div>
-        </div>
-      </div>
-    </ValeryLayout>
+        </TabsContent>
+
+        <TabsContent value="backup" className="mt-0">
+          <div className="max-w-4xl mx-auto">
+            <BackupSettings />
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  </div>
+</ValeryLayout>
   );
 }

@@ -114,7 +114,7 @@ export default function HRPage() {
             </div>
 
             <TabsContent value="dashboard" className="mt-6">
-              <HRKPIs logic={logic} />
+              <HRDashboard logic={logic} />
             </TabsContent>
 
             <TabsContent value="directorio" className="mt-6">
