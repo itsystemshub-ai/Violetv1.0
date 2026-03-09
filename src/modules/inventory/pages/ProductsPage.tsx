@@ -245,30 +245,6 @@ export default function ProductsPage() {
     return <Badge className="bg-green-500 text-white">Stock OK</Badge>;
   };
 
-  const getVentasTotal = (product: any): number => {
-    if (product.historial && product.historial > 0) return product.historial;
-    if (product.ventasHistory) {
-      const sum =
-        (product.ventasHistory[2023] || 0) +
-        (product.ventasHistory[2024] || 0) +
-        (product.ventasHistory[2025] || 0);
-      if (sum > 0) return sum;
-    }
-    return 0;
-  };
-
-  const getRanking = (product: any): string => {
-    if (product.rankingHistory) {
-      const ranking2025 = product.rankingHistory[2025];
-      const ranking2024 = product.rankingHistory[2024];
-      const ranking2023 = product.rankingHistory[2023];
-      if (ranking2025 && ranking2025 > 0) return String(ranking2025);
-      if (ranking2024 && ranking2024 > 0) return String(ranking2024);
-      if (ranking2023 && ranking2023 > 0) return String(ranking2023);
-    }
-    return "-";
-  };
-
   const handleDelete = () => {
     if (selectedProductId) {
       invLogic.deleteProduct(selectedProductId);
@@ -397,47 +373,55 @@ export default function ProductsPage() {
   }
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
-      <PremiumHUD>
-        <div className="p-6 space-y-6">
-          <div className="bg-card/50 dark:bg-slate-900/50 backdrop-blur-xl border border-border/50 rounded-[2.5rem] p-8 shadow-2xl space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div>
-                <h1 className="text-4xl font-black flex items-center gap-4 text-foreground tracking-tight">
-                  <div className="p-3 bg-primary/10 rounded-2xl">
-                    <Package className="w-8 h-8 text-primary" />
-                  </div>
-                  Productos
-                </h1>
-                <p className="text-muted-foreground mt-2 text-lg">
-                  Catálogo central de productos — se conectan con Ventas,
-                  Facturas, Compras e Inventario
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  ref={invLogic.fileInputRef}
-                  onChange={invLogic.handleImport}
-                  className="hidden"
-                  accept=".xlsx, .xls, .csv"
-                />
-                <input
-                  type="file"
-                  ref={invLogic.photoInputRef}
-                  onChange={(e) =>
-                    e.target.files && invLogic.processPhotos(e.target.files)
-                  }
-                  className="hidden"
-                  accept="image/*"
-                  multiple
-                />
-                <input
-                  type="file"
-                  ref={invLogic.folderInputRef}
-                  onChange={(e) =>
-                    e.target.files && invLogic.processPhotos(e.target.files)
-                  }
+    <PremiumHUD active={true}>
+      <div className="p-4 space-y-4 pb-20">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Gestión de Productos
+            </h2>
+            <p className="text-muted-foreground">
+              Catálogo completo de productos con control de stock e IA.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Producto
+            </Button>
+            <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/50">
+              <Button
+                variant={viewMode === "list" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="h-8 w-8 p-0"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "grid" ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="h-8 w-8 p-0"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <Tabs
+          defaultValue="all"
+          className="w-full space-y-4"
+          onValueChange={(v) =>
+            setInvLogic({ ...invLogic, statusFilter: v as any })
+          }
+        >
+          {/* ... resto del contenido de la página ... */}
                   className="hidden"
                   // @ts-ignore
                   webkitdirectory=""
@@ -674,564 +658,9 @@ export default function ProductsPage() {
 
             {invLogic.statusFilter !== "photos" && (
               <TabsContent value={invLogic.statusFilter}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Lista de Productos</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {invLogic.filteredProducts.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-20" />
-                        <h3 className="text-lg font-bold mb-2">
-                          No hay productos registrados
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Agrega tu primer producto para empezar a gestionar tu
-                          inventario
-                        </p>
-                        <Button
-                          onClick={() => {
-                            setForm({ ...emptyForm });
-                            setCreateDialogOpen(true);
-                          }}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Agregar Primer Producto
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {invLogic.filteredProducts.map(
-                          (product: any, index: number) => (
-                            <div
-                              key={product.id}
-                              className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-4"
-                            >
-                              <div className="flex items-center gap-3 flex-1">
-                                <ProductImageCarousel
-                                  images={product.images || []}
-                                  productName={
-                                    product.descripcionManguera || product.name
-                                  }
-                                />
-                                {/* Códigos (Izquierda) */}
-                                <div
-                                  className={cn(
-                                    "flex flex-col gap-1 text-muted-foreground shrink-0",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "text-[10px] w-[110px]"
-                                      : "text-[11px] w-[130px]",
-                                  )}
-                                >
-                                  <span
-                                    className={cn(
-                                      "font-medium text-foreground mb-0.5",
-                                      invLogic.statusFilter === "inactive"
-                                        ? "text-[11px]"
-                                        : "text-[12px]",
-                                    )}
-                                  >
-                                    N°:{" "}
-                                    {product.rowNumber ||
-                                      invLogic.products.findIndex(
-                                        (p: any) => p.id === product.id,
-                                      ) + 1}
-                                  </span>
-                                  <span>
-                                    CAUPLAS:{" "}
-                                    <span className="font-medium text-primary">
-                                      {product.cauplas || "-"}
-                                    </span>
-                                  </span>
-                                  <span>
-                                    TORFLEX:{" "}
-                                    <span className="font-medium">
-                                      {product.torflex || "-"}
-                                    </span>
-                                  </span>
-                                  <span>
-                                    INDOMAX:{" "}
-                                    <span className="font-medium">
-                                      {product.indomax || "-"}
-                                    </span>
-                                  </span>
-                                  <span>
-                                    OEM:{" "}
-                                    <span
-                                      className={
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[9px]"
-                                          : "text-[10px]"
-                                      }
-                                    >
-                                      {product.oem || "-"}
-                                    </span>
-                                  </span>
-                                </div>
-
-                                {/* Descripción (Medio) */}
-                                <div
-                                  className={cn(
-                                    "flex-1 border-l border-border/40 pl-2.5 py-1 mr-1.5",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "min-w-[140px]"
-                                      : "min-w-[180px]",
-                                  )}
-                                >
-                                  <p
-                                    className={cn(
-                                      "uppercase text-muted-foreground tracking-wider font-bold mb-0.5",
-                                      invLogic.statusFilter === "inactive"
-                                        ? "text-[8px]"
-                                        : "text-[9px]",
-                                    )}
-                                  >
-                                    DESCRIPCIÓN DEL PRODUCTO
-                                  </p>
-                                  <p
-                                    className={cn(
-                                      "font-bold leading-tight text-foreground/90 uppercase pr-1.5 break-words",
-                                      invLogic.statusFilter === "inactive"
-                                        ? "text-[11px]"
-                                        : "text-[13px]",
-                                    )}
-                                  >
-                                    {product.descripcionManguera ||
-                                      product.name ||
-                                      product.aplicacion ||
-                                      "-"}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="flex flex-wrap lg:flex-nowrap items-center gap-2.5 justify-end">
-                                {/* Atributos agrupados verticalmente: Categoría, Combustible, Nuevos */}
-                                <div
-                                  className={cn(
-                                    "flex flex-col gap-1 shrink-0 border-l pl-2.5 pr-2.5 border-border/40 border-r",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "w-[100px]"
-                                      : "w-[120px]",
-                                  )}
-                                >
-                                  <div className="text-center border-b border-border/30 pb-0.5">
-                                    <p
-                                      className={cn(
-                                        "uppercase text-muted-foreground tracking-wider font-bold mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Categoría
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-bold leading-tight uppercase text-foreground/90 break-words",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[9px]"
-                                          : "text-[11px]",
-                                      )}
-                                    >
-                                      {product.category || "-"}
-                                    </p>
-                                  </div>
-                                  <div className="text-center border-b border-border/30 pb-0.5">
-                                    <p
-                                      className={cn(
-                                        "uppercase text-muted-foreground tracking-wider font-bold mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Combustible
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-bold leading-tight uppercase text-foreground/90 break-words",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[9px]"
-                                          : "text-[11px]",
-                                      )}
-                                    >
-                                      {product.aplicacionesDiesel || "-"}
-                                    </p>
-                                  </div>
-                                  <div className="text-center mt-0.5">
-                                    <p
-                                      className={cn(
-                                        "uppercase text-muted-foreground tracking-wider font-bold mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Nuevos
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-bold leading-tight uppercase text-foreground/90 break-words",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[9px]"
-                                          : "text-[11px]",
-                                      )}
-                                    >
-                                      {typeof product.isNuevo === "string"
-                                        ? product.isNuevo || "-"
-                                        : product.isNuevo
-                                          ? "NUEVO"
-                                          : "-"}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Atributos agrupados verticalmente: Ventas y Ranking */}
-                                <div
-                                  className={cn(
-                                    "flex flex-col gap-1 shrink-0 px-1 border-r border-border/40",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "w-[80px]"
-                                      : "w-[95px]",
-                                  )}
-                                >
-                                  <div className="flex flex-col items-center justify-center bg-violet-50/50 dark:bg-violet-950/20 px-1 py-1 rounded-lg border border-violet-100 dark:border-violet-900/30">
-                                    <p
-                                      className={cn(
-                                        "text-violet-600 dark:text-violet-400 font-bold uppercase tracking-wide mb-0.5 text-center",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Ventas
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-black text-violet-600 dark:text-violet-400 leading-none",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[12px]"
-                                          : "text-[14px]",
-                                      )}
-                                    >
-                                      {getVentasTotal(product) || "-"}
-                                    </p>
-                                  </div>
-                                  <div className="flex flex-col items-center justify-center bg-orange-50/50 dark:bg-orange-950/20 px-1 py-1 rounded-lg border border-orange-100 dark:border-orange-900/30">
-                                    <p
-                                      className={cn(
-                                        "text-orange-600 dark:text-orange-400 font-bold uppercase tracking-wide mb-0.5 text-center",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Ranking
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-black text-orange-600 dark:text-orange-400 leading-none",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[12px]"
-                                          : "text-[14px]",
-                                      )}
-                                    >
-                                      {getRanking(product) || "-"}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* AI Forecast (PREDICCIÓN) */}
-                                <div
-                                  className={cn(
-                                    "flex flex-col gap-1 shrink-0 bg-cyan-50/50 dark:bg-cyan-950/20 px-2.5 py-1.5 rounded-lg border border-cyan-100 dark:border-cyan-900/30",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "w-[100px]"
-                                      : "w-[120px]",
-                                  )}
-                                >
-                                  <p
-                                    className={cn(
-                                      "text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wide mb-1 flex items-center justify-center gap-1",
-                                      invLogic.statusFilter === "inactive"
-                                        ? "text-[8px]"
-                                        : "text-[9px]",
-                                    )}
-                                  >
-                                    <Brain className="w-2.5 h-2.5" />
-                                    Predicción
-                                  </p>
-                                  {(() => {
-                                    const forecast = (invLogic as any)
-                                      .forecasts?.[product.id];
-                                    if (!forecast || product.stock === 0) {
-                                      return (
-                                        <p className="text-center font-bold text-rose-500 text-[10px]">
-                                          {product.stock === 0
-                                            ? "AGOTADO"
-                                            : "-"}
-                                        </p>
-                                      );
-                                    }
-                                    const hasSales =
-                                      forecast.velocity30Days > 0;
-                                    if (!hasSales)
-                                      return (
-                                        <p className="text-center text-muted-foreground text-[9px] leading-tight mt-0.5">
-                                          Sin rotación
-                                        </p>
-                                      );
-
-                                    return (
-                                      <div className="flex flex-col items-center gap-0.5">
-                                        <div
-                                          className={cn(
-                                            "font-black flex items-center gap-1",
-                                            forecast.isCritical
-                                              ? "text-rose-600 animate-pulse"
-                                              : "text-cyan-700 dark:text-cyan-300",
-                                            invLogic.statusFilter === "inactive"
-                                              ? "text-[10px]"
-                                              : "text-[12px]",
-                                          )}
-                                        >
-                                          <Clock className="w-2.5 h-2.5" />
-                                          {forecast.daysUntilDepletion ===
-                                          Infinity
-                                            ? "∞"
-                                            : `${Math.round(forecast.daysUntilDepletion)} d`}
-                                        </div>
-                                        <div className="flex items-center gap-1 text-[8px] text-muted-foreground font-medium">
-                                          <TrendingDown className="w-2 h-2" />
-                                          {forecast.velocity30Days} unid/mes
-                                        </div>
-                                      </div>
-                                    );
-                                  })()}
-                                </div>
-
-                                {/* Atributos agrupados verticalmente: Precio y Cantidad */}
-                                <div
-                                  className={cn(
-                                    "flex flex-col gap-1 shrink-0 text-center px-1 border-r border-border/40",
-                                    invLogic.statusFilter === "inactive"
-                                      ? "w-[90px]"
-                                      : "w-[105px]",
-                                  )}
-                                >
-                                  <div className="border-b border-border/30 pb-0.5">
-                                    <p
-                                      className={cn(
-                                        "uppercase text-muted-foreground tracking-wide font-bold mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Precio
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-black leading-none tabular-nums text-foreground",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[12px]"
-                                          : "text-[15px]",
-                                      )}
-                                    >
-                                      $
-                                      {new Intl.NumberFormat("es-VE", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      }).format(
-                                        product.precioFCA || product.price || 0,
-                                      )}
-                                    </p>
-                                  </div>
-                                  <div className="pt-0.5 flex flex-col items-center">
-                                    <p
-                                      className={cn(
-                                        "uppercase text-muted-foreground tracking-wide font-bold mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[8px]"
-                                          : "text-[9px]",
-                                      )}
-                                    >
-                                      Cant.
-                                    </p>
-                                    <p
-                                      className={cn(
-                                        "font-black leading-tight tabular-nums mb-0.5",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "text-[11px]"
-                                          : "text-[12px]",
-                                      )}
-                                    >
-                                      {product.stock}
-                                    </p>
-                                    <div
-                                      className={cn(
-                                        "origin-top",
-                                        invLogic.statusFilter === "inactive"
-                                          ? "scale-[0.6]"
-                                          : "scale-[0.75]",
-                                      )}
-                                    >
-                                      {getStockBadge(
-                                        product.stock,
-                                        product.minStock,
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Observaciones (Solo para pestaña Inactivos) */}
-                                {invLogic.statusFilter === "inactive" && (
-                                  <div className="w-[140px] shrink-0 border-l border-amber-200/50 pl-2.5 py-1 bg-amber-50/20 dark:bg-amber-950/10 rounded-lg">
-                                    <p className="text-[8px] uppercase text-amber-600 dark:text-amber-400 tracking-wider font-bold mb-0.5 flex items-center gap-1">
-                                      <AlertCircle className="w-2.5 h-2.5" />
-                                      Motivo
-                                    </p>
-                                    <p className="text-[9px] leading-snug text-foreground/80 italic break-words whitespace-normal line-clamp-2">
-                                      {product.deactivationReason ||
-                                        "Sin observaciones"}
-                                    </p>
-                                  </div>
-                                )}
-
-                                <div className="grid grid-cols-2 gap-x-2 gap-y-2 ml-4 w-[72px] shrink-0">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-muted"
-                                    onClick={() => {
-                                      setSelectedProductId(product.id);
-                                      setViewDialogOpen(true);
-                                    }}
-                                    title="VER DETALLE"
-                                  >
-                                    <Eye className="w-[18px] h-[18px] text-slate-500" />
-                                  </Button>
-                                  {product.status === "active" ? (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8 hover:bg-muted"
-                                      onClick={() => {
-                                        setProductToDeactivate(product);
-                                        setDeactivateReason("");
-                                        setDeactivateDialogOpen(true);
-                                      }}
-                                      title="Desactivar"
-                                    >
-                                      <Archive className="w-[18px] h-[18px] text-amber-500" />
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8 hover:bg-muted"
-                                      onClick={() =>
-                                        invLogic.updateProduct(product.id, {
-                                          status: "active",
-                                        })
-                                      }
-                                      title="Activar"
-                                    >
-                                      <CheckCircle className="w-[18px] h-[18px] text-emerald-500" />
-                                    </Button>
-                                  )}
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-muted"
-                                    title="EDITAR PRODUCTO"
-                                    onClick={() => {
-                                      setForm({
-                                        descripcionManguera:
-                                          product.descripcionManguera ||
-                                          product.name ||
-                                          "",
-                                        description: product.description || "",
-                                        category: product.category || "General",
-                                        precioFCA:
-                                          product.precioFCA ||
-                                          product.price ||
-                                          0,
-                                        cost: product.cost || 0,
-                                        stock: product.stock || 0,
-                                        minStock: product.minStock || 5,
-                                        barcode: product.oem || "",
-                                        supplier: "",
-                                        cauplas: product.cauplas || "",
-                                        torflex: product.torflex || "",
-                                        indomax: product.indomax || "",
-                                        oem: product.oem || "",
-                                        aplicacionesDiesel:
-                                          product.aplicacionesDiesel || "",
-                                        isNuevo: product.isNuevo || "",
-                                        margen: product.margen || 30,
-                                        images: product.images || [],
-                                      });
-                                      setSelectedProductId(product.id);
-                                      setEditDialogOpen(true);
-                                    }}
-                                  >
-                                    <Edit className="w-[18px] h-[18px] text-slate-500" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-red-50 hover:text-red-700"
-                                    onClick={() => {
-                                      setSelectedProductId(product.id);
-                                      setDeleteDialogOpen(true);
-                                    }}
-                                    title="Eliminar"
-                                  >
-                                    <Trash2 className="w-[18px] h-[18px] text-red-500" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    )}
-
-                    {invLogic.totalPages > 1 && (
-                      <div className="flex flex-col sm:flex-row items-center justify-between pt-6 gap-4">
-                        <p className="text-sm font-medium text-muted-foreground text-center sm:text-left">
-                          Página {invLogic.currentPage} de {invLogic.totalPages}{" "}
-                          ({invLogic.allFilteredProducts.length} items en total)
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={invLogic.currentPage === 1}
-                            onClick={() =>
-                              invLogic.setCurrentPage(invLogic.currentPage - 1)
-                            }
-                            className="font-bold border-2"
-                          >
-                            Atrás
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={
-                              invLogic.currentPage === invLogic.totalPages
-                            }
-                            onClick={() =>
-                              invLogic.setCurrentPage(invLogic.currentPage + 1)
-                            }
-                            className="font-bold border-2"
-                          >
-                            Siguiente
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                <Card className="border-none shadow-none bg-transparent">
+                  <CardContent className="p-0">
+                    <InventoryTable logic={invLogic} />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -1285,15 +714,7 @@ export default function ProductsPage() {
                 </div>
 
                 <div className="rounded-2xl border border-border overflow-hidden bg-background/50">
-                  <InventoryTable
-                    logic={{
-                      ...invLogic,
-                      filteredProducts: [...invLogic.products].sort(
-                        (a, b) =>
-                          (a.images?.length || 0) - (b.images?.length || 0),
-                      ),
-                    }}
-                  />
+                  <InventoryTable logic={invLogic} />
                 </div>
               </div>
             </TabsContent>
@@ -1383,7 +804,10 @@ export default function ProductsPage() {
         </AlertDialog>
 
         {/* PHOTO IMPORT MODAL */}
-        <Dialog open={photoImportModalOpen} onOpenChange={setPhotoImportModalOpen}>
+        <Dialog
+          open={photoImportModalOpen}
+          onOpenChange={setPhotoImportModalOpen}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -1394,7 +818,7 @@ export default function ProductsPage() {
                 Selecciona el método de carga de imágenes
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-3 py-4">
               <Button
                 variant="outline"
@@ -1438,8 +862,8 @@ export default function ProductsPage() {
             <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
               <p className="font-semibold mb-1">💡 Consejo:</p>
               <p>
-                Para carga masiva, nombra las imágenes con el código CAUPLAS del producto
-                para asociarlas automáticamente.
+                Para carga masiva, nombra las imágenes con el código CAUPLAS del
+                producto para asociarlas automáticamente.
               </p>
             </div>
           </DialogContent>
@@ -1715,7 +1139,7 @@ export default function ProductsPage() {
                     <FileSpreadsheet className="w-5 h-5 text-primary animate-pulse" />
                   )}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-semibold mb-1">
                     {invLogic.importProgress.type === "photos"
@@ -1723,9 +1147,10 @@ export default function ProductsPage() {
                       : "Importando Inventario"}
                   </h4>
                   <p className="text-xs text-muted-foreground mb-2">
-                    {invLogic.importProgress.current} de {invLogic.importProgress.total}
+                    {invLogic.importProgress.current} de{" "}
+                    {invLogic.importProgress.total}
                   </p>
-                  
+
                   {/* Progress Bar */}
                   <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
                     <div
@@ -1735,13 +1160,20 @@ export default function ProductsPage() {
                       }}
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between mt-1.5 text-xs text-muted-foreground">
                     <span>
-                      {Math.round((invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100)}%
+                      {Math.round(
+                        (invLogic.importProgress.current /
+                          (invLogic.importProgress.total || 1)) *
+                          100,
+                      )}
+                      %
                     </span>
                     <span>
-                      Faltan: {invLogic.importProgress.total - invLogic.importProgress.current}
+                      Faltan:{" "}
+                      {invLogic.importProgress.total -
+                        invLogic.importProgress.current}
                     </span>
                   </div>
                 </div>

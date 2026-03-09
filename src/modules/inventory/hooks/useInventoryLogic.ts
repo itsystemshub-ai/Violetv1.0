@@ -84,9 +84,9 @@ export const useInventoryLogic = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isFormOpen, setIsFormOpen] = useState(false);
   
-  // Paginación manual simple
+  // Paginación manual optimizada
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 200;
+  const itemsPerPage = 50;
 
   // Barcode lookup state
   const [barcodeResult, setBarcodeResult] = useState<any>(null);
@@ -214,7 +214,6 @@ export const useInventoryLogic = () => {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductType | undefined>(undefined);
   const [shouldClearBeforeImport, setShouldClearBeforeImport] = useState(false);
-  const [isCleaning, setIsCleaning] = useState(false);
   const [isPhotoImporting, setIsPhotoImporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   
@@ -277,56 +276,53 @@ export const useInventoryLogic = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const filteredProducts = products.filter((p) => {
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    
     const searchTerms = debouncedSearchQuery.toLowerCase().split(/\s+/).filter(Boolean);
     
-    const searchableText = `
-      ${p.rowNumber || ""} 
-      ${p.cauplas || ""} 
-      ${p.torflex || ""} 
-      ${p.indomax || ""} 
-      ${p.oem || ""} 
-      ${p.name || ""} 
-      ${p.descripcionManguera || ""} 
-      ${p.aplicacion || ""} 
-      ${p.category || ""} 
-      ${p.aplicacionesDiesel || ""} 
-      ${typeof p.isNuevo === 'string' ? p.isNuevo : (p.isNuevo ? 'NUEVO' : '')} 
-      ${p.historial || ""} 
-      ${p.ventasHistory?.[2023] || ""} 
-      ${p.ventasHistory?.[2024] || ""} 
-      ${p.ventasHistory?.[2025] || ""} 
-      ${p.rankingHistory?.[2023] || ""} 
-      ${p.rankingHistory?.[2024] || ""} 
-      ${p.rankingHistory?.[2025] || ""} 
-      ${p.precioFCA || p.price || ""} 
-      ${p.stock || ""}
-    `.toLowerCase();
+    return products.filter((p) => {
+      // Optimización: Solo buscar en campos clave para evitar generar strings masivos
+      const matchesSearch = searchTerms.length === 0 || searchTerms.every((term) => 
+        (p.cauplas?.toLowerCase().includes(term)) ||
+        (p.name?.toLowerCase().includes(term)) ||
+        (p.descripcionManguera?.toLowerCase().includes(term)) ||
+        (p.oem?.toLowerCase().includes(term)) ||
+        (p.indomax?.toLowerCase().includes(term)) ||
+        (p.torflex?.toLowerCase().includes(term))
+      );
 
-    const matchesSearch = searchTerms.every((term) => searchableText.includes(term));
-    const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
-    
-    let productStatus = "disponible";
-    if (p.status === "inactive") {
-      productStatus = "inactive";
-    } else if (p.stock === 0) {
-      productStatus = "agotado";
-    } else if (p.stock <= (p.minStock || 0)) {
-      productStatus = "poco_stock";
-    }
-    
-    // Si statusFilter es "active", mostramos disponible y poco_stock (stock > 0 y status = active)
-    const matchesStatus = 
-      statusFilter === "all" ? true :
-      statusFilter === "active" ? p.status !== "inactive" && p.stock > 0 :
-      statusFilter === "agotado" ? p.status !== "inactive" && p.stock === 0 :
-      productStatus === statusFilter;
+      const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
+      
+      let productStatus = "disponible";
+      if (p.status === "inactive") {
+        productStatus = "inactive";
+      } else if (p.stock === 0) {
+        productStatus = "agotado";
+      } else if (p.stock <= (p.minStock || 0)) {
+        productStatus = "poco_stock";
+      }
+      
+      const matchesStatus = 
+        statusFilter === "all" ? true :
+        statusFilter === "active" ? p.status !== "inactive" && p.stock > 0 :
+        statusFilter === "agotado" ? p.status !== "inactive" && p.stock === 0 :
+        statusFilter === "photos" ? true : // Include all for sorting in photos tab
+        productStatus === statusFilter;
 
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [products, debouncedSearchQuery, categoryFilter, statusFilter]);
 
   const sortedProducts = useMemo(() => {
     return [...filteredProducts].sort((a, b) => {
+      // Prioridad: Si estamos en fotos, ordenar por cantidad de fotos (ascendente)
+      if (statusFilter === "photos") {
+        const photosA = a.images?.length || 0;
+        const photosB = b.images?.length || 0;
+        if (photosA !== photosB) return photosA - photosB;
+      }
+
       let valA: any = a[sortBy as keyof ProductType] || "";
       let valB: any = b[sortBy as keyof ProductType] || "";
 
@@ -376,10 +372,12 @@ export const useInventoryLogic = () => {
 
   const categories = Array.from(new Set((products || []).map((p) => p.category))).filter(Boolean);
 
-  const totalInventoryValue = (products || []).reduce((acc, curr) => {
-    const price = curr.precioFCA !== undefined && curr.precioFCA !== null ? curr.precioFCA : curr.price || 0;
-    return acc + price * (curr.stock || 0);
-  }, 0);
+  const totalInventoryValue = useMemo(() => {
+    return (products || []).reduce((acc, curr) => {
+      const price = curr.precioFCA !== undefined && curr.precioFCA !== null ? curr.precioFCA : curr.price || 0;
+      return acc + price * (curr.stock || 0);
+    }, 0);
+  }, [products]);
 
   const brandChartData = useMemo(() => {
     return [

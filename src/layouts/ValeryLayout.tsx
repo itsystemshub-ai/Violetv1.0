@@ -47,18 +47,68 @@ import { useNotifications } from "@/shared/hooks/useNotifications";
 import { cn } from "@/core/shared/utils/utils";
 import { useCurrencyStore } from "@/shared/hooks/useCurrencyStore";
 import { useUIStore } from "@/shared/hooks/useUIStore";
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
+import { Outlet } from "react-router-dom";
 import ErrorBoundary from "@/shared/components/common/ErrorBoundary";
+import ValerySidebar from "@/components/navigation/ValerySidebar";
 
-interface ValeryLayoutProps {
-  children: React.ReactNode;
-  sidebar?: React.ReactNode;
-}
+// Sub-componente optimizado para la hora para evitar re-renders del layout completo
+const StatusBarClock = memo(() => {
+  const [time, setTime] = useState(new Date().toLocaleTimeString("es-VE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }));
 
-export const ValeryLayout: React.FC<ValeryLayoutProps> = ({
-  children,
-  sidebar,
-}) => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date().toLocaleTimeString("es-VE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }));
+    }, 30000); // Actualizar cada 30s es suficiente para HH:mm
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div
+      className="flex items-center gap-2 px-2 py-1 rounded-md bg-primary/5"
+      title="Hora actual"
+    >
+      <Clock className="h-3.5 w-3.5 text-primary" />
+      <span className="font-mono font-semibold text-foreground tabular-nums">
+        {time}
+      </span>
+    </div>
+  );
+});
+
+StatusBarClock.displayName = "StatusBarClock";
+
+// Sub-componente optimizado para la fecha
+const StatusBarDate = memo(() => {
+  const currentDate = new Date().toLocaleDateString("es-VE", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  return (
+    <div
+      className="hidden md:flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
+      title="Fecha actual"
+    >
+      <Calendar className="h-3.5 w-3.5 text-primary" />
+      <span className="capitalize font-medium text-foreground">
+        {currentDate}
+      </span>
+    </div>
+  );
+});
+
+StatusBarDate.displayName = "StatusBarDate";
+
+export const ValeryLayout: React.FC = memo(() => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const uiStore = useUIStore();
 
@@ -76,17 +126,6 @@ export const ValeryLayout: React.FC<ValeryLayoutProps> = ({
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } =
     useNotifications();
 
-  const currentDate = new Date().toLocaleDateString("es-VE", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  const currentTime = new Date().toLocaleTimeString("es-VE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -707,12 +746,14 @@ export const ValeryLayout: React.FC<ValeryLayoutProps> = ({
             "absolute lg:relative z-40 h-full",
           )}
         >
-          {sidebar}
+          <ValerySidebar />
         </aside>
 
         {/* Área de Trabajo */}
         <main className="flex-1 overflow-auto bg-background">
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 
@@ -780,29 +821,13 @@ export const ValeryLayout: React.FC<ValeryLayoutProps> = ({
 
         <div className="flex items-center gap-6">
           {/* Fecha */}
-          <div
-            className="hidden md:flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors"
-            title="Fecha actual"
-          >
-            <Calendar className="h-3.5 w-3.5 text-primary" />
-            <span className="capitalize font-medium text-foreground">
-              {currentDate}
-            </span>
-          </div>
+          <StatusBarDate />
 
           {/* Separador */}
           <div className="hidden md:block h-4 w-px bg-border" />
 
           {/* Hora */}
-          <div
-            className="flex items-center gap-2 px-2 py-1 rounded-md bg-primary/5"
-            title="Hora actual"
-          >
-            <Clock className="h-3.5 w-3.5 text-primary" />
-            <span className="font-mono font-semibold text-foreground tabular-nums">
-              {currentTime}
-            </span>
-          </div>
+          <StatusBarClock />
 
           {/* Versión */}
           <div

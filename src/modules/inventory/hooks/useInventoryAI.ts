@@ -279,13 +279,19 @@ export const useInventoryForecast = (products: Product[]) => {
       return isAfter(new Date(inv.date), thirtyDaysAgo);
     });
 
+    // Crear mapa de búsqueda rápida de productos por nombre e ID
+    const productLookup = new Map<string, Product>();
+    (products || []).forEach(p => {
+      productLookup.set(p.id, p);
+      if (p.name) productLookup.set(p.name, p);
+    });
+
     // Crear mapa de unidades vendidas por producto en los últimos 30 días
     const unitsSold30d: Record<string, number> = {};
     
     (recentSales || []).forEach((invoice) => {
       invoice.items?.forEach((item) => {
-        // Buscar ID del producto por su nombre (ya que las facturas guardan nombre)
-        const productData = (products || []).find(p => p.name === item.name || p.id === item.productId);
+        const productData = item.productId ? productLookup.get(item.productId) : (item.name ? productLookup.get(item.name) : null);
         if (productData) {
           unitsSold30d[productData.id] = (unitsSold30d[productData.id] || 0) + (item.quantity || 0);
         }

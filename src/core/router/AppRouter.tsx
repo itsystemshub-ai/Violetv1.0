@@ -1,17 +1,23 @@
 /**
  * AppRouter - Configuración centralizada de rutas
- * 
+ *
  * Arquitectura: Feature-Based Routing
  * - Separa la lógica de routing del componente App
  * - Implementa lazy loading automático
  * - Maneja error boundaries por ruta
  */
 
-import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { ProtectedRoute } from '@/core/auth/components/ProtectedRoute';
-import { RouteErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
-import { PUBLIC_ROUTES, PROTECTED_ROUTES, NOT_FOUND_ROUTE, RouteConfig } from './routes.config';
+import React, { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/core/auth/components/ProtectedRoute";
+import { RouteErrorBoundary } from "@/shared/components/feedback/ErrorBoundary";
+import {
+  PUBLIC_ROUTES,
+  PROTECTED_ROUTES,
+  NOT_FOUND_ROUTE,
+  RouteConfig,
+} from "./routes.config";
+import { ValeryLayout } from "@/layouts/ValeryLayout";
 
 /**
  * Loading Fallback Component
@@ -39,13 +45,7 @@ const renderRoute = (route: RouteConfig) => {
     </RouteErrorBoundary>
   );
 
-  return (
-    <Route
-      key={route.path}
-      path={route.path}
-      element={element}
-    />
-  );
+  return <Route key={route.path} path={route.path} element={element} />;
 };
 
 /**
@@ -61,13 +61,7 @@ const renderProtectedRoute = (route: RouteConfig) => {
     </ProtectedRoute>
   );
 
-  return (
-    <Route
-      key={route.path}
-      path={route.path}
-      element={element}
-    />
-  );
+  return <Route key={route.path} path={route.path} element={element} />;
 };
 
 /**
@@ -80,8 +74,10 @@ export const AppRouter: React.FC = () => {
         {/* Public Routes */}
         {PUBLIC_ROUTES.map(renderRoute)}
 
-        {/* Protected Routes */}
-        {PROTECTED_ROUTES.map(renderProtectedRoute)}
+        {/* Protected Routes Wrapper */}
+        <Route element={<ValeryLayout />}>
+          {PROTECTED_ROUTES.map(renderProtectedRoute)}
+        </Route>
 
         {/* 404 Route */}
         {renderRoute(NOT_FOUND_ROUTE)}

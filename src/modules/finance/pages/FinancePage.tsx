@@ -7,8 +7,6 @@ import {
 } from "@/shared/components/ui/tabs";
 import { useFinanceLogic } from "../hooks/useFinanceLogic";
 import { ModuleAIAssistant } from "@/core/ai/components";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { PremiumHUD } from "@/shared/components/stitch/PremiumHUD";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import { useTenant } from "@/shared/hooks/useTenant";
@@ -97,180 +95,176 @@ export default function FinancePage() {
   const { tenant } = useTenant();
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
-      <PremiumHUD>
-        {/* Animated Background */}
-        <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
-        <div className="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
-        <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] animate-pulse delay-1000 -z-10" />
+    <PremiumHUD active={true}>
+      {/* Animated Background */}
+      <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
+      <div className="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
+      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] animate-pulse delay-1000 -z-10" />
 
-        <div className="p-2 sm:p-6 space-y-6 max-w-7xl mx-auto relative z-0">
-          <Suspense fallback={<LoadingTab />}>
-            <FinanceHeader logic={logic} />
+      <div className="p-2 sm:p-6 space-y-6 max-w-7xl mx-auto relative z-0">
+        <Suspense fallback={<LoadingTab />}>
+          <FinanceHeader logic={logic} />
 
-            <div className="flex justify-end mb-4">
-              <Button
-                variant="outline"
-                className="rounded-full shadow-sm gap-2 border-violet-500/30 bg-violet-500/5 text-violet-600 hover:bg-violet-500/10 h-10 px-6"
-                onClick={() => {
-                  automationHub.trigger("/finance/bank/sync", {
-                    tenantId: tenant?.id,
-                    timestamp: new Date().toISOString(),
-                    action: "reconciliation_scan",
-                  });
-                  toast.success(
-                    "Escaneo de conciliación bancaria enviado a n8n",
-                  );
-                }}
-              >
-                <Sparkles className="w-4 h-4" />
-                Sincronizar Bancos IA
-              </Button>
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="outline"
+              className="rounded-full shadow-sm gap-2 border-violet-500/30 bg-violet-500/5 text-violet-600 hover:bg-violet-500/10 h-10 px-6"
+              onClick={() => {
+                automationHub.trigger("/finance/bank/sync", {
+                  tenantId: tenant?.id,
+                  timestamp: new Date().toISOString(),
+                  action: "reconciliation_scan",
+                });
+                toast.success("Escaneo de conciliación bancaria enviado a n8n");
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+              Sincronizar Bancos IA
+            </Button>
+          </div>
+
+          <Tabs defaultValue="dashboard" className="space-y-6">
+            <div className="overflow-x-auto pb-1">
+              <TabsList className="backdrop-blur-xl bg-card/80 border border-border p-1 rounded-full w-fit shadow-lg inline-flex">
+                <TabsTrigger
+                  value="dashboard"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Dashboard
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cxc"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  CxC
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cxp"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  CxP
+                </TabsTrigger>
+                <TabsTrigger
+                  value="libros"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Libros
+                </TabsTrigger>
+                <TabsTrigger
+                  value="igtf"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  IGTF
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cuentas"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Cuentas
+                </TabsTrigger>
+                <TabsTrigger
+                  value="asientos"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Asientos
+                </TabsTrigger>
+                <TabsTrigger
+                  value="mayor"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Libro Mayor
+                </TabsTrigger>
+                <TabsTrigger
+                  value="reconciliation"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Conciliación
+                </TabsTrigger>
+                <TabsTrigger
+                  value="reports"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Reportes
+                </TabsTrigger>
+                <TabsTrigger
+                  value="payment-queue"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-violet-500 data-[state=active]:text-white"
+                >
+                  Cola de Pagos
+                </TabsTrigger>
+                <TabsTrigger
+                  value="taxes"
+                  className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+                >
+                  Impuestos
+                </TabsTrigger>
+              </TabsList>
             </div>
 
-            <Tabs defaultValue="dashboard" className="space-y-6">
-              <div className="overflow-x-auto pb-1">
-                <TabsList className="backdrop-blur-xl bg-card/80 border border-border p-1 rounded-full w-fit shadow-lg inline-flex">
-                  <TabsTrigger
-                    value="dashboard"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Dashboard
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="cxc"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    CxC
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="cxp"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    CxP
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="libros"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Libros
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="igtf"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    IGTF
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="cuentas"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Cuentas
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="asientos"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Asientos
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="mayor"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Libro Mayor
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="reconciliation"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Conciliación
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="reports"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Reportes
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="payment-queue"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-violet-500 data-[state=active]:text-white"
-                  >
-                    Cola de Pagos
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="taxes"
-                    className="rounded-full px-6 data-[state=active]:bg-linear-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
-                  >
-                    Impuestos
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+            <TabsContent value="dashboard" className="space-y-6">
+              <FinanceKPIs logic={logic} />
 
-              <TabsContent value="dashboard" className="space-y-6">
-                <FinanceKPIs logic={logic} />
+              {/* AI Assistant */}
+              <ModuleAIAssistant
+                moduleName="Finanzas"
+                moduleContext="Gestión financiera, contabilidad, cuentas por cobrar, libros contables, IGTF y conciliación bancaria"
+                contextData={{
+                  totalAssets: logic.kpis.totalAssets,
+                  totalExpenses: logic.kpis.totalExpenses,
+                  pendingReceivables: logic.kpis.pendingReceivables,
+                  cashFlow: logic.kpis.cashFlow,
+                }}
+                compact
+              />
+              <FinanceDashboard logic={logic} />
+            </TabsContent>
 
-                {/* AI Assistant */}
-                <ModuleAIAssistant
-                  moduleName="Finanzas"
-                  moduleContext="Gestión financiera, contabilidad, cuentas por cobrar, libros contables, IGTF y conciliación bancaria"
-                  contextData={{
-                    totalAssets: logic.kpis.totalAssets,
-                    totalExpenses: logic.kpis.totalExpenses,
-                    pendingReceivables: logic.kpis.pendingReceivables,
-                    cashFlow: logic.kpis.cashFlow,
-                  }}
-                  compact
-                />
-                <FinanceDashboard logic={logic} />
-              </TabsContent>
+            <TabsContent value="libros" className="space-y-6">
+              <LibroManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="libros" className="space-y-6">
-                <LibroManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="cxc">
+              <CxCManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="cxc">
-                <CxCManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="cxp">
+              <CxPManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="cxp">
-                <CxPManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="igtf">
+              <IGTFManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="igtf">
-                <IGTFManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="cuentas">
+              <ChartOfAccountsManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="cuentas">
-                <ChartOfAccountsManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="asientos">
+              <JournalManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="asientos">
-                <JournalManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="mayor">
+              <LedgerManager logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="mayor">
-                <LedgerManager logic={logic} />
-              </TabsContent>
+            <TabsContent value="reports" className="space-y-4">
+              <FinanceReports logic={logic} />
+            </TabsContent>
 
-              <TabsContent value="reports" className="space-y-4">
-                <FinanceReports logic={logic} />
-              </TabsContent>
+            <TabsContent value="payment-queue" className="space-y-6">
+              <PaymentQueueManager
+                reportedPayments={logic.reportedPayments}
+                onApprove={logic.handleApproveReportedPayment}
+                onReject={logic.handleRejectReportedPayment}
+              />
+            </TabsContent>
 
-              <TabsContent value="payment-queue" className="space-y-6">
-                <PaymentQueueManager
-                  reportedPayments={logic.reportedPayments}
-                  onApprove={logic.handleApproveReportedPayment}
-                  onReject={logic.handleRejectReportedPayment}
-                />
-              </TabsContent>
-
-              <TabsContent value="taxes" className="space-y-6">
-                <TaxesConfigPanel />
-              </TabsContent>
-            </Tabs>
-          </Suspense>
-        </div>
-      </PremiumHUD>
-    </ValeryLayout>
+            <TabsContent value="taxes" className="space-y-6">
+              <TaxesConfigPanel />
+            </TabsContent>
+          </Tabs>
+        </Suspense>
+      </div>
+    </PremiumHUD>
   );
 }

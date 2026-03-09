@@ -3,8 +3,6 @@
  */
 
 import { useState } from "react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import {
   Tabs,
   TabsContent,
@@ -30,11 +28,11 @@ export default function CRMPage() {
   const { activeTab, setTab } = useCRMStore();
 
   // Set default tab to dashboard if not set or if it's new
-  // We'll handle this in a useEffect to avoid render loop if necessary, 
+  // We'll handle this in a useEffect to avoid render loop if necessary,
   // but for now let's just ensure dashboard exists in the store logic or here.
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
 
       <div className="p-6 space-y-6">
@@ -53,9 +51,15 @@ export default function CRMPage() {
 
         {/* Tabs */}
         <Tabs
-          value={activeTab === "pipeline" && !localStorage.getItem('crm_dashboard_visited') ? "dashboard" : activeTab}
+          value={
+            activeTab === "pipeline" &&
+            !localStorage.getItem("crm_dashboard_visited")
+              ? "dashboard"
+              : activeTab
+          }
           onValueChange={(val) => {
-            if (val === "dashboard") localStorage.setItem('crm_dashboard_visited', 'true');
+            if (val === "dashboard")
+              localStorage.setItem("crm_dashboard_visited", "true");
             setTab(val as any);
           }}
           className="space-y-6"
@@ -162,6 +166,6 @@ export default function CRMPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </ValeryLayout>
+    </>
   );
 }

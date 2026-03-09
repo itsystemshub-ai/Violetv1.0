@@ -1,7 +1,5 @@
 import React, { Suspense, lazy } from "react";
 import { useLocation } from "react-router-dom";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import {
   ShoppingCart,
   LayoutDashboard,
@@ -62,7 +60,7 @@ export default function PurchasesPage() {
     if (currentPath === "/purchases/receipts") return <ReceiptsManager />;
     if (currentPath === "/purchases/suppliers") return <SuppliersManager />;
     if (currentPath === "/purchases/analytics") return <PurchasesAnalytics />;
-    
+
     // Default dashboard
     return (
       <div className="space-y-6">
@@ -80,7 +78,7 @@ export default function PurchasesPage() {
   };
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] animate-pulse delay-1000 -z-10" />
@@ -122,10 +120,8 @@ export default function PurchasesPage() {
           </div>
         </div>
 
-        <Suspense fallback={<LoadingFallback />}>
-          {renderContent()}
-        </Suspense>
+        <Suspense fallback={<LoadingFallback />}>{renderContent()}</Suspense>
       </div>
-    </ValeryLayout>
+    </>
   );
 }
