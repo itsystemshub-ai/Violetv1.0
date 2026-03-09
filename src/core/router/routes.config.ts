@@ -17,7 +17,7 @@ const AccountsPayable = FinancePage;
 const Banks = FinancePage;
 const Accounting = FinancePage;
 const Inventory = lazy(
-  () => import("@/modules/inventory/pages/InventoryManagementPage"),
+  () => import("@/modules/inventory/pages/InventoryDashboardPage"),
 );
 const InventoryMovements = lazy(
   () => import("@/modules/inventory/pages/InventoryMovements"),
@@ -89,6 +89,13 @@ const PriceListPage = lazy(
 const KardexPage = lazy(
   () => import("@/modules/inventory/pages/KardexPage"),
 );
+const InventoryStatsPage = lazy(
+  () => import("@/modules/inventory/pages/InventoryStatsPage"),
+);
+const InventoryAnalyticsPage = lazy(
+  () => import("@/modules/inventory/pages/InventoryAnalyticsPage"),
+);
+
 
 
 // Purchases Pages Migrated to PurchasesPage Hub
@@ -421,7 +428,7 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
   },
   {
     path: "/inventory/stats",
-    component: Inventory,
+    component: InventoryStatsPage,
     protected: true,
     permission: "view:inventory",
     title: "Estadísticas de Inventario",
@@ -429,12 +436,13 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
   },
   {
     path: "/inventory/analytics",
-    component: Inventory,
+    component: InventoryAnalyticsPage,
     protected: true,
     permission: "view:inventory",
     title: "Análisis de Inventario",
     description: "Análisis avanzado y predicciones",
   },
+
   // Purchases Sub-pages
   {
     path: "/purchases/dashboard",

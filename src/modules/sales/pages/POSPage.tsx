@@ -156,15 +156,8 @@ const POSPage: React.FC = () => {
     else startScanner();
   };
 
-  const simulateScan = () => {
-    const allProducts = products || [];
-    if (allProducts.length === 0) return;
-    const randomProduct =
-      allProducts[Math.floor(Math.random() * allProducts.length)];
-    if (randomProduct) {
-      addToCart(randomProduct);
-    }
-  };
+  // Función eliminada: simulateScan (usaba Math.random para seleccionar productos)
+  // Si necesitas esta funcionalidad, implementa una búsqueda por código de barras real
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -288,12 +281,7 @@ const POSPage: React.FC = () => {
                 <X className="w-6 h-6" />
               </Button>
               <div className="absolute bottom-4 left-0 right-0 text-center px-4 space-y-3">
-                <Button
-                  className="w-full h-12 bg-primary/80 backdrop-blur-md rounded-2xl font-black uppercase tracking-tighter"
-                  onClick={simulateScan}
-                >
-                  Simular Escaneo (Auto-Match)
-                </Button>
+                {/* Botón de escaneo eliminado - usaba datos aleatorios */}
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary">
                   Escaneando Código de Barras...
                 </p>

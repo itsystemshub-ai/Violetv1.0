@@ -85,8 +85,8 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ auditLogs = [], isL
       }));
       setLogs(convertedLogs);
     } else if (!isLoading) {
-      // If no logs after loading finished, show samples for visual context
-      generateSampleLogs();
+      // No hay logs disponibles - mostrar estado vacío
+      setLogs([]);
     }
   }, [auditLogs, isLoading]);
 
@@ -103,69 +103,6 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ auditLogs = [], isL
       sys_config: 'Configuración',
     };
     return moduleMap[tableName] || 'Sistema';
-  };
-
-  const generateSampleLogs = () => {
-    const sampleLogs: ActivityLog[] = [
-      {
-        id: "1",
-        timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        user: "admin",
-        action: "CREATE",
-        module: "Inventario",
-        entity: "Producto",
-        entityId: "PROD-001",
-        description: "Creó producto 'Laptop Dell XPS 15'",
-        ipAddress: "192.168.1.100",
-      },
-      {
-        id: "2",
-        timestamp: new Date(Date.now() - 1000 * 60 * 15),
-        user: "vendedor1",
-        action: "UPDATE",
-        module: "Ventas",
-        entity: "Factura",
-        entityId: "FAC-2024-001",
-        description: "Actualizó factura #2024-001",
-        changes: { status: "Pagada" },
-        ipAddress: "192.168.1.101",
-      },
-      {
-        id: "3",
-        timestamp: new Date(Date.now() - 1000 * 60 * 30),
-        user: "admin",
-        action: "DELETE",
-        module: "Usuarios",
-        entity: "Usuario",
-        entityId: "USR-005",
-        description: "Eliminó usuario 'usuario_test'",
-        ipAddress: "192.168.1.100",
-      },
-      {
-        id: "4",
-        timestamp: new Date(Date.now() - 1000 * 60 * 45),
-        user: "contador",
-        action: "UPDATE",
-        module: "Configuración",
-        entity: "Empresa",
-        entityId: "EMP-001",
-        description: "Actualizó datos fiscales de la empresa",
-        changes: { rif: "J-123456789" },
-        ipAddress: "192.168.1.102",
-      },
-      {
-        id: "5",
-        timestamp: new Date(Date.now() - 1000 * 60 * 60),
-        user: "vendedor2",
-        action: "CREATE",
-        module: "Ventas",
-        entity: "Cliente",
-        entityId: "CLI-050",
-        description: "Creó cliente 'Empresa ABC C.A.'",
-        ipAddress: "192.168.1.103",
-      },
-    ];
-    setLogs(sampleLogs);
   };
 
   const filterLogs = () => {

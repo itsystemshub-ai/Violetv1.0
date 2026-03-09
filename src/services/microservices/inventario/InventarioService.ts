@@ -117,9 +117,11 @@ export class InventarioService {
       const normalizedCauplas = this.normalizeKey(p.cauplas);
       const existingId = normalizedCauplas ? existingMap.get(normalizedCauplas) : null;
       
+      // CRÍTICO: Si existe un producto con el mismo CAUPLAS, SIEMPRE usar su ID
+      // Esto previene duplicados al importar el mismo Excel múltiples veces
       return {
         ...p,
-        id: existingId || p.id || crypto.randomUUID(),
+        id: existingId || crypto.randomUUID(), // Removido p.id para forzar uso de existingId
         tenant_id: tenantId,
         updated_at: new Date().toISOString()
       };
@@ -221,63 +223,6 @@ export class InventarioService {
     ).join("\n");
     
     return headers + rows;
-  }
-
-  /**
-   * Limpia y unifica el inventario eliminando duplicados.
-   * 
-   * Estrategia de deduplicación:
-   * 1. Ordena por fecha de actualización (más reciente primero)
-   * 2. Agrupa por clave: cauplas > OEM > nombre
-   * 3. Mantiene el registro más reciente
-   * 4. Elimina los duplicados más antiguos
-   * 
-   * @param {string} tenantId - ID del tenant
-   * @returns {Promise<{before: number, after: number}>} Conteo antes y después
-   * 
-   * @example
-   * ```typescript
-   * const result = await inventarioService.deduplicateInventory('tenant-123');
-   * console.log(`Productos antes: ${result.before}`);
-   * console.log(`Productos después: ${result.after}`);
-   * console.log(`Duplicados eliminados: ${result.before - result.after}`);
-   * ```
-   * 
-   * @warning
-   * - Esta operación es irreversible
-   * - Se recomienda hacer backup antes de ejecutar
-   * - Los productos eliminados no se pueden recuperar
-   */
-  public async deduplicateInventory(tenantId: string): Promise<{ before: number, after: number }> {
-    const products = await this.getInventory(tenantId);
-    const beforeCount = products.length;
-    
-    // Mapa para unificar: llave -> producto
-    const unifiedMap = new Map<string, Product>();
-    const idsToDelete: string[] = [];
-
-    // Ordenamos por fecha de actualización descendente para que el más nuevo "gane" al iterar
-    const sortedProducts = [...products].sort((a, b) => 
-      new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
-    );
-
-    sortedProducts.forEach(p => {
-      const key = this.normalizeKey(p.cauplas) || this.normalizeKey(p.oem) || this.normalizeKey(p.name);
-      if (!key) return;
-
-      if (unifiedMap.has(key)) {
-        // Si ya existe en el mapa, este (que es más viejo por el sort) se marca para borrar
-        idsToDelete.push(p.id);
-      } else {
-        unifiedMap.set(key, p);
-      }
-    });
-
-    if (idsToDelete.length > 0) {
-      await localDb.products.bulkDelete(idsToDelete);
-    }
-
-    return { before: beforeCount, after: unifiedMap.size };
   }
 
   /**

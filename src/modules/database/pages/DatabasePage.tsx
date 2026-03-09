@@ -81,6 +81,122 @@ export default function DatabasePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [totalSize, setTotalSize] = useState<string>("Calculando...");
   const [expandedRecord, setExpandedRecord] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 200;
+  const [duplicateAnalysis, setDuplicateAnalysis] = useState<{
+    total: number;
+    duplicates: number;
+    unique: number;
+    duplicateGroups: Array<{ cauplas: string; count: number }>;
+  } | null>(null);
+
+  // Unificar productos duplicados por CAUPLAS (automático)
+  const unifyDuplicates = async (allProducts: any[]) => {
+    try {
+      console.log("🔍 Iniciando unificación automática de duplicados...");
+      console.log("📊 Total productos a analizar:", allProducts.length);
+      
+      // Agrupar por CAUPLAS
+      const cauplasMap = new Map<string, any[]>();
+      allProducts.forEach((product) => {
+        const cauplas = String(product.cauplas || "").trim().toUpperCase();
+        if (cauplas && cauplas !== "-" && cauplas !== "") {
+          if (!cauplasMap.has(cauplas)) {
+            cauplasMap.set(cauplas, []);
+          }
+          cauplasMap.get(cauplas)!.push(product);
+        }
+      });
+
+      console.log("📋 Códigos CAUPLAS únicos encontrados:", cauplasMap.size);
+
+      // Identificar duplicados y mantener el más reciente
+      const idsToDelete: string[] = [];
+      let duplicateGroupsCount = 0;
+      
+      cauplasMap.forEach((products, cauplas) => {
+        if (products.length > 1) {
+          duplicateGroupsCount++;
+          console.log(`⚠️ CAUPLAS duplicado: ${cauplas} (${products.length} registros)`);
+          
+          // Ordenar por fecha de actualización (más reciente primero)
+          products.sort((a, b) => 
+            new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
+          );
+          
+          // Mantener el primero (más reciente), eliminar el resto
+          for (let i = 1; i < products.length; i++) {
+            idsToDelete.push(products[i].id);
+          }
+        }
+      });
+
+      console.log(`🗑️ Total de duplicados a eliminar: ${idsToDelete.length}`);
+      console.log(`📦 Grupos de duplicados encontrados: ${duplicateGroupsCount}`);
+
+      // Eliminar duplicados
+      if (idsToDelete.length > 0) {
+        console.log("🔄 Eliminando duplicados de la base de datos...");
+        await localDb.products.bulkDelete(idsToDelete);
+        console.log("✅ Duplicados eliminados exitosamente");
+        
+        toast.success(`✅ Unificación automática: ${idsToDelete.length} duplicados eliminados`);
+        
+        // Recargar datos
+        console.log("🔄 Recargando información de tablas...");
+        await loadTableInfo();
+        
+        console.log("🔄 Recargando datos de productos...");
+        const updatedData = (await localDb.products.toArray()) || [];
+        console.log("📊 Total productos después de unificación:", updatedData.length);
+        
+        setTableData(updatedData.slice(0, 100));
+        
+        // Actualizar análisis
+        const newAnalysis = analyzeDuplicates(updatedData);
+        setDuplicateAnalysis(newAnalysis);
+        console.log("📈 Análisis actualizado:", newAnalysis);
+      } else {
+        console.log("✅ No se encontraron duplicados para eliminar");
+      }
+    } catch (err) {
+      console.error("❌ Error unificando duplicados:", err);
+      toast.error("Error al unificar duplicados");
+    }
+  };
+
+  // Analizar duplicados por CAUPLAS
+  const analyzeDuplicates = (data: any[]) => {
+    const cauplasMap = new Map<string, number>();
+    let totalWithCauplas = 0;
+
+    data.forEach((product) => {
+      const cauplas = String(product.cauplas || "").trim().toUpperCase();
+      if (cauplas && cauplas !== "-" && cauplas !== "") {
+        totalWithCauplas++;
+        cauplasMap.set(cauplas, (cauplasMap.get(cauplas) || 0) + 1);
+      }
+    });
+
+    const duplicateGroups: Array<{ cauplas: string; count: number }> = [];
+    let duplicateCount = 0;
+
+    cauplasMap.forEach((count, cauplas) => {
+      if (count > 1) {
+        duplicateGroups.push({ cauplas, count });
+        duplicateCount += count;
+      }
+    });
+
+    duplicateGroups.sort((a, b) => b.count - a.count);
+
+    return {
+      total: data.length,
+      duplicates: duplicateCount,
+      unique: data.length - duplicateCount + duplicateGroups.length,
+      duplicateGroups: duplicateGroups.slice(0, 10), // Top 10
+    };
+  };
 
   // Cargar info de todas las tablas
   const loadTableInfo = async () => {
@@ -136,11 +252,32 @@ export default function DatabasePage() {
     setSelectedTable(tableName);
     setExpandedRecord(null);
     setSearchTerm("");
+    setDuplicateAnalysis(null);
+    setCurrentPage(1); // Reset a página 1
     try {
+      console.log(`📂 Cargando tabla: ${tableName}`);
       const data = (await (localDb as any)[tableName]?.toArray()) || [];
-      setTableData(data.slice(0, 100)); // Limitar a 100 registros
+      console.log(`📊 Total registros en ${tableName}:`, data.length);
+      
+      setTableData(data); // Guardar todos los datos
+
+      // Si es la tabla de productos, analizar y unificar duplicados por CAUPLAS
+      if (tableName === "products") {
+        console.log("🔍 Analizando duplicados en productos...");
+        const analysis = analyzeDuplicates(data);
+        console.log("📈 Resultado del análisis:", analysis);
+        setDuplicateAnalysis(analysis);
+        
+        // Si hay duplicados, unificarlos automáticamente
+        if (analysis.duplicates > 0) {
+          console.log("⚠️ Duplicados detectados, iniciando unificación automática...");
+          await unifyDuplicates(data);
+        } else {
+          console.log("✅ No se detectaron duplicados");
+        }
+      }
     } catch (err) {
-      console.error("Error loading table data:", err);
+      console.error("❌ Error loading table data:", err);
       setTableData([]);
     }
   };
@@ -199,9 +336,15 @@ export default function DatabasePage() {
       .includes(searchTerm.toLowerCase());
   });
 
+  // Paginación
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, endIndex);
+
   // Obtener las columnas del primer registro
   const columns =
-    filteredData.length > 0 ? Object.keys(filteredData[0]).slice(0, 8) : [];
+    paginatedData.length > 0 ? Object.keys(paginatedData[0]).slice(0, 8) : [];
 
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
@@ -312,16 +455,64 @@ export default function DatabasePage() {
                 <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex-1">
                         <CardTitle className="flex items-center gap-2">
                           <Eye className="h-5 w-5 text-blue-500" />
                           {TABLE_LABELS[selectedTable]?.icon}{" "}
                           {TABLE_LABELS[selectedTable]?.label || selectedTable}
                         </CardTitle>
                         <CardDescription>
-                          {filteredData.length} registros mostrados
-                          {tableData.length >= 100 && " (máx. 100)"}
+                          {filteredData.length} registros totales • Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} • Página {currentPage} de {totalPages}
                         </CardDescription>
+                        
+                        {/* Análisis de Duplicados para Productos */}
+                        {duplicateAnalysis && (
+                          <div className="mt-3 p-3 rounded-lg border bg-muted/30">
+                            <div className="flex items-start gap-3">
+                              <AlertTriangle className={`h-5 w-5 mt-0.5 ${duplicateAnalysis.duplicates > 0 ? 'text-orange-500' : 'text-green-500'}`} />
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div>
+                                    <span className="text-muted-foreground">Total:</span>
+                                    <span className="ml-2 font-bold">{duplicateAnalysis.total.toLocaleString()}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Duplicados:</span>
+                                    <span className={`ml-2 font-bold ${duplicateAnalysis.duplicates > 0 ? 'text-orange-600' : 'text-green-600'}`}>
+                                      {duplicateAnalysis.duplicates.toLocaleString()}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-muted-foreground">Únicos:</span>
+                                    <span className="ml-2 font-bold text-green-600">{duplicateAnalysis.unique.toLocaleString()}</span>
+                                  </div>
+                                </div>
+                                
+                                {duplicateAnalysis.duplicates > 0 ? (
+                                  <div className="text-xs space-y-1">
+                                    <p className="font-semibold text-orange-600">
+                                      ⚠️ Se detectaron {duplicateAnalysis.duplicateGroups.length} códigos CAUPLAS duplicados
+                                    </p>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {duplicateAnalysis.duplicateGroups.map((group) => (
+                                        <Badge key={group.cauplas} variant="destructive" className="text-[10px]">
+                                          {group.cauplas} ({group.count}x)
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                    <p className="text-muted-foreground mt-2">
+                                      💡 Unificación automática en proceso...
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-green-600 font-medium">
+                                    ✅ No se detectaron duplicados por CAUPLAS. Todos los productos son únicos.
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="relative">
@@ -345,7 +536,7 @@ export default function DatabasePage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    {filteredData.length === 0 ? (
+                    {paginatedData.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
                         <HardDrive className="h-12 w-12 opacity-20" />
                         <p className="text-sm font-medium">
@@ -373,7 +564,7 @@ export default function DatabasePage() {
                         </div>
 
                         {/* Table Rows */}
-                        {filteredData.map((record, idx) => (
+                        {paginatedData.map((record, idx) => (
                           <div key={idx}>
                             <div
                               className="grid gap-2 p-2 rounded-lg border hover:bg-muted/30 transition-colors cursor-pointer text-xs"
@@ -382,12 +573,12 @@ export default function DatabasePage() {
                               }}
                               onClick={() =>
                                 setExpandedRecord(
-                                  expandedRecord === idx ? null : idx,
+                                  expandedRecord === startIndex + idx ? null : startIndex + idx,
                                 )
                               }
                             >
                               <span className="text-muted-foreground font-mono">
-                                {idx + 1}
+                                {startIndex + idx + 1}
                               </span>
                               {columns.slice(0, 6).map((col) => (
                                 <span
@@ -420,6 +611,52 @@ export default function DatabasePage() {
                             )}
                           </div>
                         ))}
+                      </div>
+                    )}
+                    
+                    {/* Paginación */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                        <div className="text-sm text-muted-foreground">
+                          Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} de {filteredData.length} registros
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                          >
+                            Primera
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                          >
+                            Anterior
+                          </Button>
+                          <span className="text-sm px-3">
+                            Página {currentPage} de {totalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                          >
+                            Siguiente
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages}
+                          >
+                            Última
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </CardContent>

@@ -37,93 +37,22 @@ export const useOrders = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
-    const mockOrders: Order[] = [
-      {
-        id: 'PED-001',
-        client: 'Empresa ABC',
-        clientId: 'CLI-001',
-        date: '2026-03-06',
-        deliveryDate: '2026-03-10',
-        amount: 15000,
-        tax: 2400,
-        total: 17400,
-        status: 'processing',
-        items: [
-          { id: '1', productId: 'P001', productName: 'Producto A', quantity: 10, price: 1000, discount: 0, subtotal: 10000 },
-          { id: '2', productId: 'P002', productName: 'Producto B', quantity: 5, price: 1000, discount: 0, subtotal: 5000 },
-        ],
-        shippingAddress: 'Calle Principal 123, Ciudad',
-        notes: 'Entrega en horario de oficina',
-      },
-      {
-        id: 'PED-002',
-        client: 'Comercial XYZ',
-        clientId: 'CLI-002',
-        date: '2026-03-05',
-        deliveryDate: '2026-03-08',
-        amount: 8500,
-        tax: 1360,
-        total: 9860,
-        status: 'shipped',
-        items: [
-          { id: '1', productId: 'P003', productName: 'Producto C', quantity: 17, price: 500, discount: 0, subtotal: 8500 },
-        ],
-        shippingAddress: 'Av. Comercial 456, Ciudad',
-        trackingNumber: 'TRK-2026-001',
-      },
-      {
-        id: 'PED-003',
-        client: 'Distribuidora 123',
-        clientId: 'CLI-003',
-        date: '2026-03-04',
-        deliveryDate: '2026-03-07',
-        amount: 22000,
-        tax: 3520,
-        total: 25520,
-        status: 'delivered',
-        items: [
-          { id: '1', productId: 'P004', productName: 'Producto D', quantity: 20, price: 1100, discount: 0, subtotal: 22000 },
-        ],
-        shippingAddress: 'Zona Industrial 789, Ciudad',
-        trackingNumber: 'TRK-2026-002',
-      },
-      {
-        id: 'PED-004',
-        client: 'Tienda DEF',
-        clientId: 'CLI-004',
-        date: '2026-03-03',
-        deliveryDate: '2026-03-09',
-        amount: 12500,
-        tax: 2000,
-        total: 14500,
-        status: 'pending',
-        items: [
-          { id: '1', productId: 'P005', productName: 'Producto E', quantity: 25, price: 500, discount: 0, subtotal: 12500 },
-        ],
-        shippingAddress: 'Centro Comercial, Local 10',
-      },
-      {
-        id: 'PED-005',
-        client: 'Empresa ABC',
-        clientId: 'CLI-001',
-        date: '2026-03-02',
-        deliveryDate: '2026-03-06',
-        amount: 18000,
-        tax: 2880,
-        total: 20880,
-        status: 'shipped',
-        items: [
-          { id: '1', productId: 'P001', productName: 'Producto A', quantity: 18, price: 1000, discount: 0, subtotal: 18000 },
-        ],
-        shippingAddress: 'Calle Principal 123, Ciudad',
-        trackingNumber: 'TRK-2026-003',
-      },
-    ];
+    // Cargar pedidos reales de la base de datos
+    const loadOrders = async () => {
+      try {
+        // TODO: Implementar carga desde localDb o API
+        // const realOrders = await localDb.orders.toArray();
+        // setOrders(realOrders);
+        setOrders([]); // Por ahora array vacío hasta que se implementen pedidos reales
+        setLoading(false);
+      } catch (error) {
+        console.error('Error cargando pedidos:', error);
+        setOrders([]);
+        setLoading(false);
+      }
+    };
 
-    setTimeout(() => {
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 500);
+    loadOrders();
   }, []);
 
   const filteredOrders = orders.filter((order) => {

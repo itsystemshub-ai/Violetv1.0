@@ -145,8 +145,12 @@ export default function TransfersPage() {
     }
   };
 
-  const handleShip = (id: string) => {
-    const trackingNumber = `TRK-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
+  const handleShip = async (id: string) => {
+    // Generar tracking number secuencial basado en timestamp
+    const now = new Date();
+    const year = now.getFullYear();
+    const timestamp = now.getTime().toString().slice(-6);
+    const trackingNumber = `TRF-${year}-${timestamp}`;
     shipTransfer(id, trackingNumber);
   };
 

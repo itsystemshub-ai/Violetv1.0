@@ -1,6 +1,6 @@
 /**
  * useTransfers - Hook para gestión de transferencias de inventario
- * Genera datos de ejemplo a partir de los productos reales
+ * Carga datos reales de la base de datos
  */
 
 import { useState, useMemo } from 'react';

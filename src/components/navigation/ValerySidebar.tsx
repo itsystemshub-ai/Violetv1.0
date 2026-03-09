@@ -34,6 +34,7 @@ import {
   ShieldCheck,
   Smartphone,
   Share2,
+  FileSearch,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -140,7 +141,7 @@ const menuItems: MenuItem[] = [
   },
   {
     id: "inventario",
-    label: "Inventario",
+    label: "Control de Inventario",
     icon: Package,
     children: [
       {
@@ -186,7 +187,6 @@ const menuItems: MenuItem[] = [
         icon: FileText,
         path: "/inventory/kardex",
       },
-
       {
         id: "categorias",
         label: "Categorías",

@@ -444,9 +444,8 @@ export const useInventoryLogic = () => {
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
         setImportProgress(prev => ({ ...prev, total: jsonData.length }));
         
-        // Track identifiers WITHIN this file to prevent in-file duplicates
-        // (DB-level upsert is handled by syncBulkProducts via cauplas key)
-        const existingIdentifiers = new Set<string>();
+        // Track CAUPLAS codes to prevent duplicates within the file
+        const existingCauplas = new Set<string>();
 
         const finalProducts: any[] = [];
         (jsonData as any[]).forEach((row) => {
@@ -458,28 +457,26 @@ export const useInventoryLogic = () => {
           
           setImportProgress(prev => ({ ...prev, current: prev.current + 1 }));
 
-          // Extract identifiers
+          // Extract CAUPLAS code (única validación de duplicados)
           const cauplas = String(normalizedRow["CAUPLAS"] || "").trim().toUpperCase();
+          
+          // Skip if no CAUPLAS code
+          if (!cauplas) {
+            console.warn("⚠️ Producto sin código CAUPLAS, omitido");
+            return;
+          }
+
+          // Skip if CAUPLAS already exists in this file
+          if (existingCauplas.has(cauplas)) {
+            console.warn(`⚠️ CAUPLAS duplicado en archivo: ${cauplas}, omitido`);
+            return;
+          }
+          
+          existingCauplas.add(cauplas);
+
           const torflex = String(normalizedRow["TORFLEX"] || "").trim().toUpperCase();
           const indomax = String(normalizedRow["INDOMAX"] || "").trim().toUpperCase();
           const oem = String(normalizedRow["OEM"] || "").trim().toUpperCase();
-          
-          // Use CAUPLAS as the primary unique key for in-file deduplication
-          // If CAUPLAS is missing, we use a combination of other codes to avoid perfect row duplicates
-          // but we no longer block different products just because they share an OEM code.
-          let dedupeKey = "";
-          if (cauplas) {
-            dedupeKey = cauplas;
-          } else if (torflex || indomax || oem) {
-            dedupeKey = `ALT-${torflex}-${indomax}-${oem}`;
-          }
-
-          if (dedupeKey && existingIdentifiers.has(dedupeKey)) {
-            return; // Skip duplicate within the same file
-          }
-          if (dedupeKey) {
-            existingIdentifiers.add(dedupeKey);
-          }
 
           // Stock and Status
           const stockVal = parseFloat(String(normalizedRow["CANTIDAD"] || "0").replace(/[^0-9.-]+/g, "")) || 0;
@@ -496,7 +493,6 @@ export const useInventoryLogic = () => {
           }
 
           finalProducts.push({
-            id: crypto.randomUUID(),
             cauplas: cauplas,
             descripcionManguera: normalizedRow["DESCRIPCION DEL PRODUCTO"] || normalizedRow["DESCRIPCIÓN DEL PRODUCTO"] || normalizedRow["DESCRIPCION"] || "Sin descripción",
             torflex: torflex,
@@ -556,20 +552,6 @@ export const useInventoryLogic = () => {
       toast.success("Reinicio de inventario exitoso");
     } catch (error) {
       toast.error("Error al vaciar el inventario.");
-    }
-  };
-
-  const handleDeduplicate = async () => {
-    if (!activeTenantId) return;
-    setIsCleaning(true);
-    try {
-      await inventarioService.deduplicateInventory(activeTenantId);
-      await fetchProducts();
-      toast.success("Limpieza de duplicados exitosa");
-    } catch (error) {
-      toast.error("Error al limpiar duplicados.");
-    } finally {
-      setIsCleaning(false);
     }
   };
 
@@ -746,7 +728,6 @@ export const useInventoryLogic = () => {
     handleImport,
     handleExport,
     handleClear,
-    handleDeduplicate,
     processPhotos,
     handleTransfer,
     handleBarcodeSearch,
