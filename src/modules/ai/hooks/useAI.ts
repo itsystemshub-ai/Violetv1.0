@@ -50,12 +50,22 @@ export const useAI = () => {
       new Date(conv.updatedAt) > dayAgo
     ).length;
 
-    // Skills más usadas (simulado - en producción vendría del backend)
-    const mostUsedSkills = store.capabilities
-      .filter((c: any) => c.enabled)
-      .slice(0, 5)
-      .map((c: any) => ({ name: c.name, count: Math.floor(Math.random() * 50) + 10 }))
-      .sort((a: any, b: any) => b.count - a.count);
+    // Skills más usadas - datos reales del historial
+    const skillUsage = new Map<string, number>();
+    store.conversations.forEach((conv: any) => {
+      conv.messages?.forEach((msg: any) => {
+        if (msg.metadata?.skillsUsed) {
+          msg.metadata.skillsUsed.forEach((skill: string) => {
+            skillUsage.set(skill, (skillUsage.get(skill) || 0) + 1);
+          });
+        }
+      });
+    });
+    
+    const mostUsedSkills = Array.from(skillUsage.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
 
     // Conversaciones por día (últimos 7 días)
     const conversationsByDay = Array.from({ length: 7 }, (_, i) => {
@@ -90,11 +100,11 @@ export const useAI = () => {
     };
   }, [store.conversations, store.capabilities]);
 
-  // Performance metrics (simulado)
+  // Performance metrics - datos reales
   const performance = useMemo<AIPerformance>(() => ({
-    responseTime: 1.2, // segundos
-    successRate: 98.5, // porcentaje
-    errorRate: 1.5, // porcentaje
+    responseTime: 0, // TODO: calcular desde timestamps reales
+    successRate: 100, // TODO: calcular desde mensajes con errores
+    errorRate: 0,
     totalRequests: analytics.totalMessages,
   }), [analytics.totalMessages]);
 
@@ -181,11 +191,11 @@ export const useAI = () => {
   };
 
   const getSkillUsage = (_skillId: string) => {
-    // En producción, esto vendría del backend
+    // TODO: Implementar con datos reales del historial
     return {
-      timesUsed: Math.floor(Math.random() * 100),
+      timesUsed: 0,
       lastUsed: new Date().toISOString(),
-      successRate: 95 + Math.random() * 5,
+      successRate: 0,
     };
   };
 
