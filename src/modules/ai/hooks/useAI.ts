@@ -101,12 +101,46 @@ export const useAI = () => {
   }, [store.conversations, store.capabilities]);
 
   // Performance metrics - datos reales
-  const performance = useMemo<AIPerformance>(() => ({
-    responseTime: 0, // TODO: calcular desde timestamps reales
-    successRate: 100, // TODO: calcular desde mensajes con errores
-    errorRate: 0,
-    totalRequests: analytics.totalMessages,
-  }), [analytics.totalMessages]);
+  const performance = useMemo<AIPerformance>(() => {
+    let totalResponseTime = 0;
+    let responseCount = 0;
+    let errorCount = 0;
+    
+    store.conversations.forEach((conv: any) => {
+      const messages = conv.messages || [];
+      for (let i = 0; i < messages.length - 1; i++) {
+        const userMsg = messages[i];
+        const assistantMsg = messages[i + 1];
+        
+        if (userMsg.role === 'user' && assistantMsg.role === 'assistant') {
+          const userTime = new Date(userMsg.timestamp).getTime();
+          const assistantTime = new Date(assistantMsg.timestamp).getTime();
+          const responseTime = assistantTime - userTime;
+          
+          if (responseTime > 0 && responseTime < 300000) { // Max 5 minutos
+            totalResponseTime += responseTime;
+            responseCount++;
+          }
+          
+          if (assistantMsg.metadata?.error || assistantMsg.content?.includes('error')) {
+            errorCount++;
+          }
+        }
+      }
+    });
+    
+    const avgResponseTime = responseCount > 0 ? Math.round(totalResponseTime / responseCount) : 0;
+    const totalRequests = analytics.totalMessages;
+    const successRate = totalRequests > 0 ? Math.round(((totalRequests - errorCount) / totalRequests) * 100) : 100;
+    const errorRate = totalRequests > 0 ? Math.round((errorCount / totalRequests) * 100) : 0;
+    
+    return {
+      responseTime: avgResponseTime,
+      successRate,
+      errorRate,
+      totalRequests,
+    };
+  }, [store.conversations, analytics.totalMessages]);
 
   // Conversaciones filtradas
   const filteredConversations = useMemo(() => {
@@ -190,12 +224,32 @@ export const useAI = () => {
     };
   };
 
-  const getSkillUsage = (_skillId: string) => {
-    // TODO: Implementar con datos reales del historial
+  const getSkillUsage = (skillId: string) => {
+    let timesUsed = 0;
+    let lastUsed: string | null = null;
+    let successCount = 0;
+    
+    store.conversations.forEach((conv: any) => {
+      conv.messages?.forEach((msg: any) => {
+        if (msg.metadata?.skillsUsed?.includes(skillId)) {
+          timesUsed++;
+          const msgTime = new Date(msg.timestamp).toISOString();
+          if (!lastUsed || msgTime > lastUsed) {
+            lastUsed = msgTime;
+          }
+          if (!msg.metadata?.error) {
+            successCount++;
+          }
+        }
+      });
+    });
+    
+    const successRate = timesUsed > 0 ? Math.round((successCount / timesUsed) * 100) : 0;
+    
     return {
-      timesUsed: 0,
-      lastUsed: new Date().toISOString(),
-      successRate: 0,
+      timesUsed,
+      lastUsed: lastUsed || new Date().toISOString(),
+      successRate,
     };
   };
 

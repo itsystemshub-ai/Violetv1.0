@@ -1,8 +1,11 @@
 /**
  * useOrders - Hook para gestión de pedidos
+ * Conectado con localDb para datos reales
  */
 
 import { useState, useEffect } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { toast } from 'sonner';
 
 export interface Order {
   id: string;
@@ -18,6 +21,9 @@ export interface Order {
   shippingAddress?: string;
   trackingNumber?: string;
   notes?: string;
+  tenantId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface OrderItem {
@@ -36,22 +42,22 @@ export const useOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
-    // Cargar pedidos reales de la base de datos
-    const loadOrders = async () => {
-      try {
-        // TODO: Implementar carga desde localDb o API
-        // const realOrders = await localDb.orders.toArray();
-        // setOrders(realOrders);
-        setOrders([]); // Por ahora array vacío hasta que se implementen pedidos reales
-        setLoading(false);
-      } catch (error) {
-        console.error('Error cargando pedidos:', error);
-        setOrders([]);
-        setLoading(false);
-      }
-    };
+  // Cargar pedidos desde localDb
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const ordersData = await localDb.orders?.toArray() || [];
+      setOrders(ordersData as Order[]);
+    } catch (error) {
+      console.error('Error cargando pedidos:', error);
+      toast.error('Error al cargar pedidos');
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadOrders();
   }, []);
 
@@ -76,22 +82,47 @@ export const useOrders = () => {
     cancelled: orders.filter(o => o.status === 'cancelled').length,
   };
 
-  const createOrder = (order: Omit<Order, 'id'>) => {
-    const newOrder: Order = {
-      ...order,
-      id: `PED-${String(orders.length + 1).padStart(3, '0')}`,
-    };
-    setOrders([newOrder, ...orders]);
+  const createOrder = async (order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const newOrder: Order = {
+        ...order,
+        id: `PED-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await localDb.orders?.add(newOrder as any);
+      await loadOrders();
+      toast.success('Pedido creado exitosamente');
+    } catch (error) {
+      console.error('Error creando pedido:', error);
+      toast.error('Error al crear pedido');
+    }
   };
 
-  const updateOrder = (id: string, updates: Partial<Order>) => {
-    setOrders(orders.map(o => 
-      o.id === id ? { ...o, ...updates } : o
-    ));
+  const updateOrder = async (id: string, updates: Partial<Order>) => {
+    try {
+      await localDb.orders?.update(id, {
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      });
+      await loadOrders();
+      toast.success('Pedido actualizado');
+    } catch (error) {
+      console.error('Error actualizando pedido:', error);
+      toast.error('Error al actualizar pedido');
+    }
   };
 
-  const deleteOrder = (id: string) => {
-    setOrders(orders.filter(o => o.id !== id));
+  const deleteOrder = async (id: string) => {
+    try {
+      await localDb.orders?.delete(id);
+      await loadOrders();
+      toast.success('Pedido eliminado');
+    } catch (error) {
+      console.error('Error eliminando pedido:', error);
+      toast.error('Error al eliminar pedido');
+    }
   };
 
   const processOrder = (id: string) => {
@@ -126,5 +157,6 @@ export const useOrders = () => {
     shipOrder,
     deliverOrder,
     cancelOrder,
+    refreshOrders: loadOrders,
   };
 };

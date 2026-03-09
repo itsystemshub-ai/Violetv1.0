@@ -5,6 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { useInventoryStore } from './useInventoryStore';
+import { localDb } from '@/core/database/localDb';
 
 export interface TransferItem {
   id: string;
@@ -161,8 +162,30 @@ export const useTransfers = () => {
     }).length,
   };
 
-  const createTransfer = (_transfer: Omit<Transfer, 'id'>) => {
-    // Future: persist to localDb
+  const createTransfer = async (transfer: Omit<Transfer, 'id'>) => {
+    try {
+      const newTransfer: Transfer = {
+        ...transfer,
+        id: `TRF-${Date.now()}`,
+      };
+      
+      // Guardar en inventory_movements
+      for (const item of transfer.items) {
+        await localDb.inventory_movements?.add({
+          id: crypto.randomUUID(),
+          product_id: item.productId,
+          tenant_id: transfer.toWarehouseId,
+          type: 'transfer',
+          reference_id: newTransfer.id,
+          quantity: item.quantity,
+          from_warehouse: transfer.fromWarehouseId,
+          to_warehouse: transfer.toWarehouseId,
+          created_at: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Error creando transferencia:', error);
+    }
   };
 
   const updateTransfer = (id: string, updates: Partial<Transfer>) => {

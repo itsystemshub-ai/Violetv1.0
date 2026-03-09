@@ -173,6 +173,7 @@ export default function ProductsPage() {
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
   const [deactivateReason, setDeactivateReason] = useState("");
   const [productToDeactivate, setProductToDeactivate] = useState<any>(null);
+  const [photoImportModalOpen, setPhotoImportModalOpen] = useState(false);
 
   // Build dynamic categories from existing products + base list
   const CATEGORIES = useMemo(() => {
@@ -522,39 +523,24 @@ export default function ProductsPage() {
                   </>
                 )}
                 {invLogic.statusFilter === "photos" && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="rounded-full shadow-sm gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
-                        disabled={invLogic.isImporting}
-                      >
-                        <Camera
-                          className={cn(
-                            "w-4 h-4",
-                            invLogic.isImporting && "animate-pulse",
-                          )}
-                        />
-                        {invLogic.isImporting
-                          ? "Procesando..."
-                          : "Importar Fotos"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => invLogic.photoInputRef.current?.click()}
-                        className="cursor-pointer font-medium"
-                      >
-                        Carga Individual (Max 3/item)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => invLogic.folderInputRef.current?.click()}
-                        className="cursor-pointer font-medium"
-                      >
-                        Carga Masiva (Carpeta)
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <>
+                    <Button
+                      variant="outline"
+                      className="rounded-full shadow-sm gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
+                      disabled={invLogic.isImporting}
+                      onClick={() => setPhotoImportModalOpen(true)}
+                    >
+                      <Camera
+                        className={cn(
+                          "w-4 h-4",
+                          invLogic.isImporting && "animate-pulse",
+                        )}
+                      />
+                      {invLogic.isImporting
+                        ? "Procesando..."
+                        : "Importar Fotos"}
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -1396,6 +1382,69 @@ export default function ProductsPage() {
           </AlertDialogContent>
         </AlertDialog>
 
+        {/* PHOTO IMPORT MODAL */}
+        <Dialog open={photoImportModalOpen} onOpenChange={setPhotoImportModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Camera className="w-5 h-5 text-primary" />
+                Importar Fotos de Productos
+              </DialogTitle>
+              <DialogDescription>
+                Selecciona el método de carga de imágenes
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-3 py-4">
+              <Button
+                variant="outline"
+                className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
+                onClick={() => {
+                  invLogic.photoInputRef.current?.click();
+                  setPhotoImportModalOpen(false);
+                }}
+              >
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
+                  <ImageIcon className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-base">Carga Individual</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Máximo 3 fotos por producto
+                  </p>
+                </div>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
+                onClick={() => {
+                  invLogic.folderInputRef.current?.click();
+                  setPhotoImportModalOpen(false);
+                }}
+              >
+                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center">
+                  <Layers className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-base">Carga Masiva</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Importar carpeta completa de imágenes
+                  </p>
+                </div>
+              </Button>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
+              <p className="font-semibold mb-1">💡 Consejo:</p>
+              <p>
+                Para carga masiva, nombra las imágenes con el código CAUPLAS del producto
+                para asociarlas automáticamente.
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* VIEW DIALOG */}
         <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
           <DialogContent className="max-w-2xl">
@@ -1654,63 +1703,49 @@ export default function ProductsPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Progress Overlay for Imports */}
+        {/* Progress Toast - Compact in Top Right */}
         {invLogic.importProgress.isActive && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm">
-            <div className="bg-card p-8 rounded-3xl border border-border shadow-2xl max-w-md w-full mx-4 space-y-6 relative overflow-hidden group">
-              {/* Animated Striped Background effect */}
-              <div className="absolute inset-0 opacity-5 pointer-events-none bg-[linear-gradient(45deg,currentColor_25%,transparent_25%,transparent_50%,currentColor_50%,currentColor_75%,transparent_75%,transparent)] bg-[length:20px_20px] animate-[progress-stripe_1s_linear_infinite]" />
-
-              <div className="text-center space-y-2 relative">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce">
+          <div className="fixed top-4 right-4 z-[100] animate-in slide-in-from-right">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-lg max-w-sm w-80">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                   {invLogic.importProgress.type === "photos" ? (
-                    <Camera className="w-8 h-8 text-primary" />
+                    <Camera className="w-5 h-5 text-primary animate-pulse" />
                   ) : (
-                    <FileSpreadsheet className="w-8 h-8 text-primary" />
+                    <FileSpreadsheet className="w-5 h-5 text-primary animate-pulse" />
                   )}
                 </div>
-                <h3 className="text-2xl font-black tracking-tight uppercase">
-                  {invLogic.importProgress.type === "photos"
-                    ? "Procesando Fotos..."
-                    : "Importando Inventario..."}
-                </h3>
-                <p className="text-muted-foreground font-medium">
-                  {invLogic.importProgress.current} de{" "}
-                  {invLogic.importProgress.total} items procesados
-                </p>
-              </div>
-
-              <div className="space-y-3 relative">
-                <div className="h-4 bg-muted rounded-full overflow-hidden border border-border">
-                  <div
-                    className="h-full bg-primary transition-all duration-300 relative"
-                    style={{
-                      width: `${(invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100}%`,
-                    }}
-                  >
-                    <div className="absolute inset-0 opacity-30 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[length:1rem_1rem] animate-[progress-stripe_1s_linear_infinite]" />
+                
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold mb-1">
+                    {invLogic.importProgress.type === "photos"
+                      ? "Procesando Fotos"
+                      : "Importando Inventario"}
+                  </h4>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {invLogic.importProgress.current} de {invLogic.importProgress.total}
+                  </p>
+                  
+                  {/* Progress Bar */}
+                  <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-300"
+                      style={{
+                        width: `${(invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-1.5 text-xs text-muted-foreground">
+                    <span>
+                      {Math.round((invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100)}%
+                    </span>
+                    <span>
+                      Faltan: {invLogic.importProgress.total - invLogic.importProgress.current}
+                    </span>
                   </div>
                 </div>
-                <div className="flex justify-between text-xs font-black uppercase tracking-widest text-muted-foreground">
-                  <span>
-                    {Math.round(
-                      (invLogic.importProgress.current /
-                        (invLogic.importProgress.total || 1)) *
-                        100,
-                    )}
-                    %
-                  </span>
-                  <span>
-                    Faltan:{" "}
-                    {invLogic.importProgress.total -
-                      invLogic.importProgress.current}
-                  </span>
-                </div>
               </div>
-
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-[0.2em] font-bold">
-                Favor no cerrar la ventana hasta finalizar el proceso
-              </p>
             </div>
           </div>
         )}

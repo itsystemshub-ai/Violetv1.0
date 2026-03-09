@@ -574,52 +574,62 @@ export const useInventoryLogic = () => {
       // Group files by product
       const productFiles = new Map<string, { product: ProductType; dataUrls: string[] }>();
 
-      for (const file of Array.from(files)) {
-        const baseName = file.name.replace(/\.[^.]+$/, '').trim().toUpperCase();
+      // OPTIMIZACIÓN: Procesar archivos en paralelo con Promise.all
+      const fileArray = Array.from(files);
+      const BATCH_SIZE = 20; // Procesar 20 imágenes a la vez (aumentado de 10 para mayor velocidad)
+      
+      for (let i = 0; i < fileArray.length; i += BATCH_SIZE) {
+        const batch = fileArray.slice(i, i + BATCH_SIZE);
+        
+        await Promise.all(batch.map(async (file) => {
+          const baseName = file.name.replace(/\.[^.]+$/, '').trim().toUpperCase();
 
-        let matchedProduct: ProductType | undefined;
+          let matchedProduct: ProductType | undefined;
 
-        // Exact match first
-        matchedProduct = cauplasMap.get(baseName);
+          // Exact match first
+          matchedProduct = cauplasMap.get(baseName);
 
-        // If no exact match, check if filename STARTS with any CAUPLAS code
-        if (!matchedProduct) {
-          for (const [code, product] of cauplasMap) {
-            if (baseName.startsWith(code)) {
-              matchedProduct = product;
-              break;
+          // If no exact match, check if filename STARTS with any CAUPLAS code
+          if (!matchedProduct) {
+            for (const [code, product] of cauplasMap) {
+              if (baseName.startsWith(code)) {
+                matchedProduct = product;
+                break;
+              }
             }
           }
-        }
 
-        if (!matchedProduct) {
-          console.warn(`[Photos] No CAUPLAS match for: "${file.name}" (parsed: "${baseName}")`);
-          continue;
-        }
+          if (!matchedProduct) {
+            console.warn(`[Photos] No CAUPLAS match for: "${file.name}" (parsed: "${baseName}")`);
+            setImportProgress(prev => ({ ...prev, current: prev.current + 1 }));
+            return;
+          }
 
-        console.log(`[Photos] Matched file "${file.name}" -> CAUPLAS "${matchedProduct.cauplas}"`);
-        setImportProgress(prev => ({ ...prev, current: prev.current + 1 }));
+          console.log(`[Photos] Matched file "${file.name}" -> CAUPLAS "${matchedProduct.cauplas}"`);
 
-        // Read file as data URL
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        const productId = matchedProduct.id;
-        if (!productFiles.has(productId)) {
-          productFiles.set(productId, {
-            product: matchedProduct,
-            dataUrls: [], // Start fresh — don't keep old images
+          // Read file as data URL
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
           });
-        }
 
-        const entry = productFiles.get(productId)!;
-        if (entry.dataUrls.length < 3) {
-          entry.dataUrls.push(dataUrl);
-        }
+          const productId = matchedProduct.id;
+          if (!productFiles.has(productId)) {
+            productFiles.set(productId, {
+              product: matchedProduct,
+              dataUrls: [], // Start fresh — don't keep old images
+            });
+          }
+
+          const entry = productFiles.get(productId)!;
+          if (entry.dataUrls.length < 3) {
+            entry.dataUrls.push(dataUrl);
+          }
+          
+          setImportProgress(prev => ({ ...prev, current: prev.current + 1 }));
+        }));
       }
 
       // Update each matched product — directly in localDb for instant visibility
@@ -627,7 +637,8 @@ export const useInventoryLogic = () => {
       const { localDb } = await import("@/core/database/localDb");
       const { useInventoryStore } = await import("./useInventoryStore");
 
-      for (const [, { product, dataUrls }] of productFiles) {
+      // OPTIMIZACIÓN: Actualizar productos en paralelo
+      const updatePromises = Array.from(productFiles.entries()).map(async ([, { product, dataUrls }]) => {
         const finalImages = dataUrls.slice(0, 3);
 
         // 1. Update localDb directly (IndexedDB) for immediate persistence
@@ -638,6 +649,7 @@ export const useInventoryLogic = () => {
           console.log(`[Photos] localDb updated for ${product.cauplas}: ${finalImages.length} images`);
         } catch (dbErr) {
           console.error(`[Photos] localDb update failed for ${product.cauplas}:`, dbErr);
+          return false;
         }
 
         // 2. Update zustand store in memory
@@ -647,16 +659,19 @@ export const useInventoryLogic = () => {
           ),
         }));
 
-        updatedCount++;
-      }
+        return true;
+      });
+
+      const results = await Promise.all(updatePromises);
+      updatedCount = results.filter(Boolean).length;
 
       if (updatedCount > 0) {
-        toast.success(`✅ Fotos asignadas a ${updatedCount} producto${updatedCount !== 1 ? 's' : ''}.`);
+        toast.success(`✅ ${files.length} foto${files.length !== 1 ? 's' : ''} subida${files.length !== 1 ? 's' : ''} a ${updatedCount} producto${updatedCount !== 1 ? 's' : ''}`);
         addNotification({
           module: "Inventario",
           type: "success",
-          title: "Carga de Fotos Completada",
-          message: `Se han procesado ${files.length} fotos y asignado a ${updatedCount} productos.`,
+          title: "✅ Fotos Subidas Exitosamente",
+          message: `Se subieron ${files.length} foto${files.length !== 1 ? 's' : ''} en ${updatedCount} producto${updatedCount !== 1 ? 's' : ''}.`,
         });
       } else {
         toast.warning('No se encontraron coincidencias. El nombre del archivo debe coincidir con el código CAUPLAS del producto.');

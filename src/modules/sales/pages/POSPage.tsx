@@ -312,7 +312,7 @@ const POSPage: React.FC = () => {
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
             <Input
-              placeholder="Buscar por Cauplas, OEM, TOR, IND..."
+              placeholder="🔍 Búsqueda inteligente: cualquier código, descripción, categoría, precio..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-14 bg-slate-100 dark:bg-white/5 border-none rounded-2xl text-lg focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground text-foreground dark:text-white"
@@ -520,7 +520,7 @@ const POSPage: React.FC = () => {
           <div className="relative flex-1 group w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 transition-colors group-focus-within:text-primary" />
             <Input
-              placeholder="Buscar por nombre, código o categoría..."
+              placeholder="🔍 Búsqueda inteligente en todas las columnas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-12 text-sm rounded-xl border-none bg-white/50 dark:bg-slate-900/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"

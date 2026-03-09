@@ -26,12 +26,7 @@ import {
   History,
 } from "lucide-react";
 import { ERP_MODULES, ROUTE_PATHS, formatCurrency } from "@/lib/index";
-import {
-  mockProducts,
-  mockInvoices,
-  mockEmployees,
-  mockFinancialAccounts,
-} from "@/data/index";
+import { localDb } from "@/core/database/localDb";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -40,6 +35,35 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
+  const [products, setProducts] = React.useState<any[]>([]);
+  const [invoices, setInvoices] = React.useState<any[]>([]);
+  const [employees, setEmployees] = React.useState<any[]>([]);
+  const [accounts, setAccounts] = React.useState<any[]>([]);
+
+  // Cargar datos reales desde localDb
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [productsData, invoicesData, employeesData, accountsData] = await Promise.all([
+          localDb.products?.limit(5).toArray() || [],
+          localDb.invoices?.limit(5).toArray() || [],
+          localDb.employees?.limit(5).toArray() || [],
+          localDb.financial_accounts?.limit(5).toArray() || [],
+        ]);
+        
+        setProducts(productsData);
+        setInvoices(invoicesData);
+        setEmployees(employeesData);
+        setAccounts(accountsData);
+      } catch (error) {
+        console.error('Error cargando datos para CommandPalette:', error);
+      }
+    };
+
+    if (open) {
+      loadData();
+    }
+  }, [open]);
 
   const runCommand = React.useCallback(
     (command: () => void) => {
@@ -114,7 +138,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Productos e Inventario">
-          {mockProducts.map((product) => (
+          {products.map((product) => (
             <CommandItem
               key={product.id}
               onSelect={() =>
@@ -125,12 +149,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             >
               <Package className="mr-2 h-4 w-4" />
               <div className="flex flex-col">
-                <span>{product.name}</span>
+                <span>{product.name || product.descripcionManguera || 'Producto'}</span>
                 <span className="text-xs text-muted-foreground">
-                  CAUPLAS: {product.cauplas} • Stock: {product.stock}
+                  CAUPLAS: {product.cauplas} • Stock: {product.stock || 0}
                 </span>
               </div>
-              <CommandShortcut>{formatCurrency(product.price)}</CommandShortcut>
+              <CommandShortcut>{formatCurrency(product.price || 0)}</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>
@@ -138,7 +162,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Facturación y Ventas">
-          {mockInvoices.map((invoice) => (
+          {invoices.map((invoice) => (
             <CommandItem
               key={invoice.id}
               onSelect={() =>
@@ -153,10 +177,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   {invoice.number} - {invoice.customerName}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  Estado: {invoice.status}
+                  Estado: {invoice.status || 'N/A'}
                 </span>
               </div>
-              <CommandShortcut>{formatCurrency(invoice.total)}</CommandShortcut>
+              <CommandShortcut>{formatCurrency(invoice.total || 0)}</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>
@@ -164,7 +188,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Recursos Humanos">
-          {mockEmployees.map((employee) => (
+          {employees.map((employee) => (
             <CommandItem
               key={employee.id}
               onSelect={() =>
@@ -176,10 +200,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               <User className="mr-2 h-4 w-4" />
               <div className="flex flex-col">
                 <span>
-                  {employee.firstName} {employee.lastName}
+                  {employee.firstName || employee.nombre || ''} {employee.lastName || employee.apellido || ''}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {employee.position} • {employee.department}
+                  {employee.position || employee.cargo || 'N/A'} • {employee.department || employee.departamento || 'N/A'}
                 </span>
               </div>
             </CommandItem>
@@ -189,7 +213,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Cuentas Contables">
-          {mockFinancialAccounts.map((account) => (
+          {accounts.map((account) => (
             <CommandItem
               key={account.id}
               onSelect={() =>
@@ -204,11 +228,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   {account.code} - {account.name}
                 </span>
                 <span className="text-xs text-muted-foreground uppercase">
-                  {account.type}
+                  {account.type || 'N/A'}
                 </span>
               </div>
               <CommandShortcut>
-                {formatCurrency(account.balance)}
+                {formatCurrency(account.balance || 0)}
               </CommandShortcut>
             </CommandItem>
           ))}

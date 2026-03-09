@@ -191,7 +191,7 @@ export const InventoryTable = ({ logic }: InventoryTableProps) => {
                   N°
                   <SortIcon field="rowNumber" />
                 </TableHead>
-                <TableHead className="w-[140px] text-center font-bold text-foreground text-[11px] uppercase tracking-wider px-2">
+                <TableHead className="w-[80px] text-center font-bold text-foreground text-[11px] uppercase tracking-wider px-2">
                   FOTO
                 </TableHead>
                 <TableHead
@@ -272,21 +272,25 @@ export const InventoryTable = ({ logic }: InventoryTableProps) => {
                     </TableHead>
                   </>
                 )}
-                <TableHead
-                  className="w-[80px] text-right font-bold text-foreground text-[11px] uppercase tracking-wider px-3 cursor-pointer hover:bg-muted/50 select-none group whitespace-normal leading-tight"
-                  onClick={() => logic.handleSort("price")}
-                >
-                  {logic.tableHeaders?.inventory?.price ||
-                    "PRECIO FCA CÓRDOBA $"}
-                  <SortIcon field="price" />
-                </TableHead>
-                <TableHead
-                  className="w-[70px] text-center font-bold text-foreground text-[11px] uppercase tracking-wider px-2 cursor-pointer hover:bg-muted/50 select-none group"
-                  onClick={() => logic.handleSort("stock")}
-                >
-                  {logic.tableHeaders?.inventory?.stock || "CANTIDAD"}
-                  <SortIcon field="stock" />
-                </TableHead>
+                {!isPhotosTab && (
+                  <TableHead
+                    className="w-[80px] text-right font-bold text-foreground text-[11px] uppercase tracking-wider px-3 cursor-pointer hover:bg-muted/50 select-none group whitespace-normal leading-tight"
+                    onClick={() => logic.handleSort("price")}
+                  >
+                    {logic.tableHeaders?.inventory?.price ||
+                      "PRECIO FCA CÓRDOBA $"}
+                    <SortIcon field="price" />
+                  </TableHead>
+                )}
+                {!isPhotosTab && (
+                  <TableHead
+                    className="w-[70px] text-center font-bold text-foreground text-[11px] uppercase tracking-wider px-2 cursor-pointer hover:bg-muted/50 select-none group"
+                    onClick={() => logic.handleSort("stock")}
+                  >
+                    {logic.tableHeaders?.inventory?.stock || "CANTIDAD"}
+                    <SortIcon field="stock" />
+                  </TableHead>
+                )}
                 {!isPhotosTab && (
                   <>
                     <TableHead className="w-[60px] text-center font-bold text-cyan-600 dark:text-cyan-400 text-[11px] uppercase tracking-wider px-2 bg-cyan-500/5 border-x border-cyan-500/10">
@@ -344,7 +348,7 @@ export const InventoryTable = ({ logic }: InventoryTableProps) => {
 
                         return (
                           <>
-                            <TableCell className="w-[140px] text-center p-2">
+                            <TableCell className="w-[80px] text-center p-1">
                               <ProductImageCarousel
                                 images={product.images || []}
                                 productName={
@@ -402,26 +406,30 @@ export const InventoryTable = ({ logic }: InventoryTableProps) => {
                               </>
                             )}
 
-                            <TableCell className="w-[80px] text-right font-bold text-foreground px-3 tabular-nums">
-                              {new Intl.NumberFormat("es-VE", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              }).format(
-                                product.precioFCA || product.price || 0,
-                              )}
-                            </TableCell>
-                            <TableCell className="w-[70px] text-center px-1">
-                              <span
-                                className={cn(
-                                  "px-2 py-1 rounded-md font-bold text-[10px]",
-                                  product.stock <= product.minStock
-                                    ? "bg-destructive/10 text-destructive"
-                                    : "bg-primary/10 text-primary",
+                            {!isPhotosTab && (
+                              <TableCell className="w-[80px] text-right font-bold text-foreground px-3 tabular-nums">
+                                {new Intl.NumberFormat("es-VE", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }).format(
+                                  product.precioFCA || product.price || 0,
                                 )}
-                              >
-                                {product.stock}
-                              </span>
-                            </TableCell>
+                              </TableCell>
+                            )}
+                            {!isPhotosTab && (
+                              <TableCell className="w-[70px] text-center px-1">
+                                <span
+                                  className={cn(
+                                    "px-2 py-1 rounded-md font-bold text-[10px]",
+                                    product.stock <= product.minStock
+                                      ? "bg-destructive/10 text-destructive"
+                                      : "bg-primary/10 text-primary",
+                                  )}
+                                >
+                                  {product.stock}
+                                </span>
+                              </TableCell>
+                            )}
                             {!isPhotosTab && (
                               <>
                                 <TableCell className="w-[60px] text-center bg-cyan-500/5 border-x border-cyan-500/10 px-2">

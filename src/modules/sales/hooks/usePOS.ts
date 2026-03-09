@@ -65,17 +65,59 @@ export const usePOS = () => {
         precio: p.precioFCA || p.price || 0,
         stock: p.stock || 0,
         categoria: p.category || 'General',
-        imagen: p.images?.[0],
+        imagen: p.images?.[0], // Primera imagen para compatibilidad
+        images: p.images || [], // Array completo de imágenes (hasta 3) para el carrusel
+        // Todos los campos del inventario para búsqueda inteligente
+        cauplas: p.cauplas || '',
+        torflex: p.torflex || '',
+        indomax: p.indomax || '',
+        oem: p.oem || '',
+        descripcionManguera: p.descripcionManguera || '',
+        aplicacion: p.aplicacion || '',
+        aplicacionesDiesel: p.aplicacionesDiesel || '',
+        isNuevo: p.isNuevo || '',
+        barcode: (p as any).barcode || '',
+        supplier: (p as any).supplier || '',
+        components: p.components || '',
       }));
   }, [inventoryProducts]);
 
   const loading = storeLoading || (!inventoryProducts && !!tenant?.id);
 
+  // Búsqueda inteligente por TODAS las columnas del inventario
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      const query = searchQuery.toLowerCase().trim();
+      
+      if (!query) {
+        // Si no hay búsqueda, solo filtrar por categoría
+        return categoryFilter === 'all' || product.categoria === categoryFilter;
+      }
+      
+      // Búsqueda inteligente en TODOS los campos del inventario
       const matchesSearch = 
-        product.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.codigo.toLowerCase().includes(searchQuery.toLowerCase());
+        // Campos principales
+        product.nombre.toLowerCase().includes(query) ||
+        product.codigo.toLowerCase().includes(query) ||
+        product.categoria.toLowerCase().includes(query) ||
+        // Códigos alternativos
+        (product as any).cauplas?.toLowerCase().includes(query) ||
+        (product as any).torflex?.toLowerCase().includes(query) ||
+        (product as any).indomax?.toLowerCase().includes(query) ||
+        (product as any).oem?.toLowerCase().includes(query) ||
+        // Descripciones y aplicaciones
+        (product as any).descripcionManguera?.toLowerCase().includes(query) ||
+        (product as any).aplicacion?.toLowerCase().includes(query) ||
+        (product as any).aplicacionesDiesel?.toLowerCase().includes(query) ||
+        // Otros campos
+        String((product as any).isNuevo || '').toLowerCase().includes(query) ||
+        (product as any).barcode?.toLowerCase().includes(query) ||
+        (product as any).supplier?.toLowerCase().includes(query) ||
+        (product as any).components?.toLowerCase().includes(query) ||
+        // Búsqueda por precio y stock (números)
+        String(product.precio).includes(query) ||
+        String(product.stock).includes(query);
+      
       const matchesCategory = categoryFilter === 'all' || product.categoria === categoryFilter;
       return matchesSearch && matchesCategory;
     });

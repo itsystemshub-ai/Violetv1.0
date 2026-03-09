@@ -6,6 +6,8 @@ class LocalNetworkService {
 
   /**
    * Inicializar conexión usando la IP del maestro.
+   * NOTA: El servidor Socket.IO debe estar corriendo en localhost:8080
+   * Si no está disponible, el sistema funcionará en modo local únicamente
    */
   public connect(masterIp: string = 'localhost') {
     this.serverUrl = `http://${masterIp}:8080`;
@@ -15,8 +17,9 @@ class LocalNetworkService {
     }
 
     this.socket = io(this.serverUrl, {
-      reconnectionAttempts: 10,
-      reconnectionDelay: 2000,
+      reconnectionAttempts: 3, // Reducido de 10 a 3
+      reconnectionDelay: 5000, // Aumentado de 2000 a 5000
+      timeout: 10000, // Timeout de 10 segundos
     });
 
     this.socket.on('connect', () => {
@@ -28,7 +31,11 @@ class LocalNetworkService {
     });
 
     this.socket.on('connect_error', (err) => {
-      console.error('[LocalNetwork] Error de conexión:', err.message);
+      // Silenciar errores si el servidor no está disponible
+      // El sistema funciona en modo local sin problemas
+      if (err.message !== 'xhr poll error') {
+        console.warn('[LocalNetwork] Servidor maestro no disponible - Modo local activo');
+      }
     });
   }
 

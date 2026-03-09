@@ -5,6 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { useInventoryStore } from './useInventoryStore';
+import { localDb } from '@/core/database/localDb';
 
 export interface AdjustmentItem {
   id: string;
@@ -160,8 +161,29 @@ export const useAdjustments = () => {
     }).length,
   };
 
-  const createAdjustment = (_adjustment: Omit<Adjustment, 'id'>) => {
-    // Future: persist to localDb
+  const createAdjustment = async (adjustment: Omit<Adjustment, 'id'>) => {
+    try {
+      const newAdjustment: Adjustment = {
+        ...adjustment,
+        id: `ADJ-${Date.now()}`,
+      };
+      
+      // Guardar en inventory_movements
+      for (const item of adjustment.items) {
+        await localDb.inventory_movements?.add({
+          id: crypto.randomUUID(),
+          product_id: item.productId,
+          tenant_id: adjustment.warehouseId,
+          type: 'adjustment',
+          reference_id: newAdjustment.id,
+          quantity: item.adjustedQuantity,
+          reason: adjustment.reason,
+          created_at: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Error creando ajuste:', error);
+    }
   };
 
   const updateAdjustment = (id: string, updates: Partial<Adjustment>) => {
