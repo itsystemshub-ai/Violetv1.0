@@ -62,7 +62,7 @@ export const getHealingLog = () => [...healingLog];
 // ── Sistema Prompt para la IA ──────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `
-Eres el Motor de Autoreparación IA de Violet ERP, un sistema de gestión empresarial venezolano (TypeScript + React + Electron + SQLite/Dexie).
+Eres el Motor de Autoreparación IA de Violet ERP, un sistema de gestión empresarial (TypeScript + React + Web + Dexie).
 
 Tu única función es analizar errores de ejecución y devolver EXCLUSIVAMENTE un JSON con este formato exacto:
 {
@@ -86,7 +86,7 @@ const isOnline = (): boolean => {
   if (typeof navigator !== "undefined" && "onLine" in navigator) {
     return navigator.onLine;
   }
-  return true; // Electron - asumir online
+  return true;
 };
 
 const buildPrompt = (req: HealingRequest): string =>

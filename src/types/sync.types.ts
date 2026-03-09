@@ -19,40 +19,6 @@ export interface MutationResult<T = unknown> {
 }
 
 /**
- * Payload de mutación para Electron
- */
-export interface ElectronMutationPayload {
-  tableName: string;
-  action: MutationAction;
-  payload: Record<string, unknown> | null;
-  recordId: string;
-}
-
-/**
- * Resultado de mutación de Electron
- */
-export interface ElectronMutationResult {
-  success: boolean;
-  error?: string;
-  data?: unknown;
-}
-
-/**
- * API de Electron
- */
-export interface ElectronAPI {
-  mutateRecord: (payload: ElectronMutationPayload) => Promise<ElectronMutationResult>;
-  // Agregar más métodos según sea necesario
-}
-
-/**
- * Window con Electron API
- */
-export interface WindowWithElectron extends Window {
-  electronAPI?: ElectronAPI;
-}
-
-/**
  * Log de sincronización
  */
 export interface SyncLog {

@@ -11,8 +11,8 @@
     "proxy": "cd server && npm install && npm start",
     "build": "npm run clean && tsc && vite build",
     "build:staging": "npm run clean && node scripts/fix-case-netlify.js && tsc && vite build --mode staging",
-    "build:production": "npm run clean && node scripts/fix-case-netlify.js && tsc && npm rebuild || true && vite build --mode production",
-    "clean": "node -e \"const fs = require('fs'); ['dist', 'dist-electron'].forEach(d => fs.rmSync(d, { recursive: true, force: true }))\"",
+    "build:production": "npm run clean && node scripts/fix-case-netlify.js && tsc && vite build --mode production",
+    "clean": "node -e \"const fs = require('fs'); if (fs.existsSync('dist')) fs.rmSync('dist', { recursive: true, force: true })\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
@@ -26,12 +26,6 @@
     "migrate:modules": "tsx scripts/migrate-to-modules.ts",
     "validate:deps": "tsx scripts/validate-dependencies.ts",
     "generate:exports": "tsx scripts/generate-barrel-exports.ts",
-    "electron:start": "wait-on http://localhost:8080 && electron .",
-    "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron:start\"",
-    "electron:dev:full": "concurrently -k \"npm run dev\" \"npm run proxy\" \"npm run electron:start\"",
-    "electron:build": "npm run clean && npm run build && electron-builder",
-    "electron:dist": "npm run clean && npm run build && node scripts/fix-electron-html.cjs && electron-builder --win",
-    "release": "npm run electron:dist",
     "vercel-build": "node scripts/fix-case-netlify.js && npm run build:production"
   },
   "dependencies": {
@@ -82,8 +76,6 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "dexie": "^4.3.0",
-    "electron-is-dev": "^3.0.1",
-    "electron-updater": "^6.8.3",
     "embla-carousel-react": "^8.3.0",
     "express": "^5.2.1",
     "framer-motion": "^11.15.0",
@@ -137,8 +129,6 @@
     "@vitest/ui": "^4.0.18",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.2.1",
-    "electron": "^40.6.1",
-    "electron-builder": "^26.8.1",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
@@ -154,48 +144,6 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^6.1.7",
-    "vitest": "^4.0.18",
-    "wait-on": "^9.0.4"
-  },
-  "main": "electron/main.cjs",
-  "build": {
-    "appId": "com.violet.erp",
-    "productName": "Violet ERP",
-    "copyright": "Copyright © 2026 Violet ERP",
-    "directories": {
-      "output": "dist-electron",
-      "buildResources": "electron"
-    },
-    "files": [
-      "electron/**/*",
-      "!electron/db.cjs",
-      "!backend/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "dist",
-        "to": "dist",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
-    "win": {
-      "target": [
-        "nsis"
-      ],
-      "artifactName": "${productName}-Setup-${version}.${ext}"
-    },
-    "nsis": {
-      "include": "electron/installer.nsh",
-      "oneClick": true,
-      "perMachine": false,
-      "allowElevation": true,
-      "allowToChangeInstallationDirectory": false,
-      "runAfterFinish": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Violet ERP"
-    }
+    "vitest": "^4.0.18"
   }
 }

@@ -12,22 +12,12 @@ const DB_TYPE = process.env.DB_TYPE || 'sqlite';
  * Determinar la ruta de la base de datos según el entorno
  */
 function getDatabasePath() {
-  // 1. Prioridad: Variable de entorno explícita (útil para Docker/xCloud)
+  // 1. Prioridad: Variable de entorno explícita (útil para Docker/Cloud)
   if (process.env.DB_PATH) {
     return process.env.DB_PATH;
   }
 
-  // 2. Entorno Electron
-  try {
-    const { app } = require('electron');
-    if (app && app.getPath) {
-      return path.join(app.getPath('userData'), 'violet_erp.db');
-    }
-  } catch (e) {
-    // No estamos en Electron
-  }
-
-  // 3. Fallback: Directorio data local (útil para desarrollo y servidores Linux)
+  // 2. Fallback: Directorio data local (útil para desarrollo y servidores Linux/Cloud)
   const dataDir = path.join(process.cwd(), 'data');
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });

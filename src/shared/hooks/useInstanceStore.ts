@@ -15,26 +15,14 @@ export const useInstanceStore = create<InstanceState>((set) => ({
   isLoaded: false,
 
   loadInstanceInfo: async () => {
-    if (window.electronAPI) {
-      const info = await window.electronAPI.getInstanceInfo();
-      set({ ...info, isLoaded: true });
-      // Initialize network connection on load
-      if (info.masterIp) {
-        NetworkService.connect(info.masterIp);
-      }
-    } else {
-      set({ isLoaded: true }); // Fallback para web
-      NetworkService.connect('localhost');
-    }
+    // En entorno cloud/web, por ahora asumimos master localmente o vía ENV
+    set({ isLoaded: true, role: 'master', masterIp: 'localhost' });
+    NetworkService.connect('localhost');
   },
 
   setInstanceInfo: async (role, masterIp) => {
     set({ role, masterIp });
     // Update network connection immediately
     NetworkService.connect(masterIp);
-    
-    if (window.electronAPI) {
-      await window.electronAPI.setInstanceInfo({ role, masterIp });
-    }
   }
 }));

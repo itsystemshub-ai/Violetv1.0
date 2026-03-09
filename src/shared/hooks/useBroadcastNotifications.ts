@@ -14,9 +14,6 @@ interface BroadcastNotification {
 }
 
 // Canal de broadcast usando BroadcastChannel API
-// Wrapped in try/catch because Electron's contextIsolation renderer
-// can throw "TypeError: Illegal constructor" when BroadcastChannel
-// is instantiated at module level before the browsing context is ready.
 const createBroadcastChannel = (): BroadcastChannel | null => {
   if (typeof window === 'undefined') return null;
   try {

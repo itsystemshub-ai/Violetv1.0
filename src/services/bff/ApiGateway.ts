@@ -43,13 +43,23 @@ export class ApiGatewayService {
 
   // Routes requests to the Service Mesh (Microservices Layer)
   public async routeToService<T>(route: APIGatewayRoute, payload: any): Promise<T | null> {
-    // Conceptual routing logic 
     console.log(`[Service Mesh] Routing to -> ${route.domain}:${route.path}`);
     
-    // Simulate latency through the Service Mesh
-    await new Promise(resolve => setTimeout(resolve, 300));
+    try {
+      const response = await fetch(`${route.domain}${route.path}`, {
+        method: payload ? 'POST' : 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: payload ? JSON.stringify(payload) : undefined
+      });
 
-    // At the moment, we will return null to be handled by respective mock/real services.
-    return null;
+      if (!response.ok) return null;
+      return await response.json() as T;
+    } catch (error) {
+      console.error(`[Gateway Error] Failed to route to ${route.domain}`, error);
+      return null;
+    }
   }
 }

@@ -4,18 +4,11 @@ const path = require('path');
 const fs = require('fs');
 
 // Determinar si estamos en desarrollo o producción
-const isDev = process.env.NODE_ENV !== 'production' && !process.resourcesPath;
+const isDev = process.env.NODE_ENV !== 'production';
 
 // Función para obtener la ruta base correcta
 function getBasePath() {
-  if (isDev) {
-    // En desarrollo
-    return path.join(__dirname, '../..');
-  } else {
-    // En producción, los archivos están en resources/app.asar
-    // pero necesitamos la ruta al directorio resources para acceder a dist
-    return process.resourcesPath;
-  }
+  return path.join(__dirname, '../..');
 }
 
 const basePath = getBasePath();
@@ -47,8 +40,7 @@ function startLocalServer() {
   log('Iniciando servidor local...');
   log(`Puerto configurado: ${port}`);
 
-  // NO inicializar base de datos aquí - ya se hizo en electron/main.cjs
-  log('Base de datos ya inicializada desde Electron');
+  log(`Puerto configurado: ${port}`);
 
   // Crear aplicación Express
   let app;
@@ -82,27 +74,12 @@ function startLocalServer() {
   
   // En producción, dist está FUERA de app.asar, en resources/app.asar.unpacked/dist
   // o directamente en resources/dist
-  let distPath;
+  // En la nube/servidor, dist está en la raíz del proyecto
+  let distPath = path.join(basePath, 'dist');
   
-  if (isDev) {
-    distPath = path.join(basePath, 'dist');
-  } else {
-    // Intentar múltiples ubicaciones posibles
-    const possiblePaths = [
-      path.join(process.resourcesPath, 'app.asar.unpacked', 'dist'),
-      path.join(process.resourcesPath, 'dist'),
-      path.join(process.resourcesPath, 'app.asar', 'dist'),
-      path.join(basePath, 'dist')
-    ];
-    
-    log('Buscando carpeta dist en ubicaciones posibles:');
-    for (const p of possiblePaths) {
-      log(`  - ${p}: ${fs.existsSync(p) ? '✓ EXISTE' : '✗ no existe'}`);
-      if (fs.existsSync(p)) {
-        distPath = p;
-        break;
-      }
-    }
+  if (!fs.existsSync(distPath)) {
+    // Fallback para entornos donde el server se ejecuta desde backend/src
+    distPath = path.resolve(__dirname, '../../dist');
   }
   
   log(`Ruta de archivos estáticos seleccionada: ${distPath}`);

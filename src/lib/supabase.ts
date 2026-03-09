@@ -1,23 +1,5 @@
 // Archivo deshabilitado temporalmente para evitar errores de inicialización
-// La aplicación usa localStorage y SQLite local en Electron
-
-declare global {
-  interface Window {
-    electronAPI?: {
-      isElectron: true;
-      platform: string;
-      version: string;
-      getConfig: () => Promise<Record<string, unknown>>;
-      saveConfig: (config: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>;
-      getVersion: () => Promise<string>;
-      printPage: () => Promise<void>;
-      getInstanceInfo: () => Promise<{ role: 'master' | 'client'; masterIp: string }>;
-      setInstanceInfo: (info: { role: 'master' | 'client'; masterIp: string }) => Promise<{ success: boolean; error?: string }>;
-      executeSql: (query: string, params?: any[]) => Promise<{ success: boolean; data?: any; error?: string }>;
-      createBackup: () => Promise<{ success: boolean; path?: string; error?: string; canceled?: boolean }>;
-    };
-  }
-}
+// La aplicación usa Dexie local en Cloud/Navegador
 
 // Mock de Supabase para evitar errores
 // Todas las operaciones retornan error indicando que Supabase está deshabilitado

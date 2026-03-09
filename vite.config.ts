@@ -14,7 +14,6 @@ export default defineConfig({
       '@modules': path.resolve(__dirname, './src/modules'),
       '@shared': path.resolve(__dirname, './src/shared'),
       '@infrastructure': path.resolve(__dirname, './src/infrastructure'),
-      '@features': path.resolve(__dirname, './src/features'),
       '@services': path.resolve(__dirname, './src/services'),
       '@lib': path.resolve(__dirname, './src/lib'),
       '@config': path.resolve(__dirname, './src/config'),

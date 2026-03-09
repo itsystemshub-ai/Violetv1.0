@@ -29,7 +29,7 @@ export function RealtimeBootstrap() {
 
     console.log(`[Instance] Rol detectado: ${role}`);
 
-    // Solo el Maestro ejecuta el Worker de sincronización con la nube (Manejado por Electron)
+    // Solo el Maestro ejecuta la lógica de sincronización
     if (role === "master") {
       console.log("[Sync] Modo Maestro detectado.");
     }
