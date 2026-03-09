@@ -1,0 +1,24 @@
+# Content Security Policy y Headers de Seguridad
+# Para Netlify, Vercel u otros servicios de hosting
+
+/*
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:* ws://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  
+  # Prevenir clickjacking
+  X-Frame-Options: DENY
+  
+  # Prevenir MIME type sniffing
+  X-Content-Type-Options: nosniff
+  
+  # Habilitar XSS protection en navegadores antiguos
+  X-XSS-Protection: 1; mode=block
+  
+  # Referrer Policy
+  Referrer-Policy: strict-origin-when-cross-origin
+  
+  # Permissions Policy (antes Feature Policy)
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  
+  # Strict Transport Security (HSTS) - Solo en producción con HTTPS
+  # Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
