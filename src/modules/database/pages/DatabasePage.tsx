@@ -29,11 +29,14 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 import { toast } from "sonner";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { localDb } from "@/core/database/localDb";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
 import { BackupSettings } from "@/modules/settings/components/BackupSettings";
 
 interface TableInfo {
@@ -95,11 +98,13 @@ export default function DatabasePage() {
     try {
       console.log("🔍 Iniciando unificación automática de duplicados...");
       console.log("📊 Total productos a analizar:", allProducts.length);
-      
+
       // Agrupar por CAUPLAS
       const cauplasMap = new Map<string, any[]>();
       allProducts.forEach((product) => {
-        const cauplas = String(product.cauplas || "").trim().toUpperCase();
+        const cauplas = String(product.cauplas || "")
+          .trim()
+          .toUpperCase();
         if (cauplas && cauplas !== "-" && cauplas !== "") {
           if (!cauplasMap.has(cauplas)) {
             cauplasMap.set(cauplas, []);
@@ -113,17 +118,21 @@ export default function DatabasePage() {
       // Identificar duplicados y mantener el más reciente
       const idsToDelete: string[] = [];
       let duplicateGroupsCount = 0;
-      
+
       cauplasMap.forEach((products, cauplas) => {
         if (products.length > 1) {
           duplicateGroupsCount++;
-          console.log(`⚠️ CAUPLAS duplicado: ${cauplas} (${products.length} registros)`);
-          
-          // Ordenar por fecha de actualización (más reciente primero)
-          products.sort((a, b) => 
-            new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
+          console.log(
+            `⚠️ CAUPLAS duplicado: ${cauplas} (${products.length} registros)`,
           );
-          
+
+          // Ordenar por fecha de actualización (más reciente primero)
+          products.sort(
+            (a, b) =>
+              new Date(b.updated_at || 0).getTime() -
+              new Date(a.updated_at || 0).getTime(),
+          );
+
           // Mantener el primero (más reciente), eliminar el resto
           for (let i = 1; i < products.length; i++) {
             idsToDelete.push(products[i].id);
@@ -132,26 +141,33 @@ export default function DatabasePage() {
       });
 
       console.log(`🗑️ Total de duplicados a eliminar: ${idsToDelete.length}`);
-      console.log(`📦 Grupos de duplicados encontrados: ${duplicateGroupsCount}`);
+      console.log(
+        `📦 Grupos de duplicados encontrados: ${duplicateGroupsCount}`,
+      );
 
       // Eliminar duplicados
       if (idsToDelete.length > 0) {
         console.log("🔄 Eliminando duplicados de la base de datos...");
         await localDb.products.bulkDelete(idsToDelete);
         console.log("✅ Duplicados eliminados exitosamente");
-        
-        toast.success(`✅ Unificación automática: ${idsToDelete.length} duplicados eliminados`);
-        
+
+        toast.success(
+          `✅ Unificación automática: ${idsToDelete.length} duplicados eliminados`,
+        );
+
         // Recargar datos
         console.log("🔄 Recargando información de tablas...");
         await loadTableInfo();
-        
+
         console.log("🔄 Recargando datos de productos...");
         const updatedData = (await localDb.products.toArray()) || [];
-        console.log("📊 Total productos después de unificación:", updatedData.length);
-        
+        console.log(
+          "📊 Total productos después de unificación:",
+          updatedData.length,
+        );
+
         setTableData(updatedData.slice(0, 100));
-        
+
         // Actualizar análisis
         const newAnalysis = analyzeDuplicates(updatedData);
         setDuplicateAnalysis(newAnalysis);
@@ -171,7 +187,9 @@ export default function DatabasePage() {
     let totalWithCauplas = 0;
 
     data.forEach((product) => {
-      const cauplas = String(product.cauplas || "").trim().toUpperCase();
+      const cauplas = String(product.cauplas || "")
+        .trim()
+        .toUpperCase();
       if (cauplas && cauplas !== "-" && cauplas !== "") {
         totalWithCauplas++;
         cauplasMap.set(cauplas, (cauplasMap.get(cauplas) || 0) + 1);
@@ -258,7 +276,7 @@ export default function DatabasePage() {
       console.log(`📂 Cargando tabla: ${tableName}`);
       const data = (await (localDb as any)[tableName]?.toArray()) || [];
       console.log(`📊 Total registros en ${tableName}:`, data.length);
-      
+
       setTableData(data); // Guardar todos los datos
 
       // Si es la tabla de productos, analizar y unificar duplicados por CAUPLAS
@@ -267,10 +285,12 @@ export default function DatabasePage() {
         const analysis = analyzeDuplicates(data);
         console.log("📈 Resultado del análisis:", analysis);
         setDuplicateAnalysis(analysis);
-        
+
         // Si hay duplicados, unificarlos automáticamente
         if (analysis.duplicates > 0) {
-          console.log("⚠️ Duplicados detectados, iniciando unificación automática...");
+          console.log(
+            "⚠️ Duplicados detectados, iniciando unificación automática...",
+          );
           await unifyDuplicates(data);
         } else {
           console.log("✅ No se detectaron duplicados");
@@ -347,7 +367,7 @@ export default function DatabasePage() {
     paginatedData.length > 0 ? Object.keys(paginatedData[0]).slice(0, 8) : [];
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="min-h-full relative pb-12 animate-in fade-in duration-700 overflow-hidden">
         {/* Background */}
         <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
@@ -374,21 +394,31 @@ export default function DatabasePage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-muted/50 p-1 rounded-full border">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="bg-muted/50 p-1 rounded-full border"
+              >
                 <TabsList className="bg-transparent border-none">
-                  <TabsTrigger value="explorer" className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <TabsTrigger
+                    value="explorer"
+                    className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     Explorador
                   </TabsTrigger>
-                  <TabsTrigger value="backup" className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <TabsTrigger
+                    value="backup"
+                    className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
                     Backup
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              
+
               <div className="h-10 w-[1px] bg-border/50 mx-2" />
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -411,308 +441,352 @@ export default function DatabasePage() {
             <TabsContent value="explorer" className="mt-0">
               {/* MAIN GRID */}
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* LEFT - Table List */}
-            <div className="lg:col-span-1 space-y-2">
-              <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Table2 className="h-5 w-5 text-blue-500" />
-                    Tablas ({tables.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1 max-h-[calc(100vh-300px)] overflow-y-auto">
-                  {tables.map((table) => (
-                    <button
-                      key={table.name}
-                      onClick={() => loadTableData(table.name)}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all hover:bg-muted/50 ${
-                        selectedTable === table.name
-                          ? "bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400"
-                          : "border border-transparent"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-base shrink-0">{table.icon}</span>
-                        <span className="text-xs font-medium truncate">
-                          {table.label}
-                        </span>
-                      </div>
-                      <Badge
-                        variant={table.count > 0 ? "default" : "outline"}
-                        className="text-[10px] h-5 shrink-0 ml-1"
-                      >
-                        {table.count}
-                      </Badge>
-                    </button>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
+                {/* LEFT - Table List */}
+                <div className="lg:col-span-1 space-y-2">
+                  <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Table2 className="h-5 w-5 text-blue-500" />
+                        Tablas ({tables.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1 max-h-[calc(100vh-300px)] overflow-y-auto">
+                      {tables.map((table) => (
+                        <button
+                          key={table.name}
+                          onClick={() => loadTableData(table.name)}
+                          className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-all hover:bg-muted/50 ${
+                            selectedTable === table.name
+                              ? "bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400"
+                              : "border border-transparent"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-base shrink-0">
+                              {table.icon}
+                            </span>
+                            <span className="text-xs font-medium truncate">
+                              {table.label}
+                            </span>
+                          </div>
+                          <Badge
+                            variant={table.count > 0 ? "default" : "outline"}
+                            className="text-[10px] h-5 shrink-0 ml-1"
+                          >
+                            {table.count}
+                          </Badge>
+                        </button>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
 
-            {/* RIGHT - Data Viewer */}
-            <div className="lg:col-span-3">
-              {selectedTable ? (
-                <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="flex items-center gap-2">
-                          <Eye className="h-5 w-5 text-blue-500" />
-                          {TABLE_LABELS[selectedTable]?.icon}{" "}
-                          {TABLE_LABELS[selectedTable]?.label || selectedTable}
-                        </CardTitle>
-                        <CardDescription>
-                          {filteredData.length} registros totales • Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} • Página {currentPage} de {totalPages}
-                        </CardDescription>
-                        
-                        {/* Análisis de Duplicados para Productos */}
-                        {duplicateAnalysis && (
-                          <div className="mt-3 p-3 rounded-lg border bg-muted/30">
-                            <div className="flex items-start gap-3">
-                              <AlertTriangle className={`h-5 w-5 mt-0.5 ${duplicateAnalysis.duplicates > 0 ? 'text-orange-500' : 'text-green-500'}`} />
-                              <div className="flex-1 space-y-2">
-                                <div className="flex items-center gap-4 text-sm">
-                                  <div>
-                                    <span className="text-muted-foreground">Total:</span>
-                                    <span className="ml-2 font-bold">{duplicateAnalysis.total.toLocaleString()}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground">Duplicados:</span>
-                                    <span className={`ml-2 font-bold ${duplicateAnalysis.duplicates > 0 ? 'text-orange-600' : 'text-green-600'}`}>
-                                      {duplicateAnalysis.duplicates.toLocaleString()}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground">Únicos:</span>
-                                    <span className="ml-2 font-bold text-green-600">{duplicateAnalysis.unique.toLocaleString()}</span>
+                {/* RIGHT - Data Viewer */}
+                <div className="lg:col-span-3">
+                  {selectedTable ? (
+                    <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="flex items-center gap-2">
+                              <Eye className="h-5 w-5 text-blue-500" />
+                              {TABLE_LABELS[selectedTable]?.icon}{" "}
+                              {TABLE_LABELS[selectedTable]?.label ||
+                                selectedTable}
+                            </CardTitle>
+                            <CardDescription>
+                              {filteredData.length} registros totales •
+                              Mostrando {startIndex + 1}-
+                              {Math.min(endIndex, filteredData.length)} • Página{" "}
+                              {currentPage} de {totalPages}
+                            </CardDescription>
+
+                            {/* Análisis de Duplicados para Productos */}
+                            {duplicateAnalysis && (
+                              <div className="mt-3 p-3 rounded-lg border bg-muted/30">
+                                <div className="flex items-start gap-3">
+                                  <AlertTriangle
+                                    className={`h-5 w-5 mt-0.5 ${duplicateAnalysis.duplicates > 0 ? "text-orange-500" : "text-green-500"}`}
+                                  />
+                                  <div className="flex-1 space-y-2">
+                                    <div className="flex items-center gap-4 text-sm">
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Total:
+                                        </span>
+                                        <span className="ml-2 font-bold">
+                                          {duplicateAnalysis.total.toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Duplicados:
+                                        </span>
+                                        <span
+                                          className={`ml-2 font-bold ${duplicateAnalysis.duplicates > 0 ? "text-orange-600" : "text-green-600"}`}
+                                        >
+                                          {duplicateAnalysis.duplicates.toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground">
+                                          Únicos:
+                                        </span>
+                                        <span className="ml-2 font-bold text-green-600">
+                                          {duplicateAnalysis.unique.toLocaleString()}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {duplicateAnalysis.duplicates > 0 ? (
+                                      <div className="text-xs space-y-1">
+                                        <p className="font-semibold text-orange-600">
+                                          ⚠️ Se detectaron{" "}
+                                          {
+                                            duplicateAnalysis.duplicateGroups
+                                              .length
+                                          }{" "}
+                                          códigos CAUPLAS duplicados
+                                        </p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                          {duplicateAnalysis.duplicateGroups.map(
+                                            (group) => (
+                                              <Badge
+                                                key={group.cauplas}
+                                                variant="destructive"
+                                                className="text-[10px]"
+                                              >
+                                                {group.cauplas} ({group.count}x)
+                                              </Badge>
+                                            ),
+                                          )}
+                                        </div>
+                                        <p className="text-muted-foreground mt-2">
+                                          💡 Unificación automática en
+                                          proceso...
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <p className="text-xs text-green-600 font-medium">
+                                        ✅ No se detectaron duplicados por
+                                        CAUPLAS. Todos los productos son únicos.
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
-                                
-                                {duplicateAnalysis.duplicates > 0 ? (
-                                  <div className="text-xs space-y-1">
-                                    <p className="font-semibold text-orange-600">
-                                      ⚠️ Se detectaron {duplicateAnalysis.duplicateGroups.length} códigos CAUPLAS duplicados
-                                    </p>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                      {duplicateAnalysis.duplicateGroups.map((group) => (
-                                        <Badge key={group.cauplas} variant="destructive" className="text-[10px]">
-                                          {group.cauplas} ({group.count}x)
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                    <p className="text-muted-foreground mt-2">
-                                      💡 Unificación automática en proceso...
-                                    </p>
-                                  </div>
-                                ) : (
-                                  <p className="text-xs text-green-600 font-medium">
-                                    ✅ No se detectaron duplicados por CAUPLAS. Todos los productos son únicos.
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Buscar..."
-                            className="pl-10 w-48 h-8 text-xs"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                          />
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => exportTable(selectedTable)}
-                        >
-                          <FileJson className="h-4 w-4 mr-1" />
-                          JSON
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {paginatedData.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
-                        <HardDrive className="h-12 w-12 opacity-20" />
-                        <p className="text-sm font-medium">
-                          {searchTerm
-                            ? "Sin resultados para la búsqueda"
-                            : "Tabla vacía — no hay registros"}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
-                        {/* Table Header */}
-                        <div
-                          className="grid gap-2 p-2 bg-muted/50 rounded-lg text-xs font-bold text-muted-foreground sticky top-0 z-10"
-                          style={{
-                            gridTemplateColumns: `40px repeat(${Math.min(columns.length, 6)}, 1fr) 40px`,
-                          }}
-                        >
-                          <span>#</span>
-                          {columns.slice(0, 6).map((col) => (
-                            <span key={col} className="truncate">
-                              {col}
-                            </span>
-                          ))}
-                          <span></span>
-                        </div>
-
-                        {/* Table Rows */}
-                        {paginatedData.map((record, idx) => (
-                          <div key={idx}>
-                            <div
-                              className="grid gap-2 p-2 rounded-lg border hover:bg-muted/30 transition-colors cursor-pointer text-xs"
-                              style={{
-                                gridTemplateColumns: `40px repeat(${Math.min(columns.length, 6)}, 1fr) 40px`,
-                              }}
-                              onClick={() =>
-                                setExpandedRecord(
-                                  expandedRecord === startIndex + idx ? null : startIndex + idx,
-                                )
-                              }
-                            >
-                              <span className="text-muted-foreground font-mono">
-                                {startIndex + idx + 1}
-                              </span>
-                              {columns.slice(0, 6).map((col) => (
-                                <span
-                                  key={col}
-                                  className="truncate"
-                                  title={String(record[col] ?? "")}
-                                >
-                                  {typeof record[col] === "object"
-                                    ? JSON.stringify(record[col])?.substring(
-                                        0,
-                                        30,
-                                      ) + "..."
-                                    : String(record[col] ?? "—")}
-                                </span>
-                              ))}
-                              <span>
-                                {expandedRecord === idx ? (
-                                  <ChevronDown className="h-3.5 w-3.5" />
-                                ) : (
-                                  <ChevronRight className="h-3.5 w-3.5" />
-                                )}
-                              </span>
-                            </div>
-                            {expandedRecord === idx && (
-                              <div className="ml-10 p-3 rounded-lg bg-muted/20 border border-dashed text-xs animate-in slide-in-from-top-2 duration-200">
-                                <pre className="whitespace-pre-wrap break-all font-mono text-[11px] text-muted-foreground max-h-60 overflow-auto">
-                                  {JSON.stringify(record, null, 2)}
-                                </pre>
                               </div>
                             )}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Paginación */}
-                    {totalPages > 1 && (
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                        <div className="text-sm text-muted-foreground">
-                          Mostrando {startIndex + 1}-{Math.min(endIndex, filteredData.length)} de {filteredData.length} registros
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(1)}
-                            disabled={currentPage === 1}
-                          >
-                            Primera
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                          >
-                            Anterior
-                          </Button>
-                          <span className="text-sm px-3">
-                            Página {currentPage} de {totalPages}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                          >
-                            Siguiente
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(totalPages)}
-                            disabled={currentPage === totalPages}
-                          >
-                            Última
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
-                  <CardContent className="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
-                    <Database className="h-16 w-16 opacity-15" />
-                    <div className="text-center">
-                      <h3 className="text-lg font-bold text-foreground mb-1">
-                        Selecciona una tabla
-                      </h3>
-                      <p className="text-sm">
-                        Haz clic en cualquier tabla de la lista para explorar
-                        sus registros
-                      </p>
-                    </div>
-
-                    {/* Quick Stats Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-xl mt-4">
-                      {tables
-                        .filter((t) => t.count > 0)
-                        .slice(0, 6)
-                        .map((t) => (
-                          <button
-                            key={t.name}
-                            onClick={() => loadTableData(t.name)}
-                            className="flex items-center gap-2 p-3 rounded-xl border bg-card/50 hover:bg-muted/50 hover:border-blue-500/30 transition-all text-left"
-                          >
-                            <span className="text-xl">{t.icon}</span>
-                            <div className="min-w-0">
-                              <p className="text-xs font-bold truncate">
-                                {t.label}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground">
-                                {t.count} registros
-                              </p>
+                          <div className="flex items-center gap-2">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                              <Input
+                                placeholder="Buscar..."
+                                className="pl-10 w-48 h-8 text-xs"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                              />
                             </div>
-                          </button>
-                        ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
-        </TabsContent>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => exportTable(selectedTable)}
+                            >
+                              <FileJson className="h-4 w-4 mr-1" />
+                              JSON
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {paginatedData.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
+                            <HardDrive className="h-12 w-12 opacity-20" />
+                            <p className="text-sm font-medium">
+                              {searchTerm
+                                ? "Sin resultados para la búsqueda"
+                                : "Tabla vacía — no hay registros"}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
+                            {/* Table Header */}
+                            <div
+                              className="grid gap-2 p-2 bg-muted/50 rounded-lg text-xs font-bold text-muted-foreground sticky top-0 z-10"
+                              style={{
+                                gridTemplateColumns: `40px repeat(${Math.min(columns.length, 6)}, 1fr) 40px`,
+                              }}
+                            >
+                              <span>#</span>
+                              {columns.slice(0, 6).map((col) => (
+                                <span key={col} className="truncate">
+                                  {col}
+                                </span>
+                              ))}
+                              <span></span>
+                            </div>
 
-        <TabsContent value="backup" className="mt-0">
-          <div className="max-w-4xl mx-auto">
-            <BackupSettings />
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  </div>
-</ValeryLayout>
+                            {/* Table Rows */}
+                            {paginatedData.map((record, idx) => (
+                              <div key={idx}>
+                                <div
+                                  className="grid gap-2 p-2 rounded-lg border hover:bg-muted/30 transition-colors cursor-pointer text-xs"
+                                  style={{
+                                    gridTemplateColumns: `40px repeat(${Math.min(columns.length, 6)}, 1fr) 40px`,
+                                  }}
+                                  onClick={() =>
+                                    setExpandedRecord(
+                                      expandedRecord === startIndex + idx
+                                        ? null
+                                        : startIndex + idx,
+                                    )
+                                  }
+                                >
+                                  <span className="text-muted-foreground font-mono">
+                                    {startIndex + idx + 1}
+                                  </span>
+                                  {columns.slice(0, 6).map((col) => (
+                                    <span
+                                      key={col}
+                                      className="truncate"
+                                      title={String(record[col] ?? "")}
+                                    >
+                                      {typeof record[col] === "object"
+                                        ? JSON.stringify(
+                                            record[col],
+                                          )?.substring(0, 30) + "..."
+                                        : String(record[col] ?? "—")}
+                                    </span>
+                                  ))}
+                                  <span>
+                                    {expandedRecord === idx ? (
+                                      <ChevronDown className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <ChevronRight className="h-3.5 w-3.5" />
+                                    )}
+                                  </span>
+                                </div>
+                                {expandedRecord === idx && (
+                                  <div className="ml-10 p-3 rounded-lg bg-muted/20 border border-dashed text-xs animate-in slide-in-from-top-2 duration-200">
+                                    <pre className="whitespace-pre-wrap break-all font-mono text-[11px] text-muted-foreground max-h-60 overflow-auto">
+                                      {JSON.stringify(record, null, 2)}
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Paginación */}
+                        {totalPages > 1 && (
+                          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                            <div className="text-sm text-muted-foreground">
+                              Mostrando {startIndex + 1}-
+                              {Math.min(endIndex, filteredData.length)} de{" "}
+                              {filteredData.length} registros
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(1)}
+                                disabled={currentPage === 1}
+                              >
+                                Primera
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setCurrentPage((prev) =>
+                                    Math.max(1, prev - 1),
+                                  )
+                                }
+                                disabled={currentPage === 1}
+                              >
+                                Anterior
+                              </Button>
+                              <span className="text-sm px-3">
+                                Página {currentPage} de {totalPages}
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setCurrentPage((prev) =>
+                                    Math.min(totalPages, prev + 1),
+                                  )
+                                }
+                                disabled={currentPage === totalPages}
+                              >
+                                Siguiente
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages}
+                              >
+                                Última
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card className="backdrop-blur-xl bg-card/80 border shadow-lg">
+                      <CardContent className="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
+                        <Database className="h-16 w-16 opacity-15" />
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold text-foreground mb-1">
+                            Selecciona una tabla
+                          </h3>
+                          <p className="text-sm">
+                            Haz clic en cualquier tabla de la lista para
+                            explorar sus registros
+                          </p>
+                        </div>
+
+                        {/* Quick Stats Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-xl mt-4">
+                          {tables
+                            .filter((t) => t.count > 0)
+                            .slice(0, 6)
+                            .map((t) => (
+                              <button
+                                key={t.name}
+                                onClick={() => loadTableData(t.name)}
+                                className="flex items-center gap-2 p-3 rounded-xl border bg-card/50 hover:bg-muted/50 hover:border-blue-500/30 transition-all text-left"
+                              >
+                                <span className="text-xl">{t.icon}</span>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold truncate">
+                                    {t.label}
+                                  </p>
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {t.count} registros
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="backup" className="mt-0">
+              <div className="max-w-4xl mx-auto">
+                <BackupSettings />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </>
   );
 }

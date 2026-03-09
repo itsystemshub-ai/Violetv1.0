@@ -4,8 +4,6 @@
  */
 
 import { useMemo, useState } from "react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import {
   Tabs,
   TabsContent,
@@ -28,33 +26,86 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/shared/components/ui/dialog";
-import {
-  FolderTree,
-  Search,
-  Car,
-  Fuel,
-  Sparkles,
-  Package,
-} from "lucide-react";
+import { FolderTree, Search, Car, Fuel, Sparkles, Package } from "lucide-react";
 import { useInventoryStore } from "@/modules/inventory/hooks/useInventoryStore";
 import { Product } from "@/lib/index";
 import { ModuleAIAssistant } from "@/core/ai/components";
 
 const VEHICLE_BRANDS = [
-  "CHEVROLET", "FORD", "TOYOTA", "FIAT", "VOLKSWAGEN", "RENAULT", "MAZDA",
-  "NISSAN", "IVECO", "HYUNDAI", "PEUGEOT", "CHERY", "MITSUBISHI", "DAEWOO",
-  "JEEP", "HONDA", "MERCEDES BENZ", "DODGE", "ENCAVA", "KIA", "JAC", "IKCO",
-  "JOHN DEERE", "HINO", "VOLVO", "CHRYSLER", "AGRALE", "HAIMA", "DONGFENG",
-  "INTERNATIONAL NAVISTAR", "ISUZU", "MACK", "CITROEN", "FORDSON", "FOTON",
-  "SUZUKI", "ZETOR", "CHANGAN", "SEAT", "BERA", "FORD TRACTOR", "YUTONG",
-  "MASSEY FERGUSON", "JMC", "KOMATSU", "PERKINS", "FREIGTHLINER", "MAE",
-  "MAS", "MFU", "MTR", "MCG", "TAP", "TNBR", "MAN", "MAST",
+  "CHEVROLET",
+  "FORD",
+  "TOYOTA",
+  "FIAT",
+  "VOLKSWAGEN",
+  "RENAULT",
+  "MAZDA",
+  "NISSAN",
+  "IVECO",
+  "HYUNDAI",
+  "PEUGEOT",
+  "CHERY",
+  "MITSUBISHI",
+  "DAEWOO",
+  "JEEP",
+  "HONDA",
+  "MERCEDES BENZ",
+  "DODGE",
+  "ENCAVA",
+  "KIA",
+  "JAC",
+  "IKCO",
+  "JOHN DEERE",
+  "HINO",
+  "VOLVO",
+  "CHRYSLER",
+  "AGRALE",
+  "HAIMA",
+  "DONGFENG",
+  "INTERNATIONAL NAVISTAR",
+  "ISUZU",
+  "MACK",
+  "CITROEN",
+  "FORDSON",
+  "FOTON",
+  "SUZUKI",
+  "ZETOR",
+  "CHANGAN",
+  "SEAT",
+  "BERA",
+  "FORD TRACTOR",
+  "YUTONG",
+  "MASSEY FERGUSON",
+  "JMC",
+  "KOMATSU",
+  "PERKINS",
+  "FREIGTHLINER",
+  "MAE",
+  "MAS",
+  "MFU",
+  "MTR",
+  "MCG",
+  "TAP",
+  "TNBR",
+  "MAN",
+  "MAST",
 ];
 
 const BRAND_COLORS = [
-  "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899",
-  "#EF4444", "#06B6D4", "#84CC16", "#F97316", "#6366F1",
-  "#14B8A6", "#D946EF", "#0EA5E9", "#A855F7", "#22C55E",
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#8B5CF6",
+  "#EC4899",
+  "#EF4444",
+  "#06B6D4",
+  "#84CC16",
+  "#F97316",
+  "#6366F1",
+  "#14B8A6",
+  "#D946EF",
+  "#0EA5E9",
+  "#A855F7",
+  "#22C55E",
 ];
 
 interface GroupItem {
@@ -67,21 +118,28 @@ export default function CategoriesPage() {
   const { products } = useInventoryStore();
   const [activeTab, setActiveTab] = useState("categorias");
   const [searchQuery, setSearchQuery] = useState("");
-  const [drillDown, setDrillDown] = useState<{ name: string; tab: string } | null>(null);
+  const [drillDown, setDrillDown] = useState<{
+    name: string;
+    tab: string;
+  } | null>(null);
 
   // Get products for the drill-down dialog
   const drillDownProducts: Product[] = useMemo(() => {
     if (!drillDown) return [];
     const { name, tab } = drillDown;
-    const sortedBrands = [...VEHICLE_BRANDS].sort((a, b) => b.length - a.length);
+    const sortedBrands = [...VEHICLE_BRANDS].sort(
+      (a, b) => b.length - a.length,
+    );
 
-    return products.filter(p => {
+    return products.filter((p) => {
       switch (tab) {
         case "categorias":
           return (p.category || "General") === name;
         case "marcas": {
           const aplicacion = (p.aplicacion || "").toUpperCase().trim();
-          const desc = (p.descripcionManguera || p.name || "").toUpperCase().trim();
+          const desc = (p.descripcionManguera || p.name || "")
+            .toUpperCase()
+            .trim();
           const combined = aplicacion || desc;
           if (!combined) return false;
           for (const brand of sortedBrands) {
@@ -104,7 +162,7 @@ export default function CategoriesPage() {
   // ─── Categorías ───
   const categoryGroups: GroupItem[] = useMemo(() => {
     const map = new Map<string, number>();
-    products.forEach(p => {
+    products.forEach((p) => {
       const cat = p.category || "General";
       map.set(cat, (map.get(cat) || 0) + 1);
     });
@@ -121,16 +179,18 @@ export default function CategoriesPage() {
   const brandGroups: GroupItem[] = useMemo(() => {
     const map = new Map<string, number>();
     // Sort brands by length descending so longer names match first (e.g., "MERCEDES BENZ" before "MAN")
-    const sortedBrands = [...VEHICLE_BRANDS].sort((a, b) => b.length - a.length);
-    
-    products.forEach(p => {
+    const sortedBrands = [...VEHICLE_BRANDS].sort(
+      (a, b) => b.length - a.length,
+    );
+
+    products.forEach((p) => {
       // Check aplicacion (vehicle field), name, and descripcionManguera
       const aplicacion = (p.aplicacion || "").toUpperCase().trim();
       const desc = (p.descripcionManguera || p.name || "").toUpperCase().trim();
       const combined = aplicacion || desc;
-      
+
       if (!combined) return;
-      
+
       for (const brand of sortedBrands) {
         if (combined.includes(brand)) {
           map.set(brand, (map.get(brand) || 0) + 1);
@@ -150,7 +210,7 @@ export default function CategoriesPage() {
   // ─── Combustible ───
   const fuelGroups: GroupItem[] = useMemo(() => {
     const map = new Map<string, number>();
-    products.forEach(p => {
+    products.forEach((p) => {
       const fuel = (p.aplicacionesDiesel || "").trim();
       if (fuel) {
         map.set(fuel, (map.get(fuel) || 0) + 1);
@@ -168,7 +228,7 @@ export default function CategoriesPage() {
   // ─── Nuevos Items ───
   const newItemGroups: GroupItem[] = useMemo(() => {
     const map = new Map<string, number>();
-    products.forEach(p => {
+    products.forEach((p) => {
       const val = String(p.isNuevo || "").trim();
       if (val) {
         map.set(val, (map.get(val) || 0) + 1);
@@ -187,37 +247,52 @@ export default function CategoriesPage() {
   const filterItems = (items: GroupItem[]) => {
     if (!searchQuery) return items;
     const q = searchQuery.toLowerCase();
-    return items.filter(item => item.name.toLowerCase().includes(q));
+    return items.filter((item) => item.name.toLowerCase().includes(q));
   };
 
   // Get the current data based on active tab
   const getActiveData = () => {
     switch (activeTab) {
-      case "categorias": return filterItems(categoryGroups);
-      case "marcas": return filterItems(brandGroups);
-      case "combustible": return filterItems(fuelGroups);
-      case "nuevos": return filterItems(newItemGroups);
-      default: return [];
+      case "categorias":
+        return filterItems(categoryGroups);
+      case "marcas":
+        return filterItems(brandGroups);
+      case "combustible":
+        return filterItems(fuelGroups);
+      case "nuevos":
+        return filterItems(newItemGroups);
+      default:
+        return [];
     }
   };
 
   const getActiveIcon = () => {
     switch (activeTab) {
-      case "categorias": return FolderTree;
-      case "marcas": return Car;
-      case "combustible": return Fuel;
-      case "nuevos": return Sparkles;
-      default: return Package;
+      case "categorias":
+        return FolderTree;
+      case "marcas":
+        return Car;
+      case "combustible":
+        return Fuel;
+      case "nuevos":
+        return Sparkles;
+      default:
+        return Package;
     }
   };
 
   const getActiveTitle = () => {
     switch (activeTab) {
-      case "categorias": return "Categorías";
-      case "marcas": return "Marcas de Vehículos";
-      case "combustible": return "Tipo de Combustible";
-      case "nuevos": return "Nuevos Items";
-      default: return "";
+      case "categorias":
+        return "Categorías";
+      case "marcas":
+        return "Marcas de Vehículos";
+      case "combustible":
+        return "Tipo de Combustible";
+      case "nuevos":
+        return "Nuevos Items";
+      default:
+        return "";
     }
   };
 
@@ -257,7 +332,7 @@ export default function CategoriesPage() {
   ];
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
 
       <div className="p-6 space-y-6">
@@ -268,7 +343,8 @@ export default function CategoriesPage() {
             Clasificación de Productos
           </h1>
           <p className="text-muted-foreground mt-1">
-            Categorías, marcas, combustible y nuevos items derivados de {products.length} productos
+            Categorías, marcas, combustible y nuevos items derivados de{" "}
+            {products.length} productos
           </p>
         </div>
 
@@ -279,10 +355,14 @@ export default function CategoriesPage() {
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {stat.label}
+                    </p>
                     <p className="text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
-                  <div className={`w-10 h-10 rounded-full ${stat.bgColor} flex items-center justify-center`}>
+                  <div
+                    className={`w-10 h-10 rounded-full ${stat.bgColor} flex items-center justify-center`}
+                  >
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
                 </div>
@@ -333,7 +413,9 @@ export default function CategoriesPage() {
                     {getActiveTitle()}
                   </CardTitle>
                   <CardDescription>
-                    {activeData.length} grupo{activeData.length !== 1 ? "s" : ""} — {totalItemsInGroup} producto{totalItemsInGroup !== 1 ? "s" : ""} en total
+                    {activeData.length} grupo
+                    {activeData.length !== 1 ? "s" : ""} — {totalItemsInGroup}{" "}
+                    producto{totalItemsInGroup !== 1 ? "s" : ""} en total
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -352,7 +434,9 @@ export default function CategoriesPage() {
                         <div
                           key={`${tabKey}-${index}`}
                           className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent/30 transition-colors cursor-pointer"
-                          onClick={() => setDrillDown({ name: item.name, tab: tabKey })}
+                          onClick={() =>
+                            setDrillDown({ name: item.name, tab: tabKey })
+                          }
                         >
                           <div
                             className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
@@ -397,7 +481,10 @@ export default function CategoriesPage() {
       </div>
 
       {/* Drill-down Dialog */}
-      <Dialog open={!!drillDown} onOpenChange={(open) => !open && setDrillDown(null)}>
+      <Dialog
+        open={!!drillDown}
+        onOpenChange={(open) => !open && setDrillDown(null)}
+      >
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -405,34 +492,65 @@ export default function CategoriesPage() {
               {drillDown?.name}
             </DialogTitle>
             <DialogDescription>
-              {drillDownProducts.length} producto{drillDownProducts.length !== 1 ? 's' : ''} en este grupo
+              {drillDownProducts.length} producto
+              {drillDownProducts.length !== 1 ? "s" : ""} en este grupo
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-auto flex-1 -mx-6 px-6">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-background z-10">
                 <tr className="border-b text-left">
-                  <th className="py-2 px-2 font-semibold text-muted-foreground">Nº</th>
-                  <th className="py-2 px-2 font-semibold text-muted-foreground">CAUPLAS</th>
-                  <th className="py-2 px-2 font-semibold text-muted-foreground">Descripción</th>
-                  <th className="py-2 px-2 font-semibold text-muted-foreground text-right">Stock</th>
-                  <th className="py-2 px-2 font-semibold text-muted-foreground text-right">Precio</th>
-                  <th className="py-2 px-2 font-semibold text-muted-foreground">Fotos</th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground">
+                    Nº
+                  </th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground">
+                    CAUPLAS
+                  </th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground">
+                    Descripción
+                  </th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground text-right">
+                    Stock
+                  </th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground text-right">
+                    Precio
+                  </th>
+                  <th className="py-2 px-2 font-semibold text-muted-foreground">
+                    Fotos
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {drillDownProducts.map((p, i) => (
-                  <tr key={p.id} className="border-b hover:bg-accent/20 transition-colors">
-                    <td className="py-2 px-2 text-muted-foreground">{p.rowNumber || i + 1}</td>
-                    <td className="py-2 px-2 font-mono font-bold text-xs">{p.cauplas || '-'}</td>
-                    <td className="py-2 px-2 max-w-[280px] truncate">{p.descripcionManguera || p.name || '-'}</td>
-                    <td className="py-2 px-2 text-right font-bold">{p.stock || 0}</td>
-                    <td className="py-2 px-2 text-right font-mono">${(p.precioFCA || p.price || 0).toFixed(2)}</td>
+                  <tr
+                    key={p.id}
+                    className="border-b hover:bg-accent/20 transition-colors"
+                  >
+                    <td className="py-2 px-2 text-muted-foreground">
+                      {p.rowNumber || i + 1}
+                    </td>
+                    <td className="py-2 px-2 font-mono font-bold text-xs">
+                      {p.cauplas || "-"}
+                    </td>
+                    <td className="py-2 px-2 max-w-[280px] truncate">
+                      {p.descripcionManguera || p.name || "-"}
+                    </td>
+                    <td className="py-2 px-2 text-right font-bold">
+                      {p.stock || 0}
+                    </td>
+                    <td className="py-2 px-2 text-right font-mono">
+                      ${(p.precioFCA || p.price || 0).toFixed(2)}
+                    </td>
                     <td className="py-2 px-2">
                       {p.images && p.images.length > 0 ? (
                         <div className="flex gap-1">
                           {p.images.slice(0, 3).map((img, idx) => (
-                            <img key={idx} src={img} alt="" className="w-8 h-8 rounded object-cover border" />
+                            <img
+                              key={idx}
+                              src={img}
+                              alt=""
+                              className="w-8 h-8 rounded object-cover border"
+                            />
                           ))}
                         </div>
                       ) : (
@@ -446,6 +564,6 @@ export default function CategoriesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </ValeryLayout>
+    </>
   );
 }

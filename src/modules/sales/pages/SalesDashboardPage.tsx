@@ -7,10 +7,7 @@ import {
   TrendingDown,
   TrendingUp,
   History,
-  Sparkles,
 } from "lucide-react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { automationHub } from "@/core/infrastructure/automation/AutomationHub";
 import { useTenant } from "@/shared/hooks/useTenant";
 import { toast } from "sonner";
@@ -46,16 +43,14 @@ const SalesDashboardPage = () => {
 
   if (loading) {
     return (
-      <ValeryLayout sidebar={<ValerySidebar />}>
-        <div className="flex h-screen items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-        </div>
-      </ValeryLayout>
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
     );
   }
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       {/* Background */}
       <div className="fixed inset-0 -z-10 bg-slate-50 dark:bg-slate-950" />
 
@@ -358,7 +353,7 @@ const SalesDashboardPage = () => {
           </TabsContent>
         </Tabs>
       </main>
-    </ValeryLayout>
+    </>
   );
 };
 

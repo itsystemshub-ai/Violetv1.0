@@ -167,7 +167,6 @@ const POSPage: React.FC = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
   );
-
   const lowStockProducts = getLowStockProducts();
 
   const getQuantity = (productId: string) => quantities[productId] || 1;
@@ -387,7 +386,8 @@ const POSPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-5 mb-8 mt-2 max-w-[1100px] mx-auto px-4 w-full">
+    <>
+      <div className="flex flex-col gap-5 mb-8 mt-2 max-w-[1100px] mx-auto px-4 w-full">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
@@ -473,8 +473,6 @@ const POSPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-
       </div>
 
       <div className="space-y-6 h-[calc(100vh-210px)]">
@@ -1388,6 +1386,7 @@ const POSPage: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+    </>
   );
 };
 

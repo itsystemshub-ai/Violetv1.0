@@ -364,11 +364,9 @@ export default function ProductsPage() {
 
   if (invLogic.isLoading) {
     return (
-      <ValeryLayout sidebar={<ValerySidebar />}>
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-        </div>
-      </ValeryLayout>
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
     );
   }
 
@@ -414,781 +412,682 @@ export default function ProductsPage() {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpiStats.map((stat, index) => (
+            <Card key={index} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {stat.label}
+                    </p>
+                    <p className="text-2xl font-bold mt-1">{stat.value}</p>
+                  </div>
+                  <div
+                    className={`w-12 h-12 rounded-full ${stat.bgColor} flex items-center justify-center`}
+                  >
+                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <Tabs
-          defaultValue="all"
+          value={invLogic.statusFilter}
+          onValueChange={invLogic.setStatusFilter}
           className="w-full space-y-4"
-          onValueChange={(v) =>
-            setInvLogic({ ...invLogic, statusFilter: v as any })
-          }
         >
-          {/* ... resto del contenido de la página ... */}
-                  className="hidden"
-                  // @ts-ignore
-                  webkitdirectory=""
-                  directory=""
-                  multiple
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+            <input
+              type="file"
+              ref={invLogic.fileInputRef}
+              onChange={invLogic.handleImport}
+              accept=".xlsx, .xls, .csv"
+              className="hidden"
+            />
+            <input
+              type="file"
+              ref={invLogic.folderInputRef}
+              onChange={invLogic.handlePhotoImport}
+              draggable
+              // @ts-ignore
+              webkitdirectory=""
+              directory=""
+              multiple
+              className="hidden"
+            />
+            <input
+              type="file"
+              ref={invLogic.photoInputRef}
+              onChange={invLogic.handleIndividualPhotoImport}
+              accept="image/*"
+              multiple
+              className="hidden"
+            />
+            <TabsList className="w-fit">
+              <TabsTrigger value="all">
+                Todos ({invLogic.products.length})
+              </TabsTrigger>
+              <TabsTrigger value="active">
+                Activos (
+                {
+                  invLogic.products.filter(
+                    (p) => p.status !== "inactive" && p.stock > 0,
+                  ).length
+                }
+                )
+              </TabsTrigger>
+              <TabsTrigger value="agotado">
+                Agotados (
+                {
+                  invLogic.products.filter(
+                    (p) => p.status !== "inactive" && p.stock === 0,
+                  ).length
+                }
+                )
+              </TabsTrigger>
+              <TabsTrigger value="inactive">
+                Inactivos (
+                {
+                  invLogic.products.filter((p) => p.status === "inactive")
+                    .length
+                }
+                )
+              </TabsTrigger>
+              <TabsTrigger value="photos" className="flex items-center gap-1.5">
+                <Camera className="w-3.5 h-3.5" />
+                Auditoría Fotos
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="flex gap-2">
+              <div className="relative w-full lg:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar productos..."
+                  value={invLogic.searchQuery}
+                  onChange={(e) => invLogic.setSearchQuery(e.target.value)}
+                  className="pl-10"
                 />
-                {invLogic.statusFilter === "all" && (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="rounded-full shadow-sm gap-2"
-                      onClick={() => invLogic.fileInputRef.current?.click()}
-                      disabled={invLogic.isImporting}
-                    >
-                      <Upload
-                        className={cn(
-                          "w-4 h-4 text-primary",
-                          invLogic.isImporting && "animate-pulse",
-                        )}
-                      />
-                      {invLogic.isImporting
-                        ? "Procesando..."
-                        : "Importar Excel"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="rounded-full shadow-sm gap-2 border-violet-500/30 bg-violet-500/5 text-violet-600 hover:bg-violet-500/10"
-                      onClick={() => {
-                        automationHub.trigger("/inventory/sync", {
-                          tenantId: tenant?.id,
-                          productCount: invLogic.products.length,
-                          timestamp: new Date().toISOString(),
-                        });
-                        toast.success("Sincronización masiva enviada a n8n");
-                      }}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      Sincronizar IA
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                          title="Reiniciar Inventario"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            ¿Estás completamente seguro?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción eliminará todos los productos
-                            permanentemente.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={invLogic.handleClear}
-                            className="bg-destructive hover:bg-destructive/90 text-white"
-                          >
-                            Eliminar Todo
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-
-                    <Button
-                      className="gap-2 ml-2"
-                      onClick={() => {
-                        setForm({ ...emptyForm });
-                        setCreateDialogOpen(true);
-                      }}
-                    >
-                      <Plus className="w-4 h-4" />
-                      NUEVO PRODUCTO
-                    </Button>
-                  </>
-                )}
-                {invLogic.statusFilter === "photos" && (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="rounded-full shadow-sm gap-2 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
-                      disabled={invLogic.isImporting}
-                      onClick={() => setPhotoImportModalOpen(true)}
-                    >
-                      <Camera
-                        className={cn(
-                          "w-4 h-4",
-                          invLogic.isImporting && "animate-pulse",
-                        )}
-                      />
-                      {invLogic.isImporting
-                        ? "Procesando..."
-                        : "Importar Fotos"}
-                    </Button>
-                  </>
-                )}
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {kpiStats.map((stat, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          {stat.label}
-                        </p>
-                        <p className="text-2xl font-bold mt-1">{stat.value}</p>
-                      </div>
-                      <div
-                        className={`w-12 h-12 rounded-full ${stat.bgColor} flex items-center justify-center`}
-                      >
-                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              <Button variant="outline" size="icon">
+                <Filter className="w-4 h-4" />
+              </Button>
+              <Dialog
+                open={invLogic.isExportOpen}
+                onOpenChange={invLogic.setIsExportOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Download className="w-4 h-4 text-emerald-500" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Exportar Inventario</DialogTitle>
+                    <DialogDescription>
+                      Selecciona el formato de exportación.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid grid-cols-3 gap-4 py-4">
+                    <Button
+                      variant="ghost"
+                      className="flex flex-col h-24 gap-2"
+                      onClick={() => invLogic.handleExport("xlsx")}
+                    >
+                      <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
+                      <span className="text-xs font-bold">EXCEL</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="flex flex-col h-24 gap-2"
+                      onClick={() => invLogic.handleExport("csv")}
+                    >
+                      <FileText className="w-8 h-8 text-blue-600" />
+                      <span className="text-xs font-bold">CSV</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="flex flex-col h-24 gap-2"
+                      onClick={() => invLogic.handleExport("json")}
+                    >
+                      <FileJson className="w-8 h-8 text-amber-600" />
+                      <span className="text-xs font-bold">JSON</span>
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
-          <Tabs
-            value={invLogic.statusFilter}
-            onValueChange={invLogic.setStatusFilter}
-          >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
-              <TabsList className="w-fit">
-                <TabsTrigger value="all">
-                  Todos ({invLogic.products.length})
-                </TabsTrigger>
-                <TabsTrigger value="active">
-                  Activos (
-                  {
-                    invLogic.products.filter(
-                      (p) => p.status !== "inactive" && p.stock > 0,
-                    ).length
-                  }
-                  )
-                </TabsTrigger>
-                <TabsTrigger value="agotado">
-                  Agotados (
-                  {
-                    invLogic.products.filter(
-                      (p) => p.status !== "inactive" && p.stock === 0,
-                    ).length
-                  }
-                  )
-                </TabsTrigger>
-                <TabsTrigger value="inactive">
-                  Inactivos (
-                  {
-                    invLogic.products.filter((p) => p.status === "inactive")
-                      .length
-                  }
-                  )
-                </TabsTrigger>
-                <TabsTrigger
-                  value="photos"
-                  className="flex items-center gap-1.5"
-                >
-                  <Camera className="w-3.5 h-3.5" />
-                  Auditoría Fotos
-                </TabsTrigger>
-              </TabsList>
-
-              <div className="flex gap-2">
-                <div className="relative w-full lg:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar productos..."
-                    value={invLogic.searchQuery}
-                    onChange={(e) => invLogic.setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button variant="outline" size="icon">
-                  <Filter className="w-4 h-4" />
-                </Button>
-                <Dialog
-                  open={invLogic.isExportOpen}
-                  onOpenChange={invLogic.setIsExportOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Download className="w-4 h-4 text-emerald-500" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Exportar Inventario</DialogTitle>
-                      <DialogDescription>
-                        Selecciona el formato de exportación.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid grid-cols-3 gap-4 py-4">
-                      <Button
-                        variant="ghost"
-                        className="flex flex-col h-24 gap-2"
-                        onClick={() => invLogic.handleExport("xlsx")}
-                      >
-                        <FileSpreadsheet className="w-8 h-8 text-emerald-600" />
-                        <span className="text-xs font-bold">EXCEL</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className="flex flex-col h-24 gap-2"
-                        onClick={() => invLogic.handleExport("csv")}
-                      >
-                        <FileText className="w-8 h-8 text-blue-600" />
-                        <span className="text-xs font-bold">CSV</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className="flex flex-col h-24 gap-2"
-                        onClick={() => invLogic.handleExport("json")}
-                      >
-                        <FileJson className="w-8 h-8 text-amber-600" />
-                        <span className="text-xs font-bold">JSON</span>
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-
-            {invLogic.statusFilter !== "photos" && (
-              <TabsContent value={invLogic.statusFilter}>
-                <Card className="border-none shadow-none bg-transparent">
-                  <CardContent className="p-0">
-                    <InventoryTable logic={invLogic} />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            )}
-
-            <TabsContent value="photos" className="space-y-6">
-              <div className="backdrop-blur-xl bg-card/80 border border-border rounded-3xl p-8 shadow-2xl">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                  <div>
-                    <h2 className="text-3xl font-black tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent uppercase">
-                      Gestión de Fotos
-                    </h2>
-                    <p className="text-muted-foreground mt-1 text-lg">
-                      Auditoría de integridad visual de productos
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-4">
-                    <div className="px-6 py-3 bg-primary/10 rounded-2xl border border-primary/20 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
-                      <div className="p-2 bg-primary/20 rounded-xl">
-                        <Camera className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-primary/60 uppercase tracking-widest leading-none mb-1">
-                          Total con Fotos
-                        </p>
-                        <p className="text-2xl font-black text-primary leading-none">
-                          {invLogic.products?.filter(
-                            (p) => (p.images?.length || 0) > 0,
-                          ).length || 0}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="px-6 py-3 bg-rose-500/10 rounded-2xl border border-rose-500/20 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
-                      <div className="p-2 bg-rose-500/20 rounded-xl">
-                        <BadgeX className="w-5 h-5 text-rose-500" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-rose-500/60 uppercase tracking-widest leading-none mb-1">
-                          Sin Fotos
-                        </p>
-                        <p className="text-2xl font-black text-rose-500 leading-none">
-                          {invLogic.products?.filter(
-                            (p) => (p.images?.length || 0) === 0,
-                          ).length || 0}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-border overflow-hidden bg-background/50">
+          {invLogic.statusFilter !== "photos" && (
+            <TabsContent value={invLogic.statusFilter}>
+              <Card className="border-none shadow-none bg-transparent">
+                <CardContent className="p-0">
                   <InventoryTable logic={invLogic} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
+          <TabsContent value="photos" className="space-y-6">
+            <div className="backdrop-blur-xl bg-card/80 border border-border rounded-3xl p-8 shadow-2xl">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent uppercase">
+                    Gestión de Fotos
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-lg">
+                    Auditoría de integridad visual de productos
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-4">
+                  <div className="px-6 py-3 bg-primary/10 rounded-2xl border border-primary/20 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
+                    <div className="p-2 bg-primary/20 rounded-xl">
+                      <Camera className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-primary/60 uppercase tracking-widest leading-none mb-1">
+                        Total con Fotos
+                      </p>
+                      <p className="text-2xl font-black text-primary leading-none">
+                        {invLogic.products?.filter(
+                          (p) => (p.images?.length || 0) > 0,
+                        ).length || 0}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-3 bg-rose-500/10 rounded-2xl border border-rose-500/20 flex items-center gap-3 shadow-sm hover:shadow-md transition-all">
+                    <div className="p-2 bg-rose-500/20 rounded-xl">
+                      <BadgeX className="w-5 h-5 text-rose-500" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-rose-500/60 uppercase tracking-widest leading-none mb-1">
+                        Sin Fotos
+                      </p>
+                      <p className="text-2xl font-black text-rose-500 leading-none">
+                        {invLogic.products?.filter(
+                          (p) => (p.images?.length || 0) === 0,
+                        ).length || 0}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
 
-          <ModuleAIAssistant
-            moduleName="Productos"
-            moduleContext="Gestión de productos, catálogo, precios y stock"
-            contextData={{
-              totalProducts: invLogic.products.length,
-              lowStock: invLogic.lowStockCount,
-              outOfStock: invLogic.products.filter((p) => !p.stock).length,
-            }}
-            compact
-          />
-        </div>
-
-        {/* DELETE DIALOG */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta acción no se puede deshacer. El producto será eliminado
-                permanentemente de la base de datos.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-destructive hover:bg-destructive/90"
-              >
-                Eliminar
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        {/* DEACTIVATE DIALOG */}
-        <AlertDialog
-          open={deactivateDialogOpen}
-          onOpenChange={setDeactivateDialogOpen}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>¿Desactivar Producto?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Por favor, indique un motivo u observación por la cual se
-                desactiva este ítem. El producto pasará a la pestaña
-                "Inactivos".
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="py-2">
-              <Label className="text-sm font-semibold mb-1 block">
-                Motivo u observación
-              </Label>
-              <Input
-                value={deactivateReason}
-                onChange={(e) => setDeactivateReason(e.target.value)}
-                placeholder="Ej: Producto descontinuado, dañado..."
-                className="mt-2"
-              />
+              <div className="rounded-2xl border border-border overflow-hidden bg-background/50">
+                <InventoryTable logic={invLogic} />
+              </div>
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setDeactivateReason("")}>
-                Cancelar
-              </AlertDialogCancel>
-              <AlertDialogAction
-                disabled={!deactivateReason.trim()}
-                onClick={() => {
-                  if (productToDeactivate) {
-                    invLogic.updateProduct(productToDeactivate.id, {
-                      status: "inactive",
-                      deactivationReason: deactivateReason,
-                    });
-                  }
-                  setDeactivateReason("");
-                  setDeactivateDialogOpen(false);
-                  setProductToDeactivate(null);
-                }}
-              >
-                Confirmar Desactivación
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          </TabsContent>
+        </Tabs>
 
-        {/* PHOTO IMPORT MODAL */}
-        <Dialog
-          open={photoImportModalOpen}
-          onOpenChange={setPhotoImportModalOpen}
-        >
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Camera className="w-5 h-5 text-primary" />
-                Importar Fotos de Productos
-              </DialogTitle>
-              <DialogDescription>
-                Selecciona el método de carga de imágenes
-              </DialogDescription>
-            </DialogHeader>
+        <ModuleAIAssistant
+          moduleName="Productos"
+          moduleContext="Gestión de productos, catálogo, precios y stock"
+          contextData={{
+            totalProducts: invLogic.products.length,
+            lowStock: invLogic.lowStockCount,
+            outOfStock: invLogic.products.filter((p) => !p.stock).length,
+          }}
+          compact
+        />
+      </div>
 
-            <div className="space-y-3 py-4">
-              <Button
-                variant="outline"
-                className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
-                onClick={() => {
-                  invLogic.photoInputRef.current?.click();
-                  setPhotoImportModalOpen(false);
-                }}
-              >
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
-                  <ImageIcon className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold text-base">Carga Individual</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Máximo 3 fotos por producto
+      {/* DELETE DIALOG */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El producto será eliminado
+              permanentemente de la base de datos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* DEACTIVATE DIALOG */}
+      <AlertDialog
+        open={deactivateDialogOpen}
+        onOpenChange={setDeactivateDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Desactivar Producto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Por favor, indique un motivo u observación por la cual se
+              desactiva este ítem. El producto pasará a la pestaña "Inactivos".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-2">
+            <Label className="text-sm font-semibold mb-1 block">
+              Motivo u observación
+            </Label>
+            <Input
+              value={deactivateReason}
+              onChange={(e) => setDeactivateReason(e.target.value)}
+              placeholder="Ej: Producto descontinuado, dañado..."
+              className="mt-2"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeactivateReason("")}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!deactivateReason.trim()}
+              onClick={() => {
+                if (productToDeactivate) {
+                  invLogic.updateProduct(productToDeactivate.id, {
+                    status: "inactive",
+                    deactivationReason: deactivateReason,
+                  });
+                }
+                setDeactivateReason("");
+                setDeactivateDialogOpen(false);
+                setProductToDeactivate(null);
+              }}
+            >
+              Confirmar Desactivación
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* PHOTO IMPORT MODAL */}
+      <Dialog
+        open={photoImportModalOpen}
+        onOpenChange={setPhotoImportModalOpen}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Camera className="w-5 h-5 text-primary" />
+              Importar Fotos de Productos
+            </DialogTitle>
+            <DialogDescription>
+              Selecciona el método de carga de imágenes
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-4">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
+              onClick={() => {
+                invLogic.photoInputRef.current?.click();
+                setPhotoImportModalOpen(false);
+              }}
+            >
+              <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
+                <ImageIcon className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-base">Carga Individual</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Máximo 3 fotos por producto
+                </p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
+              onClick={() => {
+                invLogic.folderInputRef.current?.click();
+                setPhotoImportModalOpen(false);
+              }}
+            >
+              <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center">
+                <Layers className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-base">Carga Masiva</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Importar carpeta completa de imágenes
+                </p>
+              </div>
+            </Button>
+          </div>
+
+          <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
+            <p className="font-semibold mb-1">💡 Consejo:</p>
+            <p>
+              Para carga masiva, nombra las imágenes con el código CAUPLAS del
+              producto para asociarlas automáticamente.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* VIEW DIALOG */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>DETALLES DEL PRODUCTO</DialogTitle>
+            <DialogDescription>
+              Información completa del producto {selectedProduct?.name}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedProduct && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold text-primary">
+                    CAUPLAS
+                  </p>
+                  <p className="text-sm font-bold">
+                    {selectedProduct.cauplas || "-"}
                   </p>
                 </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary/5 hover:border-primary transition-all"
-                onClick={() => {
-                  invLogic.folderInputRef.current?.click();
-                  setPhotoImportModalOpen(false);
-                }}
-              >
-                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center">
-                  <Layers className="w-6 h-6 text-purple-600" />
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold text-base">Carga Masiva</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Importar carpeta completa de imágenes
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    TORFLEX
+                  </p>
+                  <p className="text-sm font-bold">
+                    {selectedProduct.torflex || "-"}
                   </p>
                 </div>
-              </Button>
-            </div>
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    INDOMAX
+                  </p>
+                  <p className="text-sm font-bold">
+                    {selectedProduct.indomax || "-"}
+                  </p>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    OEM
+                  </p>
+                  <p className="text-sm font-bold">
+                    {selectedProduct.oem || "-"}
+                  </p>
+                </div>
 
-            <div className="bg-muted/50 rounded-lg p-3 text-xs text-muted-foreground">
-              <p className="font-semibold mb-1">💡 Consejo:</p>
-              <p>
-                Para carga masiva, nombra las imágenes con el código CAUPLAS del
-                producto para asociarlas automáticamente.
-              </p>
-            </div>
-          </DialogContent>
-        </Dialog>
+                <div className="col-span-2">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    Estado
+                  </p>
+                  {getStatusBadge(selectedProduct.status)}
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">
+                    Categoría
+                  </p>
+                  <p className="text-sm font-bold">
+                    {selectedProduct.category}
+                  </p>
+                </div>
 
-        {/* VIEW DIALOG */}
-        <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>DETALLES DEL PRODUCTO</DialogTitle>
-              <DialogDescription>
-                Información completa del producto {selectedProduct?.name}
-              </DialogDescription>
-            </DialogHeader>
-            {selectedProduct && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold text-primary">
-                      CAUPLAS
-                    </p>
-                    <p className="text-sm font-bold">
-                      {selectedProduct.cauplas || "-"}
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                      TORFLEX
-                    </p>
-                    <p className="text-sm font-bold">
-                      {selectedProduct.torflex || "-"}
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                      INDOMAX
-                    </p>
-                    <p className="text-sm font-bold">
-                      {selectedProduct.indomax || "-"}
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                      OEM
-                    </p>
-                    <p className="text-sm font-bold">
-                      {selectedProduct.oem || "-"}
-                    </p>
-                  </div>
-
+                {selectedProduct.barcode && (
                   <div className="col-span-2">
                     <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                      Estado
-                    </p>
-                    {getStatusBadge(selectedProduct.status)}
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                      Categoría
+                      Código de Barras
                     </p>
                     <p className="text-sm font-bold">
-                      {selectedProduct.category}
+                      {selectedProduct.barcode}
                     </p>
                   </div>
-
-                  {selectedProduct.barcode && (
-                    <div className="col-span-2">
-                      <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                        Código de Barras
-                      </p>
-                      <p className="text-sm font-bold">
-                        {selectedProduct.barcode}
-                      </p>
-                    </div>
-                  )}
+                )}
+                <div className="col-span-2">
+                  <p className="text-sm text-muted-foreground">
+                    DESCRIPCIÓN DEL PRODUCTO
+                  </p>
+                  <p className="font-medium">
+                    {selectedProduct.descripcionManguera ||
+                      selectedProduct.name ||
+                      "-"}
+                  </p>
+                </div>
+                {selectedProduct.description && (
                   <div className="col-span-2">
                     <p className="text-sm text-muted-foreground">
-                      DESCRIPCIÓN DEL PRODUCTO
+                      NOTAS ADICIONALES
                     </p>
-                    <p className="font-medium">
-                      {selectedProduct.descripcionManguera ||
-                        selectedProduct.name ||
-                        "-"}
+                    <p className="text-sm italic">
+                      {selectedProduct.description}
                     </p>
                   </div>
-                  {selectedProduct.description && (
-                    <div className="col-span-2">
-                      <p className="text-sm text-muted-foreground">
-                        NOTAS ADICIONALES
-                      </p>
-                      <p className="text-sm italic">
-                        {selectedProduct.description}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                )}
+              </div>
 
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3">Precios y Costos</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Precio de Venta
-                      </p>
-                      <p className="text-xl font-bold text-green-600">
-                        {formatMoney(
-                          selectedProduct.precioFCA ||
-                            selectedProduct.price ||
-                            0,
-                        )}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Costo</p>
-                      <p className="text-xl font-bold">
-                        {formatMoney(selectedProduct.cost)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Margen</p>
-                      <p className="text-xl font-bold text-blue-600">
-                        {(selectedProduct.precioFCA ||
-                          selectedProduct.price ||
-                          0) > 0
-                          ? Math.round(
-                              (((selectedProduct.precioFCA ||
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3">Precios y Costos</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Precio de Venta
+                    </p>
+                    <p className="text-xl font-bold text-green-600">
+                      {formatMoney(
+                        selectedProduct.precioFCA || selectedProduct.price || 0,
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Costo</p>
+                    <p className="text-xl font-bold">
+                      {formatMoney(selectedProduct.cost)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Margen</p>
+                    <p className="text-xl font-bold text-blue-600">
+                      {(selectedProduct.precioFCA ||
+                        selectedProduct.price ||
+                        0) > 0
+                        ? Math.round(
+                            (((selectedProduct.precioFCA ||
+                              selectedProduct.price ||
+                              0) -
+                              selectedProduct.cost) /
+                              (selectedProduct.precioFCA ||
                                 selectedProduct.price ||
-                                0) -
-                                selectedProduct.cost) /
-                                (selectedProduct.precioFCA ||
-                                  selectedProduct.price ||
-                                  1)) *
-                                100,
-                            )
-                          : 0}
-                        %
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Ganancia por Unidad
-                      </p>
-                      <p className="text-xl font-bold text-purple-600">
-                        {formatMoney(
-                          (selectedProduct.precioFCA ||
-                            selectedProduct.price ||
-                            0) - selectedProduct.cost,
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3">Inventario</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Stock Actual
-                      </p>
-                      <p className="text-2xl font-bold">
-                        {selectedProduct.stock}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Stock Mínimo
-                      </p>
-                      <p className="text-2xl font-bold text-yellow-600">
-                        {selectedProduct.minStock}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-sm text-muted-foreground">
-                      Valor en Inventario
+                                1)) *
+                              100,
+                          )
+                        : 0}
+                      %
                     </p>
-                    <p className="text-2xl font-bold text-green-600">
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Ganancia por Unidad
+                    </p>
+                    <p className="text-xl font-bold text-purple-600">
                       {formatMoney(
                         (selectedProduct.precioFCA ||
                           selectedProduct.price ||
-                          0) * selectedProduct.stock,
+                          0) - selectedProduct.cost,
                       )}
                     </p>
                   </div>
                 </div>
+              </div>
 
-                {selectedProduct.supplier && (
-                  <div className="border-t pt-4">
-                    <p className="text-sm text-muted-foreground">Proveedor</p>
-                    <p className="font-medium">{selectedProduct.supplier}</p>
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3">Inventario</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Stock Actual
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {selectedProduct.stock}
+                    </p>
                   </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Stock Mínimo
+                    </p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {selectedProduct.minStock}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Valor en Inventario
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {formatMoney(
+                      (selectedProduct.precioFCA ||
+                        selectedProduct.price ||
+                        0) * selectedProduct.stock,
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {selectedProduct.supplier && (
+                <div className="border-t pt-4">
+                  <p className="text-sm text-muted-foreground">Proveedor</p>
+                  <p className="font-medium">{selectedProduct.supplier}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* CREATE DIALOG */}
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary" />
+              NUEVO PRODUCTO
+            </DialogTitle>
+            <DialogDescription>
+              El producto será guardado y estará disponible en Ventas, Facturas,
+              Inventario y Compras
+            </DialogDescription>
+          </DialogHeader>
+          <ProductFormFields />
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setCreateDialogOpen(false)}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreate}
+              disabled={!form.descripcionManguera?.trim() || isSaving}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {isSaving ? "Guardando..." : "Guardar Producto"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* EDIT DIALOG */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-primary" />
+              EDITAR PRODUCTO
+            </DialogTitle>
+            <DialogDescription>
+              Los cambios se reflejarán en todos los módulos del sistema
+            </DialogDescription>
+          </DialogHeader>
+          <ProductFormFields />
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              <X className="w-4 h-4 mr-2" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleUpdate}
+              disabled={!form.descripcionManguera?.trim() || isSaving}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {isSaving ? "Guardando..." : "Actualizar Producto"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Progress Toast - Compact in Top Right */}
+      {invLogic.importProgress.isActive && (
+        <div className="fixed top-4 right-4 z-[100] animate-in slide-in-from-right">
+          <div className="bg-card p-4 rounded-lg border border-border shadow-lg max-w-sm w-80">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                {invLogic.importProgress.type === "photos" ? (
+                  <Camera className="w-5 h-5 text-primary animate-pulse" />
+                ) : (
+                  <FileSpreadsheet className="w-5 h-5 text-primary animate-pulse" />
                 )}
               </div>
-            )}
-          </DialogContent>
-        </Dialog>
 
-        {/* CREATE DIALOG */}
-        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-          <DialogContent className="max-w-xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Plus className="w-5 h-5 text-primary" />
-                NUEVO PRODUCTO
-              </DialogTitle>
-              <DialogDescription>
-                El producto será guardado y estará disponible en Ventas,
-                Facturas, Inventario y Compras
-              </DialogDescription>
-            </DialogHeader>
-            <ProductFormFields />
-            <div className="flex justify-end gap-2 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={() => setCreateDialogOpen(false)}
-              >
-                <X className="w-4 h-4 mr-2" />
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreate}
-                disabled={!form.descripcionManguera?.trim() || isSaving}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? "Guardando..." : "Guardar Producto"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold mb-1">
+                  {invLogic.importProgress.type === "photos"
+                    ? "Procesando Fotos"
+                    : "Importando Inventario"}
+                </h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {invLogic.importProgress.current} de{" "}
+                  {invLogic.importProgress.total}
+                </p>
 
-        {/* EDIT DIALOG */}
-        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-          <DialogContent className="max-w-xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Edit className="w-5 h-5 text-primary" />
-                EDITAR PRODUCTO
-              </DialogTitle>
-              <DialogDescription>
-                Los cambios se reflejarán en todos los módulos del sistema
-              </DialogDescription>
-            </DialogHeader>
-            <ProductFormFields />
-            <div className="flex justify-end gap-2 pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-              >
-                <X className="w-4 h-4 mr-2" />
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleUpdate}
-                disabled={!form.descripcionManguera?.trim() || isSaving}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {isSaving ? "Guardando..." : "Actualizar Producto"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Progress Toast - Compact in Top Right */}
-        {invLogic.importProgress.isActive && (
-          <div className="fixed top-4 right-4 z-[100] animate-in slide-in-from-right">
-            <div className="bg-card p-4 rounded-lg border border-border shadow-lg max-w-sm w-80">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  {invLogic.importProgress.type === "photos" ? (
-                    <Camera className="w-5 h-5 text-primary animate-pulse" />
-                  ) : (
-                    <FileSpreadsheet className="w-5 h-5 text-primary animate-pulse" />
-                  )}
+                {/* Progress Bar */}
+                <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{
+                      width: `${(invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100}%`,
+                    }}
+                  />
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold mb-1">
-                    {invLogic.importProgress.type === "photos"
-                      ? "Procesando Fotos"
-                      : "Importando Inventario"}
-                  </h4>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {invLogic.importProgress.current} de{" "}
-                    {invLogic.importProgress.total}
-                  </p>
-
-                  {/* Progress Bar */}
-                  <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="h-full bg-primary transition-all duration-300"
-                      style={{
-                        width: `${(invLogic.importProgress.current / (invLogic.importProgress.total || 1)) * 100}%`,
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between mt-1.5 text-xs text-muted-foreground">
-                    <span>
-                      {Math.round(
-                        (invLogic.importProgress.current /
-                          (invLogic.importProgress.total || 1)) *
-                          100,
-                      )}
-                      %
-                    </span>
-                    <span>
-                      Faltan:{" "}
-                      {invLogic.importProgress.total -
-                        invLogic.importProgress.current}
-                    </span>
-                  </div>
+                <div className="flex items-center justify-between mt-1.5 text-xs text-muted-foreground">
+                  <span>
+                    {Math.round(
+                      (invLogic.importProgress.current /
+                        (invLogic.importProgress.total || 1)) *
+                        100,
+                    )}
+                    %
+                  </span>
+                  <span>
+                    Faltan:{" "}
+                    {invLogic.importProgress.total -
+                      invLogic.importProgress.current}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        <style>{`
+      <style>{`
         @keyframes progress-stripe {
           from { background-position: 1rem 0; }
           to { background-position: 0 0; }
         }
       `}</style>
-      </PremiumHUD>
-    </ValeryLayout>
+    </PremiumHUD>
   );
 }

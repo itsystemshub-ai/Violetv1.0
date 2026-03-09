@@ -2,9 +2,6 @@
  * SalesReportsPage - Reportes y Análisis de Ventas (Modular)
  */
 
-import { useState } from "react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { Button } from "@/shared/components/ui/button";
 import {
   Card,
@@ -48,11 +45,9 @@ export const SalesReportsPage = () => {
 
   if (loading || !report) {
     return (
-      <ValeryLayout sidebar={<ValerySidebar />}>
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-        </div>
-      </ValeryLayout>
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
     );
   }
 
@@ -91,7 +86,7 @@ export const SalesReportsPage = () => {
   ];
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
 
       <div className="p-6 space-y-6">
@@ -375,7 +370,7 @@ export const SalesReportsPage = () => {
           ]}
         />
       </div>
-    </ValeryLayout>
+    </>
   );
 };
 

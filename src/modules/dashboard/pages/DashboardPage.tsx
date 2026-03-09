@@ -3,9 +3,6 @@
  * Conecta con useSalesStore, useInventoryStore y localDb
  */
 
-import React, { useEffect, useState, useMemo } from "react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import DashboardKPIs from "../components/organisms/DashboardKPIs";
 import DashboardMainContent from "../components/organisms/DashboardMainContent";
 import DashboardSidebar from "../components/organisms/DashboardSidebar";
@@ -281,92 +278,90 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
-      <PremiumHUD>
-        <div className="p-6">
-          <div className="max-w-[1800px] mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-4xl font-bold text-foreground mb-2">
-                  Dashboard
-                </h1>
-                <p className="text-muted-foreground">
-                  Panel de control con métricas operativas en tiempo real
-                </p>
-              </div>
-
-              {/* Global Date Filter */}
-              <div className="flex items-center gap-3 bg-card p-2 rounded-2xl shadow-sm border border-border/50">
-                <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap px-2">
-                  Periodo:
-                </span>
-                <Select value={dateRange} onValueChange={setDateRange}>
-                  <SelectTrigger className="w-[160px] border-none bg-muted/50 focus:ring-0 font-bold rounded-xl h-10">
-                    <SelectValue placeholder="Seleccionar..." />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem
-                      value="hoy"
-                      className="rounded-lg font-medium cursor-pointer"
-                    >
-                      Hoy
-                    </SelectItem>
-                    <SelectItem
-                      value="esta_semana"
-                      className="rounded-lg font-medium cursor-pointer"
-                    >
-                      Esta Semana
-                    </SelectItem>
-                    <SelectItem
-                      value="este_mes"
-                      className="rounded-lg font-medium cursor-pointer"
-                    >
-                      Este Mes
-                    </SelectItem>
-                    <SelectItem
-                      value="este_ano"
-                      className="rounded-lg font-medium cursor-pointer"
-                    >
-                      Este Año
-                    </SelectItem>
-                    <SelectItem
-                      value="all_time"
-                      className="rounded-lg font-medium cursor-pointer"
-                    >
-                      Histórico (Todo)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+    <PremiumHUD active={true}>
+      <div className="p-6">
+        <div className="max-w-[1800px] mx-auto space-y-6">
+          {/* Header */}
+          <div className="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Panel de control con métricas operativas en tiempo real
+              </p>
             </div>
 
-            {/* KPIs con datos REALES */}
-            <DashboardKPIs data={realData} />
-
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content - gráficos y insights reales */}
-              <DashboardMainContent
-                charts={realCharts}
-                insights={realInsights}
-                suggestedPurchases={suggestedPurchases}
-              />
-
-              {/* Sidebar */}
-              <DashboardSidebar
-                lowStockCount={lowStockCount}
-                weather={{
-                  temp: parseInt(weather.temp) || 24,
-                  condition: weather.condition,
-                  icon: "🌤️",
-                }}
-                pendingOrders={pendingOrders}
-              />
+            {/* Global Date Filter */}
+            <div className="flex items-center gap-3 bg-card p-2 rounded-2xl shadow-sm border border-border/50">
+              <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap px-2">
+                Periodo:
+              </span>
+              <Select value={dateRange} onValueChange={setDateRange}>
+                <SelectTrigger className="w-[160px] border-none bg-muted/50 focus:ring-0 font-bold rounded-xl h-10">
+                  <SelectValue placeholder="Seleccionar..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem
+                    value="hoy"
+                    className="rounded-lg font-medium cursor-pointer"
+                  >
+                    Hoy
+                  </SelectItem>
+                  <SelectItem
+                    value="esta_semana"
+                    className="rounded-lg font-medium cursor-pointer"
+                  >
+                    Esta Semana
+                  </SelectItem>
+                  <SelectItem
+                    value="este_mes"
+                    className="rounded-lg font-medium cursor-pointer"
+                  >
+                    Este Mes
+                  </SelectItem>
+                  <SelectItem
+                    value="este_ano"
+                    className="rounded-lg font-medium cursor-pointer"
+                  >
+                    Este Año
+                  </SelectItem>
+                  <SelectItem
+                    value="all_time"
+                    className="rounded-lg font-medium cursor-pointer"
+                  >
+                    Histórico (Todo)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
+          {/* KPIs con datos REALES */}
+          <DashboardKPIs data={realData} />
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content - gráficos y insights reales */}
+            <DashboardMainContent
+              charts={realCharts}
+              insights={realInsights}
+              suggestedPurchases={suggestedPurchases}
+            />
+
+            {/* Sidebar */}
+            <DashboardSidebar
+              lowStockCount={lowStockCount}
+              weather={{
+                temp: parseInt(weather.temp) || 24,
+                condition: weather.condition,
+                icon: "🌤️",
+              }}
+              pendingOrders={pendingOrders}
+            />
+          </div>
         </div>
-      </PremiumHUD>
-    </ValeryLayout>
+      </div>
+    </PremiumHUD>
   );
 }

@@ -3,8 +3,6 @@ import { Button } from "@/shared/components/ui/button";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/core/shared/utils/utils";
 import { useInventoryLogic } from "@/modules/inventory/hooks/useInventoryLogic";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 
 // Lazy-loaded components
 const InventoryDashboard = lazy(() =>
@@ -42,7 +40,7 @@ export default function InventoryDashboardPage() {
     });
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       {/* Animated Background */}
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-amber-500/10 dark:bg-amber-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
@@ -83,6 +81,6 @@ export default function InventoryDashboardPage() {
           </Button>
         </div>
       </div>
-    </ValeryLayout>
+    </>
   );
 }

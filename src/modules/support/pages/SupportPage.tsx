@@ -48,8 +48,6 @@ import {
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { toast } from "sonner";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { localDb } from "@/core/database/localDb";
 
 // FAQ Data
@@ -239,7 +237,7 @@ export default function SupportPage() {
   };
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="min-h-full relative pb-12 animate-in fade-in duration-700 overflow-hidden">
         {/* Background */}
         <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
@@ -714,6 +712,6 @@ export default function SupportPage() {
           </div>
         </div>
       </div>
-    </ValeryLayout>
+    </>
   );
 }

@@ -54,17 +54,21 @@ import ValerySidebar from "@/components/navigation/ValerySidebar";
 
 // Sub-componente optimizado para la hora para evitar re-renders del layout completo
 const StatusBarClock = memo(() => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString("es-VE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }));
+  const [time, setTime] = useState(
+    new Date().toLocaleTimeString("es-VE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString("es-VE", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }));
+      setTime(
+        new Date().toLocaleTimeString("es-VE", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
     }, 30000); // Actualizar cada 30s es suficiente para HH:mm
     return () => clearInterval(timer);
   }, []);
@@ -125,7 +129,6 @@ export const ValeryLayout: React.FC = memo(() => {
   const { tenant, allTenants, switchTenant } = useTenant();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } =
     useNotifications();
-
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -840,6 +843,6 @@ export const ValeryLayout: React.FC = memo(() => {
       </footer>
     </div>
   );
-};
+});
 
 export default ValeryLayout;

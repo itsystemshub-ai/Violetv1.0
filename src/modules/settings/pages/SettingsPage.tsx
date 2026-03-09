@@ -47,8 +47,6 @@ import {
 } from "@/shared/components/ui/tabs";
 import { USER_ROLES, DEPARTMENTS, Tenant, User } from "@/lib";
 import { NetworkService } from "@/services/LocalNetworkService";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 
 // Lazy-loaded Organisms for Code Splitting
 const SystemConfigPanel = lazy(
@@ -365,7 +363,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="min-h-full relative pb-12 animate-in fade-in duration-1000 overflow-hidden">
         {/* Animated Background */}
         <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
@@ -398,6 +396,6 @@ export default function SettingsPage() {
           </Suspense>
         </div>
       </div>
-    </ValeryLayout>
+    </>
   );
 }

@@ -3,8 +3,6 @@
  */
 
 import { useState } from "react";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -163,7 +161,7 @@ export default function InvoicesPageNew() {
   ];
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
 
       <div className="p-6 space-y-6">
@@ -241,43 +239,120 @@ export default function InvoicesPageNew() {
             {filteredInvoices.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No se encontraron facturas</p>
-                <p className="text-sm text-muted-foreground mt-2">Las facturas se crean automáticamente al aprobar pedidos</p>
+                <p className="text-muted-foreground">
+                  No se encontraron facturas
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Las facturas se crean automáticamente al aprobar pedidos
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50 border-b">
                     <tr>
-                      <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Código</th>
-                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">Tipo</th>
-                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">Cliente</th>
-                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">Fecha</th>
-                      <th className="text-center py-3 px-3 font-semibold text-muted-foreground">Moneda</th>
-                      <th className="text-right py-3 px-3 font-semibold text-muted-foreground">Subtotal</th>
-                      <th className="text-right py-3 px-3 font-semibold text-muted-foreground">Total</th>
-                      <th className="text-center py-3 px-3 font-semibold text-muted-foreground">Estado</th>
-                      <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Acciones</th>
+                      <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                        Código
+                      </th>
+                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">
+                        Tipo
+                      </th>
+                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">
+                        Cliente
+                      </th>
+                      <th className="text-left py-3 px-3 font-semibold text-muted-foreground">
+                        Fecha
+                      </th>
+                      <th className="text-center py-3 px-3 font-semibold text-muted-foreground">
+                        Moneda
+                      </th>
+                      <th className="text-right py-3 px-3 font-semibold text-muted-foreground">
+                        Subtotal
+                      </th>
+                      <th className="text-right py-3 px-3 font-semibold text-muted-foreground">
+                        Total
+                      </th>
+                      <th className="text-center py-3 px-3 font-semibold text-muted-foreground">
+                        Estado
+                      </th>
+                      <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {filteredInvoices.map((invoice) => (
-                      <tr key={invoice.id} className="hover:bg-accent/30 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-xs whitespace-nowrap">{invoice.code}</td>
-                        <td className="py-3 px-3"><Badge variant="outline" className="text-xs">{invoice.recipientType === "client" ? "Cliente" : "Vendedor"}</Badge></td>
-                        <td className="py-3 px-3 max-w-[160px] break-words">{invoice.recipientName}</td>
-                        <td className="py-3 px-3 text-muted-foreground whitespace-nowrap">{new Date(invoice.createdAt).toLocaleDateString()}</td>
-                        <td className="py-3 px-3 text-center"><Badge variant="outline">{invoice.currency}</Badge></td>
-                        <td className="py-3 px-3 text-right whitespace-nowrap">{invoice.currency === "USD" ? "$" : "Bs."}{invoice.subtotal.toLocaleString()}</td>
-                        <td className="py-3 px-3 text-right font-bold whitespace-nowrap">{invoice.currency === "USD" ? "$" : "Bs."}{invoice.total.toLocaleString()}</td>
-                        <td className="py-3 px-3 text-center">{getStatusBadge(invoice.status)}</td>
+                      <tr
+                        key={invoice.id}
+                        className="hover:bg-accent/30 transition-colors"
+                      >
+                        <td className="py-3 px-4 font-mono font-bold text-xs whitespace-nowrap">
+                          {invoice.code}
+                        </td>
+                        <td className="py-3 px-3">
+                          <Badge variant="outline" className="text-xs">
+                            {invoice.recipientType === "client"
+                              ? "Cliente"
+                              : "Vendedor"}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-3 max-w-[160px] break-words">
+                          {invoice.recipientName}
+                        </td>
+                        <td className="py-3 px-3 text-muted-foreground whitespace-nowrap">
+                          {new Date(invoice.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          <Badge variant="outline">{invoice.currency}</Badge>
+                        </td>
+                        <td className="py-3 px-3 text-right whitespace-nowrap">
+                          {invoice.currency === "USD" ? "$" : "Bs."}
+                          {invoice.subtotal.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-3 text-right font-bold whitespace-nowrap">
+                          {invoice.currency === "USD" ? "$" : "Bs."}
+                          {invoice.total.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          {getStatusBadge(invoice.status)}
+                        </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-center gap-0.5">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setSelectedInvoiceId(invoice.id); setViewDialogOpen(true); }} title="Ver"><Eye className="w-3.5 h-3.5" /></Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => {
+                                setSelectedInvoiceId(invoice.id);
+                                setViewDialogOpen(true);
+                              }}
+                              title="Ver"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </Button>
                             {invoice.status === "pending" && (
                               <>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleOpenEdit(invoice)} title="Editar"><Edit className="w-3.5 h-3.5" /></Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setSelectedInvoiceId(invoice.id); setApproveDialogOpen(true); }} title="Aprobar"><CheckCircle className="w-3.5 h-3.5 text-green-600" /></Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleOpenEdit(invoice)}
+                                  title="Editar"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => {
+                                    setSelectedInvoiceId(invoice.id);
+                                    setApproveDialogOpen(true);
+                                  }}
+                                  title="Aprobar"
+                                >
+                                  <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                                </Button>
                               </>
                             )}
                           </div>
@@ -388,6 +463,6 @@ export default function InvoicesPageNew() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </ValeryLayout>
+    </>
   );
 }

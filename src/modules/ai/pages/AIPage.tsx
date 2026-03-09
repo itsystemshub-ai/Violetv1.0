@@ -36,15 +36,13 @@ import { AIConfiguration } from "../components/AIConfiguration";
 import { AITools } from "../components/AITools";
 import { AIStats } from "../components/AIStats";
 import { useAI } from "../hooks/useAI";
-import ValeryLayout from "@/layouts/ValeryLayout";
-import ValerySidebar from "@/components/navigation/ValerySidebar";
 
 export const AIPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("chat");
   const { analytics, performance, exportConversations } = useAI();
 
   return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
+    <>
       <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/20 rounded-full blur-[120px] animate-pulse -z-10" />
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-magenta-500/10 dark:bg-magenta-500/20 rounded-full blur-[120px] animate-pulse delay-1000 -z-10" />
@@ -277,7 +275,7 @@ export const AIPage: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </ValeryLayout>
+    </>
   );
 };
 
