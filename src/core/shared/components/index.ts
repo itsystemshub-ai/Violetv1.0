@@ -1,2 +1,2 @@
 export * from './OnlineStatusProvider';
-export * from './RealtimeBootstrap';
+export * from './RealtimeInitializer';

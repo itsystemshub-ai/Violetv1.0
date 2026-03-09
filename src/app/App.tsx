@@ -12,7 +12,11 @@ import { MaintenanceResponder } from "@/components/shared/MaintenanceResponder";
 import { initializeRoutePreloading } from "@/core/performance/RoutePreloader";
 
 // Lazy load heavy components that aren't needed immediately
-const RealtimeBootstrap = lazy(() => import("@/core/shared/components/RealtimeBootstrap").then(m => ({ default: m.RealtimeBootstrap })));
+const RealtimeInitializer = lazy(() =>
+  import("@/core/shared/components/RealtimeInitializer").then((m) => ({
+    default: m.RealtimeInitializer,
+  })),
+);
 
 /**
  * App Component
@@ -25,8 +29,8 @@ const RealtimeBootstrap = lazy(() => import("@/core/shared/components/RealtimeBo
  * 5. AppRouter - Configuración de rutas
  * 6. NotificationManager - Sistema de notificaciones
  * 7. OfflineBanner - Banner de estado offline
- * 8. RealtimeBootstrap - Inicialización de realtime (lazy loaded)
- * 
+ * 8. RealtimeInitializer - Inicialización de realtime (lazy loaded)
+ *
  * Optimizaciones:
  * - Lazy loading de componentes pesados
  * - Precarga de rutas críticas en idle time
@@ -47,7 +51,7 @@ const App: React.FC = () => {
             <NotificationManager />
             <OfflineBanner />
             <Suspense fallback={null}>
-              <RealtimeBootstrap />
+              <RealtimeInitializer />
             </Suspense>
             <AIFloatingButton />
             <IdleTimer />

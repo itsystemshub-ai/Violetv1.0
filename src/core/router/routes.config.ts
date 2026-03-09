@@ -78,24 +78,11 @@ const ProductsPage = lazy(
 const CategoriesPage = lazy(
   () => import("@/modules/inventory/pages/CategoriesPage"),
 );
-const AdjustmentsPage = lazy(
-  () => import("@/modules/inventory/pages/AdjustmentsPage"),
-);
-const TransfersPage = lazy(
-  () => import("@/modules/inventory/pages/TransfersPage"),
-);
-const PriceListPage = lazy(
-  () => import("@/modules/inventory/pages/PriceListPage"),
-);
-const KardexPage = lazy(
-  () => import("@/modules/inventory/pages/KardexPage"),
-);
-const InventoryStatsPage = lazy(
-  () => import("@/modules/inventory/pages/InventoryStatsPage"),
-);
-const InventoryAnalyticsPage = lazy(
-  () => import("@/modules/inventory/pages/InventoryAnalyticsPage"),
-);
+const MovementsControlPage = lazy(() => import("@/modules/inventory/pages/MovementsControlPage"));
+const PriceListPage = lazy(() => import("@/modules/inventory/pages/PriceListPage"));
+const TransfersPage = lazy(() => import("@/modules/inventory/pages/TransfersPage"));
+const InventoryStatsPage = lazy(() => import("@/modules/inventory/pages/InventoryStatsPage"));
+const InventoryAnalyticsPage = lazy(() => import("@/modules/inventory/pages/InventoryAnalyticsPage"));
 
 
 
@@ -405,19 +392,17 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
 
   {
     path: "/inventory/kardex",
-    component: KardexPage,
+    component: MovementsControlPage,
     protected: true,
     permission: "view:inventory",
-    title: "Kardex",
-    description: "Libro mayor de inventario (Entradas y Salidas)",
+    title: "Kardex y Ajustes",
   },
   {
     path: "/inventory/adjustments",
-    component: AdjustmentsPage,
+    component: MovementsControlPage,
     protected: true,
     permission: "view:inventory",
-    title: "Ajustes",
-    description: "Ajustes de inventario",
+    title: "Ajustes (Unificados)",
   },
   {
     path: "/inventory/transfers",

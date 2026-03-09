@@ -63,54 +63,6 @@ const PIPELINE_STAGES = [
   { id: "closed_lost", name: "Perdido", color: "bg-red-500", probability: 0 },
 ];
 
-const MOCK_DEALS: Deal[] = [
-  {
-    id: "1",
-    title: "Implementación ERP Completo",
-    company: "Empresa ABC",
-    contact: "Juan Pérez",
-    value: 250000,
-    probability: 75,
-    stage: "negotiation",
-    expectedCloseDate: "2024-03-15",
-    assignedTo: "Carlos Vendedor",
-    lastActivity: "Llamada hace 2 horas",
-    tags: ["enterprise", "hot"],
-    phone: "+58 412-1234567",
-    email: "juan@empresa.com",
-  },
-  {
-    id: "2",
-    title: "Módulo de Inventario",
-    company: "Negocio XYZ",
-    contact: "María González",
-    value: 85000,
-    probability: 50,
-    stage: "proposal",
-    expectedCloseDate: "2024-03-20",
-    assignedTo: "Ana Vendedora",
-    lastActivity: "Email enviado ayer",
-    tags: ["mid-market"],
-    phone: "+58 424-7654321",
-    email: "maria@negocio.com",
-  },
-  {
-    id: "3",
-    title: "Sistema POS",
-    company: "Tienda 123",
-    contact: "Carlos Rodríguez",
-    value: 45000,
-    probability: 25,
-    stage: "qualified",
-    expectedCloseDate: "2024-04-01",
-    assignedTo: "Carlos Vendedor",
-    lastActivity: "Reunión programada",
-    tags: ["smb", "retail"],
-    phone: "+58 414-9876543",
-    email: "carlos@tienda.com",
-  },
-];
-
 export default function PipelinePanel() {
   const { tenant } = useSystemConfig();
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -202,8 +154,10 @@ export default function PipelinePanel() {
       <div className="flex justify-between items-center">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto">
           <Card className="px-4 py-2">
-            <div className="text-sm text-muted-foreground">Valor Total</div>
-            <div className="text-xl font-bold">
+            <div className="text-subtitle text-muted-foreground">
+              Valor Total
+            </div>
+            <div className="text-numeric text-xl">
               ${totalPipelineValue.toLocaleString()}
             </div>
           </Card>
@@ -227,12 +181,12 @@ export default function PipelinePanel() {
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${stage.color}`} />
-                  <h3 className="font-semibold text-sm">{stage.name}</h3>
+                  <h3 className="text-card-title text-sm">{stage.name}</h3>
                   <Badge variant="secondary" className="text-[10px]">
                     {stageDeals.length}
                   </Badge>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-numeric text-xs text-muted-foreground">
                   ${stageValue.toLocaleString()}
                 </span>
               </div>
@@ -245,20 +199,23 @@ export default function PipelinePanel() {
                   >
                     <CardContent className="p-3 space-y-3">
                       <div>
-                        <h4 className="font-bold text-sm leading-tight">
+                        <h4 className="text-subtitle leading-tight">
                           {deal.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-body text-xs text-muted-foreground mt-1">
                           {deal.company}
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1 text-xs font-bold">
+                        <div className="flex items-center gap-1 text-numeric text-xs">
                           <DollarSign className="w-3 h-3 text-green-600" />$
                           {deal.value.toLocaleString()}
                         </div>
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge
+                          variant="outline"
+                          className="text-numeric text-[10px]"
+                        >
                           {deal.probability}%
                         </Badge>
                       </div>

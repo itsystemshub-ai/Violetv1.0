@@ -2,7 +2,10 @@
  * useSalesReports - Hook para reportes y análisis de ventas (Modular)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
+import { Invoice } from '@/lib/index';
 
 export interface SalesData {
   date: string;
@@ -45,146 +48,126 @@ export interface SalesReport {
 }
 
 export const useSalesReports = () => {
+  const { tenant } = useSystemConfig();
   const [report, setReport] = useState<SalesReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [periodFilter, setPeriodFilter] = useState<string>('month');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  useEffect(() => {
-    const mockReport: SalesReport = {
-      period: 'Marzo 2026',
-      totalRevenue: 1250000,
-      totalOrders: 156,
-      averageOrderValue: 8013,
-      totalProfit: 375000,
-      profitMargin: 30,
-      topProducts: [
-        {
-          productId: 'PROD-001',
-          productName: 'Laptop Dell Inspiron 15',
-          category: 'Computadoras',
-          unitsSold: 45,
-          revenue: 540000,
-          profit: 135000,
-          profitMargin: 25,
-        },
-        {
-          productId: 'PROD-003',
-          productName: 'Monitor Samsung 27" 4K',
-          category: 'Monitores',
-          unitsSold: 68,
-          revenue: 442000,
-          profit: 132600,
-          profitMargin: 30,
-        },
-        {
-          productId: 'PROD-005',
-          productName: 'Impresora HP LaserJet',
-          category: 'Impresoras',
-          unitsSold: 32,
-          revenue: 134400,
-          profit: 40320,
-          profitMargin: 30,
-        },
-        {
-          productId: 'PROD-002',
-          productName: 'Mouse Logitech MX Master 3',
-          category: 'Accesorios',
-          unitsSold: 120,
-          revenue: 120000,
-          profit: 36000,
-          profitMargin: 30,
-        },
-        {
-          productId: 'PROD-004',
-          productName: 'Teclado Mecánico RGB',
-          category: 'Accesorios',
-          unitsSold: 85,
-          revenue: 153000,
-          profit: 45900,
-          profitMargin: 30,
-        },
-      ],
-      topCustomers: [
-        {
-          customerId: 'CLI-001',
-          customerName: 'Empresa ABC S.A.',
-          totalOrders: 24,
-          totalRevenue: 285000,
-          averageOrderValue: 11875,
-          lastPurchase: '2026-03-05',
-        },
-        {
-          customerId: 'CLI-002',
-          customerName: 'Tech Solutions Ltd.',
-          totalOrders: 18,
-          totalRevenue: 198000,
-          averageOrderValue: 11000,
-          lastPurchase: '2026-03-04',
-        },
-        {
-          customerId: 'CLI-003',
-          customerName: 'Distribuidora XYZ',
-          totalOrders: 15,
-          totalRevenue: 165000,
-          averageOrderValue: 11000,
-          lastPurchase: '2026-03-03',
-        },
-        {
-          customerId: 'CLI-004',
-          customerName: 'Comercial 123',
-          totalOrders: 12,
-          totalRevenue: 132000,
-          averageOrderValue: 11000,
-          lastPurchase: '2026-03-02',
-        },
-        {
-          customerId: 'CLI-005',
-          customerName: 'Mayorista Global',
-          totalOrders: 10,
-          totalRevenue: 110000,
-          averageOrderValue: 11000,
-          lastPurchase: '2026-03-01',
-        },
-      ],
-      salesByDay: [
-        { date: '2026-03-01', sales: 12, orders: 12, revenue: 95000 },
-        { date: '2026-03-02', sales: 15, orders: 15, revenue: 120000 },
-        { date: '2026-03-03', sales: 18, orders: 18, revenue: 145000 },
-        { date: '2026-03-04', sales: 22, orders: 22, revenue: 175000 },
-        { date: '2026-03-05', sales: 25, orders: 25, revenue: 200000 },
-        { date: '2026-03-06', sales: 28, orders: 28, revenue: 225000 },
-      ],
-      salesByCategory: [
-        { category: 'Computadoras', revenue: 540000, percentage: 43.2 },
-        { category: 'Monitores', revenue: 442000, percentage: 35.4 },
-        { category: 'Accesorios', revenue: 273000, percentage: 21.8 },
-        { category: 'Impresoras', revenue: 134400, percentage: 10.8 },
-      ],
-      salesByPaymentMethod: [
-        { method: 'Tarjeta de Crédito', amount: 625000, percentage: 50 },
-        { method: 'Transferencia', amount: 437500, percentage: 35 },
-        { method: 'Efectivo', amount: 187500, percentage: 15 },
-      ],
-    };
-
-    setTimeout(() => {
-      setReport(mockReport);
+  const fetchSalesReport = useCallback(async () => {
+    if (!tenant?.id || tenant.id === 'none') {
       setLoading(false);
-    }, 500);
-  }, [periodFilter, categoryFilter]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const invoices = (await localDb.invoices
+        .where('tenant_id')
+        .equals(tenant.id)
+        .toArray()) as Invoice[];
+
+      const validInvoices = invoices.filter(i => i.type === 'venta' && i.status !== 'anulada');
+
+      let totalRevenue = 0;
+      let totalOrders = validInvoices.length;
+      let topProductsMap = new Map<string, ProductSales>();
+      let topCustomersMap = new Map<string, CustomerSales>();
+      let salesByDayMap = new Map<string, SalesData>();
+
+      validInvoices.forEach(inv => {
+        totalRevenue += inv.total;
+        
+        // Sales by day
+        const day = inv.date;
+        const currentDay = salesByDayMap.get(day) || { date: day, sales: 0, orders: 0, revenue: 0 };
+        currentDay.orders += 1;
+        currentDay.sales += 1;
+        currentDay.revenue += inv.total;
+        salesByDayMap.set(day, currentDay);
+
+        // Top Customers
+        if (inv.customerId) {
+          const cust = topCustomersMap.get(inv.customerId) || {
+             customerId: inv.customerId,
+             customerName: inv.customerName,
+             totalOrders: 0,
+             totalRevenue: 0,
+             averageOrderValue: 0,
+             lastPurchase: inv.date
+          };
+          cust.totalOrders += 1;
+          cust.totalRevenue += inv.total;
+          if (new Date(inv.date) > new Date(cust.lastPurchase)) {
+            cust.lastPurchase = inv.date;
+          }
+          topCustomersMap.set(inv.customerId, cust);
+        }
+
+        // Top Products
+        inv.items.forEach(item => {
+          const prod = topProductsMap.get(item.productId) || {
+            productId: item.productId,
+            productName: item.name,
+            category: 'General',
+            unitsSold: 0,
+            revenue: 0,
+            profit: 0,
+            profitMargin: 0
+          };
+          prod.unitsSold += item.quantity;
+          prod.revenue += item.total;
+          prod.profit += item.total * 0.3; // estimated 30% profit
+          topProductsMap.set(item.productId, prod);
+        });
+      });
+
+      // Calculate averages and margins
+      for (const [_, cust] of topCustomersMap) {
+        cust.averageOrderValue = cust.totalOrders > 0 ? cust.totalRevenue / cust.totalOrders : 0;
+      }
+      for (const [_, prod] of topProductsMap) {
+        prod.profitMargin = prod.revenue > 0 ? (prod.profit / prod.revenue) * 100 : 0;
+      }
+
+      const topProducts = Array.from(topProductsMap.values()).sort((a,b) => b.revenue - a.revenue);
+      const topCustomers = Array.from(topCustomersMap.values()).sort((a,b) => b.totalRevenue - a.totalRevenue);
+      const salesByDay = Array.from(salesByDayMap.values()).sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      const dynamicReport: SalesReport = {
+        period: periodFilter,
+        totalRevenue,
+        totalOrders,
+        averageOrderValue: totalOrders > 0 ? totalRevenue / totalOrders : 0,
+        totalProfit: totalRevenue * 0.3, // Example estimated profit
+        profitMargin: 30,
+        topProducts,
+        topCustomers,
+        salesByDay,
+        salesByCategory: [],
+        salesByPaymentMethod: []
+      };
+
+      setReport(dynamicReport);
+    } catch (error) {
+      console.error('[useSalesReports] Error fetching sales data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant?.id, periodFilter]);
+
+  useEffect(() => {
+    fetchSalesReport();
+  }, [fetchSalesReport]);
 
   const exportReport = (format: 'pdf' | 'excel' | 'csv') => {
     console.log(`Exporting report as ${format}`);
-    // Implementar lógica de exportación
   };
 
   const compareWithPreviousPeriod = () => {
-    // Implementar comparación con período anterior
     return {
-      revenueGrowth: 15.5,
-      ordersGrowth: 12.3,
-      profitGrowth: 18.2,
+      revenueGrowth: 0,
+      ordersGrowth: 0,
+      profitGrowth: 0,
     };
   };
 

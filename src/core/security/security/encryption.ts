@@ -5,8 +5,16 @@
 
 import CryptoJS from 'crypto-js';
 
-// IMPORTANTE: En producción, esta clave debe venir de variables de entorno
-const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY || 'violet-erp-default-key-change-in-production';
+// IMPORTANTE: En producción, esta clave DEBE venir de variables de entorno
+// Si no existe, se generará una estática in-memory para desarrollo, pero mostrará un warning.
+let runtimeKey = import.meta.env.VITE_ENCRYPTION_KEY;
+
+if (!runtimeKey) {
+  console.warn('⚠️ ADVERTENCIA: VITE_ENCRYPTION_KEY no está definida en el entorno. Se utilizará una clave temporal estática, lo cual es inseguro para entornos de producción.');
+  runtimeKey = 'violet-erp-fallback-key-do-not-use-in-production-8f92a1';
+}
+
+const ENCRYPTION_KEY = runtimeKey;
 
 /**
  * Encripta datos usando AES-256

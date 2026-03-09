@@ -115,13 +115,13 @@ function getActiveSection(pathname: string): string {
   if (pathname.includes("/settings/ai")) return "ai";
   if (pathname.includes("/settings/connectivity")) return "connectivity";
   if (pathname.includes("/settings/monitor")) return "monitor";
-  
+
   // Redirecciones de rutas antiguas eliminadas
   if (pathname.includes("/settings/activity")) return "monitor"; // Redirigir a monitor
   if (pathname.includes("/settings/audit")) return "security"; // Redirigir a seguridad
   if (pathname.includes("/settings/password-requests")) return "security"; // Redirigir a seguridad
   if (pathname.includes("/settings/automation")) return "ai"; // Redirigir a IA
-  
+
   return "company"; // default for /settings
 }
 
@@ -381,10 +381,10 @@ export default function SettingsPage() {
                   <SettingsIcon className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-black tracking-tighter text-foreground">
+                  <h1 className="text-page-title text-foreground">
                     Configuración
                   </h1>
-                  <p className="text-sm text-muted-foreground font-medium">
+                  <p className="text-subtitle text-muted-foreground">
                     Administración del sistema y preferencias
                   </p>
                 </div>

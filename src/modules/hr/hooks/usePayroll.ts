@@ -2,7 +2,9 @@
  * usePayroll - Hook para gestión de nómina
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
 
 export interface PayrollItem {
   employeeId: string;
@@ -31,211 +33,38 @@ export interface Payroll {
   approvedBy?: string;
   approvedDate?: string;
   notes?: string;
+  tenant_id?: string;
 }
 
 export const usePayroll = () => {
+  const { tenant } = useSystemConfig();
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
-    const mockPayrolls: Payroll[] = [
-      {
-        id: 'PAY-001',
-        period: 'Marzo 2026 - Quincena 1',
-        startDate: '2026-03-01',
-        endDate: '2026-03-15',
-        paymentDate: '2026-03-16',
-        items: [
-          {
-            employeeId: 'EMP-001',
-            employeeName: 'Juan Pérez García',
-            position: 'Gerente de Ventas',
-            baseSalary: 17500,
-            bonuses: 2000,
-            deductions: 3500,
-            netSalary: 16000,
-          },
-          {
-            employeeId: 'EMP-002',
-            employeeName: 'María González López',
-            position: 'Contador',
-            baseSalary: 14000,
-            bonuses: 1000,
-            deductions: 2800,
-            netSalary: 12200,
-          },
-          {
-            employeeId: 'EMP-003',
-            employeeName: 'Carlos Rodríguez Sánchez',
-            position: 'Desarrollador Senior',
-            baseSalary: 16000,
-            bonuses: 1500,
-            deductions: 3200,
-            netSalary: 14300,
-          },
-        ],
-        totalEmployees: 3,
-        totalBaseSalary: 47500,
-        totalBonuses: 4500,
-        totalDeductions: 9500,
-        totalNetSalary: 42500,
-        status: 'paid',
-        createdBy: 'Patricia Sánchez',
-        approvedBy: 'Director General',
-        approvedDate: '2026-03-15',
-        notes: 'Nómina quincenal pagada sin incidencias',
-      },
-      {
-        id: 'PAY-002',
-        period: 'Febrero 2026 - Quincena 2',
-        startDate: '2026-02-16',
-        endDate: '2026-02-28',
-        paymentDate: '2026-03-01',
-        items: [
-          {
-            employeeId: 'EMP-001',
-            employeeName: 'Juan Pérez García',
-            position: 'Gerente de Ventas',
-            baseSalary: 17500,
-            bonuses: 3000,
-            deductions: 3500,
-            netSalary: 17000,
-          },
-          {
-            employeeId: 'EMP-002',
-            employeeName: 'María González López',
-            position: 'Contador',
-            baseSalary: 14000,
-            bonuses: 500,
-            deductions: 2800,
-            netSalary: 11700,
-          },
-        ],
-        totalEmployees: 2,
-        totalBaseSalary: 31500,
-        totalBonuses: 3500,
-        totalDeductions: 6300,
-        totalNetSalary: 28700,
-        status: 'paid',
-        createdBy: 'Patricia Sánchez',
-        approvedBy: 'Director General',
-        approvedDate: '2026-02-28',
-      },
-      {
-        id: 'PAY-003',
-        period: 'Marzo 2026 - Quincena 2',
-        startDate: '2026-03-16',
-        endDate: '2026-03-31',
-        paymentDate: '2026-04-01',
-        items: [
-          {
-            employeeId: 'EMP-001',
-            employeeName: 'Juan Pérez García',
-            position: 'Gerente de Ventas',
-            baseSalary: 17500,
-            bonuses: 1500,
-            deductions: 3500,
-            netSalary: 15500,
-          },
-          {
-            employeeId: 'EMP-002',
-            employeeName: 'María González López',
-            position: 'Contador',
-            baseSalary: 14000,
-            bonuses: 800,
-            deductions: 2800,
-            netSalary: 12000,
-          },
-          {
-            employeeId: 'EMP-003',
-            employeeName: 'Carlos Rodríguez Sánchez',
-            position: 'Desarrollador Senior',
-            baseSalary: 16000,
-            bonuses: 2000,
-            deductions: 3200,
-            netSalary: 14800,
-          },
-          {
-            employeeId: 'EMP-005',
-            employeeName: 'Luis Hernández Torres',
-            position: 'Supervisor de Almacén',
-            baseSalary: 11000,
-            bonuses: 500,
-            deductions: 2000,
-            netSalary: 9500,
-          },
-        ],
-        totalEmployees: 4,
-        totalBaseSalary: 58500,
-        totalBonuses: 4800,
-        totalDeductions: 11500,
-        totalNetSalary: 51800,
-        status: 'approved',
-        createdBy: 'Patricia Sánchez',
-        approvedBy: 'Director General',
-        approvedDate: '2026-03-30',
-        notes: 'Pendiente de pago',
-      },
-      {
-        id: 'PAY-004',
-        period: 'Abril 2026 - Quincena 1',
-        startDate: '2026-04-01',
-        endDate: '2026-04-15',
-        paymentDate: '2026-04-16',
-        items: [
-          {
-            employeeId: 'EMP-001',
-            employeeName: 'Juan Pérez García',
-            position: 'Gerente de Ventas',
-            baseSalary: 17500,
-            bonuses: 0,
-            deductions: 3500,
-            netSalary: 14000,
-          },
-          {
-            employeeId: 'EMP-002',
-            employeeName: 'María González López',
-            position: 'Contador',
-            baseSalary: 14000,
-            bonuses: 0,
-            deductions: 2800,
-            netSalary: 11200,
-          },
-        ],
-        totalEmployees: 2,
-        totalBaseSalary: 31500,
-        totalBonuses: 0,
-        totalDeductions: 6300,
-        totalNetSalary: 25200,
-        status: 'calculated',
-        createdBy: 'Patricia Sánchez',
-        notes: 'Pendiente de aprobación',
-      },
-      {
-        id: 'PAY-005',
-        period: 'Abril 2026 - Quincena 2',
-        startDate: '2026-04-16',
-        endDate: '2026-04-30',
-        paymentDate: '2026-05-01',
-        items: [],
-        totalEmployees: 0,
-        totalBaseSalary: 0,
-        totalBonuses: 0,
-        totalDeductions: 0,
-        totalNetSalary: 0,
-        status: 'draft',
-        createdBy: 'Patricia Sánchez',
-        notes: 'Borrador en preparación',
-      },
-    ];
-
-    setTimeout(() => {
-      setPayrolls(mockPayrolls);
+  const fetchPayrolls = useCallback(async () => {
+    if (!tenant?.id || tenant.id === 'none') {
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+    setLoading(true);
+    try {
+      const dbPayrolls = await localDb.payroll_records
+        .where('tenant_id')
+        .equals(tenant.id)
+        .toArray();
+      setPayrolls(dbPayrolls as Payroll[]);
+    } catch (error) {
+      console.error('[usePayroll] Error fetching payrolls:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant?.id]);
+
+  useEffect(() => {
+    fetchPayrolls();
+  }, [fetchPayrolls]);
 
   const filteredPayrolls = payrolls.filter((payroll) => {
     const matchesSearch = 
@@ -261,31 +90,51 @@ export const usePayroll = () => {
                payDate.getFullYear() === now.getFullYear();
       })
       .reduce((sum, p) => sum + p.totalNetSalary, 0),
-    avgPayroll: Math.round(
-      payrolls.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.totalNetSalary, 0) / 
-      payrolls.filter(p => p.status === 'paid').length
-    ),
+    avgPayroll: payrolls.filter(p => p.status === 'paid').length > 0
+      ? Math.round(
+          payrolls.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.totalNetSalary, 0) / 
+          payrolls.filter(p => p.status === 'paid').length
+        )
+      : 0,
     totalEmployeesPaid: payrolls
       .filter(p => p.status === 'paid')
       .reduce((sum, p) => sum + p.totalEmployees, 0),
   };
 
-  const createPayroll = (payroll: Omit<Payroll, 'id'>) => {
+  const createPayroll = async (payroll: Omit<Payroll, 'id'>) => {
+    if (!tenant?.id || tenant.id === 'none') return;
     const newPayroll: Payroll = {
       ...payroll,
-      id: `PAY-${String(payrolls.length + 1).padStart(3, '0')}`,
+      id: `PAY-${Date.now()}`,
     };
-    setPayrolls([newPayroll, ...payrolls]);
+    try {
+      await localDb.payroll_records.add({ ...newPayroll, tenant_id: tenant.id });
+      setPayrolls(prev => [newPayroll, ...prev]);
+    } catch (error) {
+      console.error('[usePayroll] Error creating:', error);
+    }
   };
 
-  const updatePayroll = (id: string, updates: Partial<Payroll>) => {
-    setPayrolls(payrolls.map(p => 
-      p.id === id ? { ...p, ...updates } : p
-    ));
+  const updatePayroll = async (id: string, updates: Partial<Payroll>) => {
+    if (!tenant?.id || tenant.id === 'none') return;
+    try {
+      await localDb.payroll_records.update(id, updates);
+      setPayrolls(prev => prev.map(p => 
+        p.id === id ? { ...p, ...updates } : p
+      ));
+    } catch (error) {
+      console.error('[usePayroll] Error updating:', error);
+    }
   };
 
-  const deletePayroll = (id: string) => {
-    setPayrolls(payrolls.filter(p => p.id !== id));
+  const deletePayroll = async (id: string) => {
+    if (!tenant?.id || tenant.id === 'none') return;
+    try {
+      await localDb.payroll_records.delete(id);
+      setPayrolls(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('[usePayroll] Error deleting:', error);
+    }
   };
 
   const calculatePayroll = (id: string) => {

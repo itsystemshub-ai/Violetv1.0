@@ -273,11 +273,11 @@ export default function RolesPermissionsPage({
         {standalone && (
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-3">
+              <h1 className="text-page-title flex items-center gap-3">
                 <Shield className="w-8 h-8 text-primary" />
                 Roles y Permisos
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className="text-subtitle text-muted-foreground mt-1">
                 Gestiona los privilegios de acceso al sistema
               </p>
             </div>
@@ -324,7 +324,7 @@ export default function RolesPermissionsPage({
                         {role.userCount} usuarios
                       </Badge>
                     </div>
-                    <CardTitle className="mt-4 text-xl font-bold tracking-tight">
+                    <CardTitle className="mt-4 text-card-title">
                       {role.name}
                     </CardTitle>
                   </CardHeader>
@@ -360,7 +360,7 @@ export default function RolesPermissionsPage({
           <TabsContent value="matrix" className="space-y-4">
             <Card className="border-border/50 bg-card/50 backdrop-blur-xl overflow-hidden">
               <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="text-xl flex items-center gap-2">
+                <CardTitle className="text-card-title flex items-center gap-2">
                   <Shield className="w-5 h-5 text-primary" />
                   Matriz de Control de Acceso (RBAC)
                 </CardTitle>
@@ -599,7 +599,7 @@ export default function RolesPermissionsPage({
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <DialogTitle className="text-2xl font-black tracking-tighter">
+                  <DialogTitle className="text-page-title">
                     {selectedRole?.name}
                   </DialogTitle>
                   <DialogDescription>

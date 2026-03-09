@@ -36,9 +36,9 @@ export class VioletLocalDb extends Dexie {
   password_reset_requests!: Table<any>;
   automation_queue!: Table<any>;
   crm_chats!: Table<any>;
-  crm_messages!: Table<any>;
   reported_payments!: Table<any>;
   orders!: Table<any>;
+  inventory_adjustments!: Table<any>;
 
   constructor() {
     super('VioletERP_LocalDB');
@@ -419,6 +419,43 @@ export class VioletLocalDb extends Dexie {
         suppliers: 'id, rif, name, tenant_id, is_dirty, deleted_at',
         notifications: 'id, type, timestamp, userId, tenantId, read',
         inventory_movements: 'id, product_id, tenant_id, type, reference_id, created_at',
+        accounts_receivable: 'id, invoice_id, customer_rif, tenant_id, status, due_date, created_at',
+        payments: 'id, receivable_id, tenant_id, payment_method, created_at',
+        cash_register: 'id, tenant_id, type, reference_id, created_at',
+        libro_ventas: 'id, tenant_id, numero_factura, fecha_factura, periodo_fiscal, rif_cliente, created_at',
+        exchange_differences: 'id, invoice_id, payment_id, tenant_id, type, created_at, is_dirty',
+        password_reset_requests: 'id, user_id, username, status, tenant_id, created_at',
+        automation_queue: '++id, status, timestamp',
+        crm_chats: 'id, customer_id, tenant_id, status',
+        crm_messages: 'id, chat_id, sender, tenant_id',
+        reported_payments: 'id, invoice_number, tenant_id, status',
+        orders: 'id, client, clientId, date, status, tenant_id, created_at, updated_at'
+      });
+
+      // v18: Índices Compuestos para Optimización de Consultas Grandes
+      this.version(18).stores({
+        products: 'id, name, category, tenant_id, updated_at, is_dirty, last_sync, deleted_at, version, cauplas',
+        invoices: 'id, number, customerName, date, tenant_id, is_dirty, last_sync, type, deleted_at, payment_type, payment_status',
+        tenants: 'id, name, slug, is_dirty, deleted_at',
+        profiles: 'id, username, email, rif, tenant_id, is_dirty',
+        employees: 'id, dni, rif, tenant_id, status, is_dirty, deleted_at',
+        financial_accounts: 'id, code, tenant_id, is_dirty, deleted_at',
+        financial_transactions: 'id, account_id, tenant_id, created_at, is_dirty, deleted_at',
+        payroll_records: 'id, employee_id, tenant_id, period_date, is_dirty, deleted_at',
+        requisitions: 'id, tenant_id, status, created_at, is_dirty, deleted_at',
+        sys_config: 'id, key, tenant_id, is_dirty',
+        audit_logs: 'id, table_name, record_id, changed_by, created_at',
+        sync_logs: 'id, table_name, action, sync_status, created_at',
+        sellers: 'id, name, tenant_id, is_dirty, deleted_at',
+        salary_history: 'id, employee_id, tenant_id, is_dirty',
+        prestaciones_acumuladas: 'id, employee_id, tenant_id, is_dirty',
+        igtf_records: 'id, invoice_id, tenant_id, created_at, is_dirty',
+        compras_maestro: 'id, num_factura, proveedor_id, tenant_id, is_dirty, deleted_at',
+        compras_detalle: 'id, compra_id, producto_id, tenant_id',
+        suppliers: 'id, rif, name, tenant_id, is_dirty, deleted_at',
+        notifications: 'id, type, timestamp, userId, tenantId, read',
+        inventory_movements: 'id, product_id, tenant_id, type, reference_id, created_at, [tenant_id+type], [tenant_id+created_at]',
+        inventory_adjustments: 'id, date, type, status, tenant_id, created_at, [tenant_id+status]',
         accounts_receivable: 'id, invoice_id, customer_rif, tenant_id, status, due_date, created_at',
         payments: 'id, receivable_id, tenant_id, payment_method, created_at',
         cash_register: 'id, tenant_id, type, reference_id, created_at',

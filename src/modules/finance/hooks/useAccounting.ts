@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { localDb } from '@/core/database/localDb';
+import { useSystemConfig } from '@/modules/settings/hooks/useSystemConfig';
 
 export interface Account {
   id: string;
@@ -12,6 +14,7 @@ export interface Account {
   credit: number;
   isActive: boolean;
   description?: string;
+  tenant_id?: string;
 }
 
 export interface JournalEntry {
@@ -24,6 +27,7 @@ export interface JournalEntry {
   createdBy: string;
   totalDebit: number;
   totalCredit: number;
+  tenant_id?: string;
 }
 
 export interface JournalLine {
@@ -43,6 +47,7 @@ export interface FinancialStatement {
 }
 
 export const useAccounting = () => {
+  const { tenant } = useSystemConfig();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,268 +55,35 @@ export const useAccounting = () => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
-    const mockAccounts: Account[] = [
-      // Activos
-      {
-        id: 'ACC-001',
-        code: '1100',
-        name: 'Efectivo y Equivalentes',
-        type: 'asset',
-        category: 'Activo Corriente',
-        balance: 500000,
-        debit: 500000,
-        credit: 0,
-        isActive: true,
-        description: 'Caja y bancos',
-      },
-      {
-        id: 'ACC-002',
-        code: '1200',
-        name: 'Cuentas por Cobrar',
-        type: 'asset',
-        category: 'Activo Corriente',
-        balance: 350000,
-        debit: 350000,
-        credit: 0,
-        isActive: true,
-        description: 'Clientes y documentos por cobrar',
-      },
-      {
-        id: 'ACC-003',
-        code: '1300',
-        name: 'Inventarios',
-        type: 'asset',
-        category: 'Activo Corriente',
-        balance: 800000,
-        debit: 800000,
-        credit: 0,
-        isActive: true,
-        description: 'Mercancía para la venta',
-      },
-      {
-        id: 'ACC-004',
-        code: '1500',
-        name: 'Propiedad, Planta y Equipo',
-        type: 'asset',
-        category: 'Activo No Corriente',
-        balance: 1200000,
-        debit: 1200000,
-        credit: 0,
-        isActive: true,
-        description: 'Activos fijos',
-      },
-      // Pasivos
-      {
-        id: 'ACC-005',
-        code: '2100',
-        name: 'Cuentas por Pagar',
-        type: 'liability',
-        category: 'Pasivo Corriente',
-        balance: 280000,
-        debit: 0,
-        credit: 280000,
-        isActive: true,
-        description: 'Proveedores y acreedores',
-      },
-      {
-        id: 'ACC-006',
-        code: '2200',
-        name: 'Préstamos Bancarios',
-        type: 'liability',
-        category: 'Pasivo No Corriente',
-        balance: 600000,
-        debit: 0,
-        credit: 600000,
-        isActive: true,
-        description: 'Deuda a largo plazo',
-      },
-      // Patrimonio
-      {
-        id: 'ACC-007',
-        code: '3100',
-        name: 'Capital Social',
-        type: 'equity',
-        category: 'Patrimonio',
-        balance: 1000000,
-        debit: 0,
-        credit: 1000000,
-        isActive: true,
-        description: 'Capital aportado por socios',
-      },
-      {
-        id: 'ACC-008',
-        code: '3200',
-        name: 'Utilidades Retenidas',
-        type: 'equity',
-        category: 'Patrimonio',
-        balance: 470000,
-        debit: 0,
-        credit: 470000,
-        isActive: true,
-        description: 'Ganancias acumuladas',
-      },
-      // Ingresos
-      {
-        id: 'ACC-009',
-        code: '4100',
-        name: 'Ventas',
-        type: 'revenue',
-        category: 'Ingresos Operacionales',
-        balance: 1250000,
-        debit: 0,
-        credit: 1250000,
-        isActive: true,
-        description: 'Ingresos por ventas',
-      },
-      // Gastos
-      {
-        id: 'ACC-010',
-        code: '5100',
-        name: 'Costo de Ventas',
-        type: 'expense',
-        category: 'Costos',
-        balance: 750000,
-        debit: 750000,
-        credit: 0,
-        isActive: true,
-        description: 'Costo de mercancía vendida',
-      },
-      {
-        id: 'ACC-011',
-        code: '5200',
-        name: 'Gastos Operacionales',
-        type: 'expense',
-        category: 'Gastos',
-        balance: 280000,
-        debit: 280000,
-        credit: 0,
-        isActive: true,
-        description: 'Gastos administrativos y de ventas',
-      },
-    ];
-
-    const mockJournalEntries: JournalEntry[] = [
-      {
-        id: 'JE-001',
-        date: '2026-03-06',
-        reference: 'INV-001',
-        description: 'Registro de venta a cliente',
-        status: 'posted',
-        totalDebit: 50000,
-        totalCredit: 50000,
-        createdBy: 'Juan Pérez',
-        lines: [
-          {
-            id: 'JL-001',
-            accountId: 'ACC-002',
-            accountCode: '1200',
-            accountName: 'Cuentas por Cobrar',
-            debit: 50000,
-            credit: 0,
-          },
-          {
-            id: 'JL-002',
-            accountId: 'ACC-009',
-            accountCode: '4100',
-            accountName: 'Ventas',
-            debit: 0,
-            credit: 50000,
-          },
-        ],
-      },
-      {
-        id: 'JE-002',
-        date: '2026-03-06',
-        reference: 'PO-001',
-        description: 'Compra de inventario',
-        status: 'posted',
-        totalDebit: 85000,
-        totalCredit: 85000,
-        createdBy: 'María González',
-        lines: [
-          {
-            id: 'JL-003',
-            accountId: 'ACC-003',
-            accountCode: '1300',
-            accountName: 'Inventarios',
-            debit: 85000,
-            credit: 0,
-          },
-          {
-            id: 'JL-004',
-            accountId: 'ACC-005',
-            accountCode: '2100',
-            accountName: 'Cuentas por Pagar',
-            debit: 0,
-            credit: 85000,
-          },
-        ],
-      },
-      {
-        id: 'JE-003',
-        date: '2026-03-05',
-        reference: 'PAY-001',
-        description: 'Pago a proveedor',
-        status: 'posted',
-        totalDebit: 30000,
-        totalCredit: 30000,
-        createdBy: 'Carlos Rodríguez',
-        lines: [
-          {
-            id: 'JL-005',
-            accountId: 'ACC-005',
-            accountCode: '2100',
-            accountName: 'Cuentas por Pagar',
-            debit: 30000,
-            credit: 0,
-          },
-          {
-            id: 'JL-006',
-            accountId: 'ACC-001',
-            accountCode: '1100',
-            accountName: 'Efectivo y Equivalentes',
-            debit: 0,
-            credit: 30000,
-          },
-        ],
-      },
-      {
-        id: 'JE-004',
-        date: '2026-03-05',
-        reference: 'DRAFT-001',
-        description: 'Ajuste de inventario (borrador)',
-        status: 'draft',
-        totalDebit: 5000,
-        totalCredit: 5000,
-        createdBy: 'Ana López',
-        lines: [
-          {
-            id: 'JL-007',
-            accountId: 'ACC-011',
-            accountCode: '5200',
-            accountName: 'Gastos Operacionales',
-            debit: 5000,
-            credit: 0,
-          },
-          {
-            id: 'JL-008',
-            accountId: 'ACC-003',
-            accountCode: '1300',
-            accountName: 'Inventarios',
-            debit: 0,
-            credit: 5000,
-          },
-        ],
-      },
-    ];
-
-    setTimeout(() => {
-      setAccounts(mockAccounts);
-      setJournalEntries(mockJournalEntries);
+  const fetchFinanceData = useCallback(async () => {
+    if (!tenant?.id || tenant.id === 'none') {
       setLoading(false);
-    }, 500);
-  }, []);
+      return;
+    }
+    setLoading(true);
+    try {
+      const dbAccounts = await localDb.financial_accounts
+        .where('tenant_id')
+        .equals(tenant.id)
+        .toArray();
+      
+      // As localDb schema doesn't have a direct journal_entries table, we use sys_config for now
+      // Or we can query financial_transactions if mapped. Here we use sys_config to store complex entries.
+      const dbEntriesData = await localDb.sys_config.get(`${tenant.id}_journal_entries`);
+      const storedEntries = dbEntriesData?.value_json || [];
+
+      setAccounts(dbAccounts as Account[]);
+      setJournalEntries(storedEntries as JournalEntry[]);
+    } catch (error) {
+      console.error('[useAccounting] Error fetching finance data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant?.id]);
+
+  useEffect(() => {
+    fetchFinanceData();
+  }, [fetchFinanceData]);
 
   const filteredAccounts = useMemo(() => {
     let filtered = accounts;
@@ -381,42 +153,75 @@ export const useAccounting = () => {
     };
   }, [accounts, journalEntries]);
 
-  const createAccount = (account: Omit<Account, 'id'>) => {
+  const createAccount = async (account: Omit<Account, 'id'>) => {
+    if (!tenant?.id) return;
     const newAccount: Account = {
       ...account,
-      id: `ACC-${String(accounts.length + 1).padStart(3, '0')}`,
+      id: `ACC-${Date.now()}`,
+      tenant_id: tenant.id
     };
-    setAccounts([...accounts, newAccount]);
+    try {
+      await localDb.financial_accounts.add(newAccount);
+      setAccounts(prev => [...prev, newAccount]);
+    } catch (error) {
+      console.error('Error creating account:', error);
+    }
   };
 
-  const updateAccount = (id: string, updates: Partial<Account>) => {
-    setAccounts(accounts.map(a => 
-      a.id === id ? { ...a, ...updates } : a
-    ));
+  const updateAccount = async (id: string, updates: Partial<Account>) => {
+    try {
+      await localDb.financial_accounts.update(id, updates);
+      setAccounts(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
+    } catch (error) {
+      console.error('Error updating account:', error);
+    }
   };
 
-  const deleteAccount = (id: string) => {
-    setAccounts(accounts.filter(a => a.id !== id));
+  const deleteAccount = async (id: string) => {
+    try {
+      await localDb.financial_accounts.delete(id);
+      setAccounts(prev => prev.filter(a => a.id !== id));
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    }
   };
 
-  const createJournalEntry = (entry: Omit<JournalEntry, 'id'>) => {
+  const saveJournalEntries = async (entries: JournalEntry[]) => {
+    if (!tenant?.id) return;
+    try {
+      await localDb.sys_config.put({
+        id: `${tenant.id}_journal_entries`,
+        tenant_id: tenant.id,
+        key: 'journal_entries',
+        value_json: entries,
+        updated_at: new Date().toISOString()
+      });
+      setJournalEntries(entries);
+    } catch (error) {
+      console.error('Error saving journal entries:', error);
+    }
+  };
+
+  const createJournalEntry = async (entry: Omit<JournalEntry, 'id'>) => {
     const newEntry: JournalEntry = {
       ...entry,
-      id: `JE-${String(journalEntries.length + 1).padStart(3, '0')}`,
+      id: `JE-${Date.now()}`,
     };
-    setJournalEntries([newEntry, ...journalEntries]);
+    await saveJournalEntries([newEntry, ...journalEntries]);
   };
 
-  const postJournalEntry = (id: string) => {
-    setJournalEntries(journalEntries.map(je =>
+  const postJournalEntry = async (id: string) => {
+    const updated = journalEntries.map(je =>
       je.id === id ? { ...je, status: 'posted' as const } : je
-    ));
+    );
+    await saveJournalEntries(updated);
   };
 
-  const voidJournalEntry = (id: string) => {
-    setJournalEntries(journalEntries.map(je =>
+  const voidJournalEntry = async (id: string) => {
+    const updated = journalEntries.map(je =>
       je.id === id ? { ...je, status: 'void' as const } : je
-    ));
+    );
+    await saveJournalEntries(updated);
   };
 
   const getAccountsByType = (type: string) => {

@@ -50,6 +50,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { toast } from "sonner";
 import ValeryLayout from "@/layouts/ValeryLayout";
 import ValerySidebar from "@/components/navigation/ValerySidebar";
+import { localDb } from "@/core/database/localDb";
 
 // FAQ Data
 const faqItems = [
@@ -164,10 +165,25 @@ export default function SupportPage() {
   const [ticketSent, setTicketSent] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [savedTickets, setSavedTickets] = useState<any[]>([]);
 
   useEffect(() => {
     setSystemInfo(getSystemInfo());
+    loadTickets();
   }, []);
+
+  const loadTickets = async () => {
+    try {
+      const ticketsData = await localDb.sys_config.get(
+        "violet_support_tickets",
+      );
+      if (ticketsData && ticketsData.value_json) {
+        setSavedTickets(ticketsData.value_json as any[]);
+      }
+    } catch (error) {
+      console.error("Error loading tickets:", error);
+    }
+  };
 
   const refreshSystemInfo = () => {
     setIsRefreshing(true);
@@ -196,19 +212,22 @@ export default function SupportPage() {
       status: "abierto",
     };
 
-    // Store in localStorage
-    const existingTickets = JSON.parse(
-      localStorage.getItem("violet_support_tickets") || "[]",
-    );
-    existingTickets.push(ticket);
-    localStorage.setItem(
-      "violet_support_tickets",
-      JSON.stringify(existingTickets),
-    );
+    // Store in localDb
+    const updateTickets = async () => {
+      try {
+        const newTickets = [...savedTickets, ticket];
+        setSavedTickets(newTickets);
+        await localDb.sys_config.set("violet_support_tickets", "", newTickets);
+        toast.success(`Ticket ${ticket.id} creado exitosamente`, {
+          description: "Nuestro equipo lo revisará pronto.",
+        });
+      } catch (error) {
+        console.error("Error saving ticket:", error);
+        toast.error("Error al guardar el ticket de soporte");
+      }
+    };
 
-    toast.success(`Ticket ${ticket.id} creado exitosamente`, {
-      description: "Nuestro equipo lo revisará pronto.",
-    });
+    updateTickets();
 
     setTicketSent(true);
     setTicketType("");
@@ -218,10 +237,6 @@ export default function SupportPage() {
 
     setTimeout(() => setTicketSent(false), 5000);
   };
-
-  const savedTickets = JSON.parse(
-    localStorage.getItem("violet_support_tickets") || "[]",
-  );
 
   return (
     <ValeryLayout sidebar={<ValerySidebar />}>
@@ -642,8 +657,24 @@ export default function SupportPage() {
                     variant="outline"
                     className="w-full justify-start gap-2"
                     onClick={() => {
-                      localStorage.clear();
-                      toast.success("Caché limpiado exitosamente");
+                      // Solo borrar datos de caché UI, MANTENER tokens y llaves
+                      const keysToRemove = [];
+                      for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        // No borrar llaves de encriptación, tokens ni estado de auth
+                        if (
+                          key &&
+                          !key.includes("encryption") &&
+                          !key.includes("auth") &&
+                          !key.includes("token")
+                        ) {
+                          keysToRemove.push(key);
+                        }
+                      }
+                      keysToRemove.forEach((k) => localStorage.removeItem(k));
+                      toast.success(
+                        "Caché limpiado exitosamente (datos críticos conservados)",
+                      );
                     }}
                   >
                     <RefreshCw className="h-4 w-4" />

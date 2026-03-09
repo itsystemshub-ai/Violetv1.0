@@ -9,7 +9,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'admin',
     name: 'Administrador del Sistema',
-    password: 'admin123', // Se debe cambiar en producción
+    password: 'VioletAdmin@2026!', // Contraseña segura por defecto
     role: USER_ROLES.SUPER_ADMIN,
     department: DEPARTMENTS.ADMIN,
     email: 'admin@violet-erp.com',
@@ -63,7 +63,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'gerente',
     name: 'Carlos Rodríguez',
-    password: 'gerente123',
+    password: 'VioletManager@2026!',
     role: USER_ROLES.MANAGER,
     department: DEPARTMENTS.MANAGEMENT,
     email: 'gerente@violet-erp.com',
@@ -98,7 +98,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'contador',
     name: 'María González',
-    password: 'contador123',
+    password: 'VioletAccountant@2026!',
     role: USER_ROLES.ACCOUNTANT,
     department: DEPARTMENTS.ACCOUNTING,
     email: 'contador@violet-erp.com',
@@ -122,7 +122,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'vendedor1',
     name: 'Juan Pérez',
-    password: 'ventas123',
+    password: 'VioletSales1@2026!',
     role: USER_ROLES.SALES,
     department: DEPARTMENTS.SALES,
     email: 'vendedor1@violet-erp.com',
@@ -143,7 +143,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'vendedor2',
     name: 'Ana Martínez',
-    password: 'ventas123',
+    password: 'VioletSales2@2026!',
     role: USER_ROLES.SALES,
     department: DEPARTMENTS.SALES,
     email: 'vendedor2@violet-erp.com',
@@ -164,7 +164,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'almacen',
     name: 'Pedro López',
-    password: 'almacen123',
+    password: 'VioletWarehouse@2026!',
     role: USER_ROLES.WAREHOUSE,
     department: DEPARTMENTS.WAREHOUSE,
     email: 'almacen@violet-erp.com',
@@ -184,7 +184,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'compras',
     name: 'Laura Fernández',
-    password: 'compras123',
+    password: 'VioletPurchasing@2026!',
     role: USER_ROLES.MANAGER,
     department: DEPARTMENTS.PURCHASING,
     email: 'compras@violet-erp.com',
@@ -205,7 +205,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'rrhh',
     name: 'Roberto Sánchez',
-    password: 'rrhh123',
+    password: 'VioletHR@2026!',
     role: USER_ROLES.HR,
     department: DEPARTMENTS.HR,
     email: 'rrhh@violet-erp.com',
@@ -226,7 +226,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'soporte',
     name: 'Sofía Ramírez',
-    password: 'soporte123',
+    password: 'VioletSupport@2026!',
     role: USER_ROLES.ADMIN,
     department: DEPARTMENTS.IT,
     email: 'soporte@violet-erp.com',
@@ -247,7 +247,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'cliente',
     name: 'Cliente Demo',
-    password: 'cliente123',
+    password: 'VioletClient@2026!',
     role: USER_ROLES.CLIENT,
     department: DEPARTMENTS.CLIENTS,
     email: 'cliente@demo.com',
@@ -263,7 +263,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'finanzas',
     name: 'Director de Finanzas',
-    password: 'finanzas123',
+    password: 'VioletFinance@2026!',
     role: USER_ROLES.FINANCE,
     department: DEPARTMENTS.FINANCE,
     email: 'finanzas@violet-erp.com',
@@ -294,7 +294,7 @@ export const DEFAULT_USERS: Omit<User, 'id' | 'tenantId' | 'created_at' | 'updat
   {
     username: 'atencion',
     name: 'Agente de Atención al Cliente',
-    password: 'atencion123',
+    password: 'VioletCustomerService@2026!',
     role: USER_ROLES.CUSTOMER_SERVICE,
     department: DEPARTMENTS.CUSTOMER_SERVICE,
     email: 'atencion@violet-erp.com',

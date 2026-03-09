@@ -3,15 +3,15 @@
  */
 
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { localDb } from "@/core/database/localDb";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { useCRMStore } from "../hooks/useCRMStore";
@@ -31,8 +31,9 @@ import {
   Ticket,
   MessageSquare,
   DollarSign,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
+import { WhatsAppIntegration } from "./WhatsAppIntegration";
 
 export function CRMDashboard() {
   const { tenant } = useSystemConfig();
@@ -52,17 +53,25 @@ export function CRMDashboard() {
     setLoading(true);
     try {
       // 1. Pipeline Data
-      const pipelineData = await localDb.sys_config.get(`${tenant.id}_crm_pipeline`);
+      const pipelineData = await localDb.sys_config.get(
+        `${tenant.id}_crm_pipeline`,
+      );
       const deals = (pipelineData?.value_json as any[]) || [];
       const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
-      const avgProb = deals.length > 0 
-        ? deals.reduce((sum, d) => sum + (d.probability || 0), 0) / deals.length 
-        : 0;
+      const avgProb =
+        deals.length > 0
+          ? deals.reduce((sum, d) => sum + (d.probability || 0), 0) /
+            deals.length
+          : 0;
 
       // 2. Tickets Data
-      const ticketsData = await localDb.sys_config.get(`${tenant.id}_crm_tickets`);
+      const ticketsData = await localDb.sys_config.get(
+        `${tenant.id}_crm_tickets`,
+      );
       const tickets = (ticketsData?.value_json as any[]) || [];
-      const open = tickets.filter(t => t.status === "Open" || t.status === "In Progress").length;
+      const open = tickets.filter(
+        (t) => t.status === "Open" || t.status === "In Progress",
+      ).length;
 
       // 3. Chats Data (Already in store, but ensure it's fetched)
       if (chats.length === 0) {
@@ -123,27 +132,33 @@ export function CRMDashboard() {
     },
   ];
 
-  if (loading) return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
-      {[1, 2, 3, 4].map(i => <div key={i} className="h-32 bg-muted rounded-2xl" />)}
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-32 bg-muted rounded-2xl" />
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi, i) => (
-          <Card key={i} className="rounded-2xl border-none shadow-sm transition-all hover:scale-[1.02]">
+          <Card
+            key={i}
+            className="rounded-2xl border-none shadow-sm transition-all hover:scale-[1.02]"
+          >
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-2">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                  <p className="text-subtitle uppercase tracking-widest text-muted-foreground/60">
                     {kpi.label}
                   </p>
-                  <p className="text-2xl font-black italic tracking-tighter">
+                  <p className="text-numeric text-2xl font-black italic tracking-tighter">
                     {kpi.value}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground">
+                  <p className="text-body text-[10px] font-bold text-muted-foreground">
                     {kpi.sub}
                   </p>
                 </div>
@@ -159,78 +174,99 @@ export function CRMDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="rounded-2xl border-none shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black italic uppercase tracking-tight flex items-center gap-2">
+            <CardTitle className="text-card-title italic uppercase tracking-tight flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
               Estado del Pipeline
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-subtitle text-xs">
               Resumen visual de oportunidades por etapa
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] pt-4">
-             {stats.totalDeals > 0 ? (
-               <div className="h-full w-full">
-                 <ResponsiveContainer width="100%" height="100%">
-                   <BarChart
-                     data={[
-                       { stage: 'Prospectos', value: stats.totalDeals * 0.4 },
-                       { stage: 'Calificados', value: stats.totalDeals * 0.25 },
-                       { stage: 'Propuesta', value: stats.totalDeals * 0.2 },
-                       { stage: 'Cierre', value: stats.totalDeals * 0.15 },
-                     ]}
-                     layout="vertical"
-                     margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
-                   >
-                     <CartesianGrid strokeDasharray="3 3" horizontal={false} strokeOpacity={0.1} />
-                     <XAxis type="number" hide />
-                     <YAxis 
-                        dataKey="stage" 
-                        type="category" 
-                        axisLine={false} 
-                        tickLine={false}
-                        tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
-                     />
-                     <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                        cursor={{ fill: 'transparent' }}
-                     />
-                     <Bar 
-                        dataKey="value" 
-                        fill="hsl(var(--primary))" 
-                        radius={[0, 4, 4, 0]} 
-                        barSize={20}
-                     />
-                   </BarChart>
-                 </ResponsiveContainer>
-               </div>
-             ) : (
-               <div className="h-full flex flex-col items-center justify-center text-center space-y-2 border-t border-dashed">
-                 <p className="text-sm text-muted-foreground italic font-medium">Buscando datos de Pipeline...</p>
-                 <Badge variant="outline" className="text-slate-400">Sin datos registrados</Badge>
-               </div>
-             )}
+            {stats.totalDeals > 0 ? (
+              <div className="h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      { stage: "Prospectos", value: stats.totalDeals * 0.4 },
+                      { stage: "Calificados", value: stats.totalDeals * 0.25 },
+                      { stage: "Propuesta", value: stats.totalDeals * 0.2 },
+                      { stage: "Cierre", value: stats.totalDeals * 0.15 },
+                    ]}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      horizontal={false}
+                      strokeOpacity={0.1}
+                    />
+                    <XAxis type="number" hide />
+                    <YAxis
+                      dataKey="stage"
+                      type="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fontWeight: 700, fill: "#64748b" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "12px",
+                        border: "none",
+                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                      }}
+                      cursor={{ fill: "transparent" }}
+                    />
+                    <Bar
+                      dataKey="value"
+                      fill="hsl(var(--primary))"
+                      radius={[0, 4, 4, 0]}
+                      barSize={20}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-2 border-t border-dashed">
+                <p className="text-sm text-muted-foreground italic font-medium">
+                  Buscando datos de Pipeline...
+                </p>
+                <Badge variant="outline" className="text-slate-400">
+                  Sin datos registrados
+                </Badge>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card className="rounded-2xl border-none shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-black italic uppercase tracking-tight flex items-center gap-2">
+            <CardTitle className="text-card-title italic uppercase tracking-tight flex items-center gap-2">
               <Ticket className="w-5 h-5 text-primary" />
               Soporte Crítico
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-subtitle text-xs">
               Tickets que requieren atención inmediata
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] flex items-center justify-center border-t border-dashed">
-             <div className="text-center space-y-2">
-               <p className="text-sm text-muted-foreground italic font-medium">Panel de Incidencias en Tiempo Real</p>
-               <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
+            <div className="text-center space-y-2">
+              <p className="text-sm text-muted-foreground italic font-medium">
+                Panel de Incidencias en Tiempo Real
+              </p>
+              <Badge
+                variant="outline"
+                className="text-amber-600 border-amber-200 bg-amber-50"
+              >
                 {stats.openTickets} Pendientes
-               </Badge>
+              </Badge>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <WhatsAppIntegration />
       </div>
     </div>
   );

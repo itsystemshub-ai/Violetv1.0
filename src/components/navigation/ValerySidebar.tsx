@@ -181,16 +181,10 @@ const menuItems: MenuItem[] = [
         path: "/inventory/catalog",
       },
       {
-        id: "kardex",
-        label: "Kardex",
-        icon: FileText,
+        id: "movimientos-ajustes",
+        label: "🔄 Kardex y Ajustes (Unificado)",
+        icon: History,
         path: "/inventory/kardex",
-      },
-      {
-        id: "ajustes",
-        label: "Ajustes",
-        icon: Package,
-        path: "/inventory/adjustments",
       },
       {
         id: "stats-inv",

@@ -1,8 +1,10 @@
 // Auto-generated barrel export
 
-export * from './AdjustmentsPage';
-export * from './CategoriesPage';
-export * from './InventoryMovements';
-export * from './KardexPage';
+export * from './InventoryDashboardPage';
 export * from './ProductsPage';
+export * from './MovementsControlPage';
+export * from './CategoriesPage';
+export * from './PriceListPage';
 export * from './TransfersPage';
+export * from './InventoryStatsPage';
+export * from './InventoryAnalyticsPage';
