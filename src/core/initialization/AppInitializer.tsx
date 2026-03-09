@@ -5,12 +5,17 @@
  * - Separa la lógica de inicialización del componente App
  * - Maneja estados de carga y error
  * - Implementa retry logic
+ * - Incluye: seguridad, manejo de errores, validaciones, configuración de desarrollo
  */
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useSystemConfig } from "@/modules/settings/hooks/useSystemConfig";
 import { NetworkService } from "@/services/LocalNetworkService";
 import { backupService } from "@/services/backup/BackupService";
+import { errorHandler, ErrorSeverity, ErrorCategory } from "@/core/error/ErrorHandler";
+import { devConfig, initializeDevConfig } from "@/core/config/DevConfig";
+import { securityService } from "@/core/security/SecurityService";
+import { defaultValidator } from "@/modules/inventory/utils/validation";
 
 interface AppInitializerProps {
   children: React.ReactNode;
@@ -108,18 +113,61 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
 
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-      // 1. Fetch tenants configuration
+      // 0. Configuración de desarrollo
+      if (process.env.NODE_ENV === 'development') {
+        console.log("[AppInitializer] 🔧 Configurando modo desarrollo...");
+        devConfig.logDevelopmentInfo();
+        initializeDevConfig();
+      }
+
+      // 1. Inicializar sistema de manejo de errores
+      console.log("[AppInitializer] 🛡️  Inicializando manejo de errores...");
+      errorHandler.enableErrorReporting();
+      
+      // Configurar listener global de errores
+      errorHandler.addErrorListener((error) => {
+        console.error('[AppInitializer] Error capturado:', error);
+        
+        // Mostrar notificación para errores críticos
+        if (error.severity === ErrorSeverity.CRITICAL || error.severity === ErrorSeverity.HIGH) {
+          // Puedes integrar con tu sistema de notificaciones aquí
+          console.error('Error crítico detectado:', error.message);
+        }
+      });
+
+      // 2. Inicializar seguridad
+      console.log("[AppInitializer] 🔐 Inicializando seguridad...");
+      try {
+        await securityService.initializeEncryption();
+        console.log("[AppInitializer] ✅ Seguridad inicializada");
+      } catch (securityError) {
+        console.warn("[AppInitializer] ⚠️  Error inicializando seguridad:", securityError);
+        // Continuar sin seguridad en modo desarrollo
+        if (process.env.NODE_ENV === 'production') {
+          throw securityError;
+        }
+      }
+
+      // 3. Inicializar validaciones
+      console.log("[AppInitializer] 📋 Inicializando sistema de validaciones...");
+      // El validador ya está inicializado como singleton
+
+      // 4. Fetch tenants configuration
       console.log("[AppInitializer] 📦 Cargando configuración de tenants...");
       await fetchAllTenants();
 
-      // 2. Initialize network service
+      // 5. Initialize network service
       console.log("[AppInitializer] 🌐 Inicializando servicio de red...");
       const configuredIp = localStorage.getItem("master_ip") || "localhost";
       NetworkService.connect(configuredIp);
 
-      // 3. Initialize backup service
+      // 6. Initialize backup service
       console.log("[AppInitializer] 💾 Inicializando servicio de backup...");
       backupService.getConfig();
+
+      // 7. Verificar compatibilidad del navegador
+      console.log("[AppInitializer] 🌍 Verificando compatibilidad del navegador...");
+      checkBrowserCompatibility();
 
       console.log("[AppInitializer] ✅ Servicios inicializados correctamente");
 
@@ -134,6 +182,14 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
 
       const err =
         error instanceof Error ? error : new Error("Error desconocido");
+
+      // Registrar error en el sistema de manejo de errores
+      errorHandler.handleError(
+        err,
+        ErrorSeverity.CRITICAL,
+        ErrorCategory.UNKNOWN,
+        { module: 'app', component: 'initialization', retryCount: state.retryCount }
+      );
 
       setState((prev) => ({
         ...prev,
@@ -157,6 +213,52 @@ export const AppInitializer: React.FC<AppInitializerProps> = ({
   /**
    * Initialize on mount
    */
+  /**
+   * Check browser compatibility
+   */
+  const checkBrowserCompatibility = () => {
+    const compatibilityIssues: string[] = [];
+
+    // Verificar Web Crypto API (necesaria para seguridad)
+    if (!window.crypto || !window.crypto.subtle) {
+      compatibilityIssues.push('Web Crypto API no disponible. La seguridad estará limitada.');
+    }
+
+    // Verificar localStorage
+    try {
+      localStorage.setItem('test', 'test');
+      localStorage.removeItem('test');
+    } catch {
+      compatibilityIssues.push('localStorage no disponible. Algunas funciones no estarán disponibles.');
+    }
+
+    // Verificar IndexedDB
+    if (!window.indexedDB) {
+      compatibilityIssues.push('IndexedDB no disponible. La base de datos local no funcionará.');
+    }
+
+    // Verificar características modernas
+    if (!window.Promise) {
+      compatibilityIssues.push('Promises no disponibles. La aplicación no funcionará correctamente.');
+    }
+
+    if (!window.fetch) {
+      compatibilityIssues.push('Fetch API no disponible. Las peticiones de red no funcionarán.');
+    }
+
+    if (compatibilityIssues.length > 0) {
+      console.warn('[AppInitializer] ⚠️  Problemas de compatibilidad detectados:');
+      compatibilityIssues.forEach(issue => console.warn(`  • ${issue}`));
+      
+      errorHandler.handleError(
+        new Error('Problemas de compatibilidad del navegador'),
+        ErrorSeverity.MEDIUM,
+        ErrorCategory.UI,
+        { issues: compatibilityIssues }
+      );
+    }
+  };
+
   /**
    * Initialize on mount & Handle Branding
    */
