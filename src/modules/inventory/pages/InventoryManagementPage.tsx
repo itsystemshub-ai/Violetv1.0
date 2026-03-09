@@ -27,6 +27,11 @@ const InventoryHeader = lazy(() =>
     default: m.InventoryHeader,
   })),
 );
+const InventoryDashboard = lazy(() =>
+  import("@/modules/inventory/components/InventoryDashboard").then((m) => ({
+    default: m.InventoryDashboard,
+  })),
+);
 const InventoryKPIs = lazy(() =>
   import("@/modules/inventory/components/InventoryKPIs").then((m) => ({
     default: m.InventoryKPIs,
@@ -240,10 +245,7 @@ export default function InventoryManagementPage() {
               value="dashboard"
               className="mt-0 ring-offset-background outline-none space-y-4"
             >
-              <InventoryKPIs logic={logic as any} />
-
-              {/* Panel de IA */}
-              <InventoryAIPanel products={logic.products || []} />
+              <InventoryDashboard />
 
               {/* AI Assistant */}
               <ModuleAIAssistant

@@ -8,4 +8,5 @@ export * from './InventoryHeader';
 export * from './InventoryKPIs';
 export * from './InventoryStats';
 export * from './InventoryTable';
+export * from './InventoryDashboard';
 export * from './StockHistory';

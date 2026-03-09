@@ -70,6 +70,11 @@ interface Role {
   color: string;
 }
 
+interface RolesPermissionsPageProps {
+  standalone?: boolean;
+  view?: "roles" | "users" | "matrix";
+}
+
 const PREDEFINED_ROLES: Role[] = [
   {
     id: "super_admin",
@@ -201,14 +206,17 @@ const PREDEFINED_ROLES: Role[] = [
   },
 ];
 
-export default function RolesPermissionsPage() {
+export default function RolesPermissionsPage({
+  standalone = true,
+  view,
+}: RolesPermissionsPageProps) {
   const [roles, setRoles] = useState<Role[]>(PREDEFINED_ROLES);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingPermissions, setEditingPermissions] = useState<Permission[]>(
     [],
   );
-  const [activeTab, setActiveTab] = useState("roles");
+  const [activeTab, setActiveTab] = useState(view || "roles");
   const [usersDialogOpen, setUsersDialogOpen] = useState(false);
   const [selectedUserForEdit, setSelectedUserForEdit] = useState<any>(null);
 
@@ -259,39 +267,95 @@ export default function RolesPermissionsPage() {
     return permission.replace(":", " ").replace("_", " ").toUpperCase();
   };
 
-  return (
-    <ValeryLayout sidebar={<ValerySidebar />}>
-      <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
-
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Shield className="w-8 h-8 text-primary" />
-              Roles y Permisos
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Gestiona los privilegios de acceso al sistema
-            </p>
+  const content = (
+    <>
+      <div className={cn(standalone ? "p-6 space-y-6" : "space-y-6")}>
+        {standalone && (
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold flex items-center gap-3">
+                <Shield className="w-8 h-8 text-primary" />
+                Roles y Permisos
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Gestiona los privilegios de acceso al sistema
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="backdrop-blur-xl bg-card/80 border border-border p-1 rounded-full w-fit shadow-lg">
-            <TabsTrigger value="roles" className="rounded-full px-6">
-              Roles
-            </TabsTrigger>
-            <TabsTrigger value="users" className="rounded-full px-6">
-              Usuarios
-            </TabsTrigger>
-            <TabsTrigger value="matrix" className="rounded-full px-6">
-              Matriz
-            </TabsTrigger>
-          </TabsList>
+          {!view && (
+            <TabsList className="backdrop-blur-xl bg-card/80 border border-border p-1 rounded-full w-fit shadow-lg">
+              <TabsTrigger value="roles" className="rounded-full px-6">
+                Roles
+              </TabsTrigger>
+              <TabsTrigger value="users" className="rounded-full px-6">
+                Usuarios
+              </TabsTrigger>
+              <TabsTrigger value="matrix" className="rounded-full px-6">
+                Matriz
+              </TabsTrigger>
+            </TabsList>
+          )}
+
+          <TabsContent value="roles" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {roles.map((role) => (
+                <Card
+                  key={role.id}
+                  className="border-border/50 bg-card/40 backdrop-blur-xl overflow-hidden hover:shadow-xl transition-all duration-300 group"
+                >
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <div
+                        className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center shadow-lg",
+                          role.color,
+                        )}
+                      >
+                        <Shield className="w-5 h-5 text-white" />
+                      </div>
+                      <Badge variant="secondary" className="rounded-full">
+                        {role.userCount} usuarios
+                      </Badge>
+                    </div>
+                    <CardTitle className="mt-4 text-xl font-bold tracking-tight">
+                      {role.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+                      {role.description}
+                    </p>
+                    <div className="pt-2 flex items-center justify-between">
+                      <div className="flex -space-x-2">
+                        {/* Placeholder for small avatar circles */}
+                        <div className="w-6 h-6 rounded-full border-2 border-background bg-muted" />
+                        <div className="w-6 h-6 rounded-full border-2 border-background bg-muted" />
+                        <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] font-bold">
+                          +{role.userCount > 3 ? role.userCount - 2 : 0}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditRole(role)}
+                        className="rounded-full group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Editar Permisos
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
           <TabsContent value="matrix" className="space-y-4">
             <Card className="border-border/50 bg-card/50 backdrop-blur-xl overflow-hidden">
@@ -654,6 +718,15 @@ export default function RolesPermissionsPage() {
           </div>
         </DialogContent>
       </Dialog>
+    </>
+  );
+
+  if (!standalone) return content;
+
+  return (
+    <ValeryLayout sidebar={<ValerySidebar />}>
+      <div className="fixed inset-0 bg-linear-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-10" />
+      {content}
     </ValeryLayout>
   );
 }

@@ -387,7 +387,7 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     description: "Categorías de productos",
   },
   {
-    path: "/inventory/pricelists",
+    path: "/inventory/catalog",
     component: PriceListPage,
     protected: true,
     permission: "view:inventory",
@@ -418,6 +418,20 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     permission: "view:inventory",
     title: "Transferencias",
     description: "Transferencias entre almacenes",
+  },
+  {
+    path: "/inventory/stats",
+    component: Inventory,
+    protected: true,
+    permission: "view:inventory",
+    title: "Estadísticas de Inventario",
+  },
+  {
+    path: "/inventory/analytics",
+    component: Inventory,
+    protected: true,
+    permission: "view:inventory",
+    title: "Analítica IA de Inventario",
   },
   // Purchases Sub-pages
   {
@@ -608,6 +622,27 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     permission: "view:settings",
     title: "Configuración de IA",
     description: "Asistente de inteligencia artificial",
+  },
+  {
+    path: "/settings/monitor",
+    component: Settings,
+    protected: true,
+    permission: "view:settings",
+    title: "Monitoreo del Sistema",
+  },
+  {
+    path: "/settings/activity",
+    component: Settings,
+    protected: true,
+    permission: "view:settings",
+    title: "Registro de Actividad",
+  },
+  {
+    path: "/settings/audit",
+    component: Settings,
+    protected: true,
+    permission: "view:settings",
+    title: "Auditoría de Seguridad",
   },
   {
     path: "/settings/password-requests",

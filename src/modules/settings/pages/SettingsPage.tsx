@@ -248,6 +248,9 @@ export default function SettingsPage() {
               <TabsTrigger value="roles" className="rounded-full px-6">
                 Roles y Permisos
               </TabsTrigger>
+              <TabsTrigger value="matrix" className="rounded-full px-6">
+                Matriz
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="users">
               <UserManagementPanel
@@ -264,7 +267,10 @@ export default function SettingsPage() {
               />
             </TabsContent>
             <TabsContent value="roles">
-              <RolesPermissionsPage />
+              <RolesPermissionsPage standalone={false} view="roles" />
+            </TabsContent>
+            <TabsContent value="matrix">
+              <RolesPermissionsPage standalone={false} view="matrix" />
             </TabsContent>
           </Tabs>
         );

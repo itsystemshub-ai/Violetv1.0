@@ -120,61 +120,6 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ isMaster }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-border/50 bg-linear-to-br from-cyan-500/10 to-magenta-500/10">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Estado
-                </p>
-                <p className="text-2xl font-bold mt-1">
-                  {enabled ? "Activa" : "Inactiva"}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                <Bot className="h-6 w-6 text-cyan-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50 bg-linear-to-br from-purple-500/10 to-blue-500/10">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Skills Activas
-                </p>
-                <p className="text-2xl font-bold mt-1">
-                  {enabledCapabilities}/21
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-purple-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50 bg-linear-to-br from-magenta-500/10 to-pink-500/10">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Modelo
-                </p>
-                <p className="text-sm font-bold mt-1">Llama 3.3 70B</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-magenta-500/20 flex items-center justify-center">
-                <Zap className="h-6 w-6 text-magenta-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid gap-6 md:grid-cols-2">
         {/* Configuración General */}
         <Card className="border-border/50">

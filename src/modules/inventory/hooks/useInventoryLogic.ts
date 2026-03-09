@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { barcodeService } from "@/modules/inventory/services/barcode.service";
@@ -59,9 +60,26 @@ export const useInventoryLogic = () => {
     user?.permissions.includes("inventory:export") ||
     user?.role === "admin";
 
+  const location = useLocation();
+  const getInitialTab = () => {
+    const path = location.pathname;
+    if (path.includes("/inventory/stats")) return "warehouses";
+    if (path.includes("/inventory/analytics")) return "charts";
+    if (path.includes("/inventory/catalog")) return "catalog";
+    if (path.includes("/inventory/products")) return "stock";
+    if (path === "/inventory" || path === "/inventory/") return "dashboard";
+    return "stock";
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [activeTab, setActiveTab] = useState("stock");
+  const [activeTab, setActiveTab] = useState(getInitialTab());
+
+  // Update tab when location changes (e.g. sidebar clicks)
+  useEffect(() => {
+    setActiveTab(getInitialTab());
+  }, [location.pathname]);
+
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isFormOpen, setIsFormOpen] = useState(false);

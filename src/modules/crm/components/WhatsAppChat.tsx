@@ -12,6 +12,7 @@ import {
   FileText,
   Image as ImageIcon,
   Receipt,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/core/shared/utils/utils";
 import { Button } from "@/shared/components/ui/button";
