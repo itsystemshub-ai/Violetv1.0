@@ -68,10 +68,13 @@ export const useAI = () => {
       return { date: dateStr, count };
     }).reverse();
 
-    // Mensajes por hora (últimas 24 horas)
+    // Mensajes por hora (últimas 24 horas) - datos reales
     const messagesByHour = Array.from({ length: 24 }, (_, hour) => {
-      const count = Math.floor(Math.random() * 10); // Simulado
-      return { hour, count };
+      const hourMessages = store.conversations.flatMap((c: any) => c.messages || []).filter((m: any) => {
+        const msgDate = new Date(m.timestamp);
+        return msgDate.getHours() === hour;
+      });
+      return { hour, count: hourMessages.length };
     });
 
     return {
