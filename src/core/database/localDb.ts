@@ -39,6 +39,12 @@ export class VioletLocalDb extends Dexie {
   reported_payments!: Table<any>;
   orders!: Table<any>;
   inventory_adjustments!: Table<any>;
+  // ERP Core Tables - FASE 1
+  business_transactions!: Table<any>;
+  workflow_definitions!: Table<any>;
+  workflow_instances!: Table<any>;
+  ledger_entries!: Table<any>;
+  journal_entries!: Table<any>;
 
   constructor() {
     super('VioletERP_LocalDB');
@@ -467,6 +473,51 @@ export class VioletLocalDb extends Dexie {
         crm_messages: 'id, chat_id, sender, tenant_id',
         reported_payments: 'id, invoice_number, tenant_id, status',
         orders: 'id, client, clientId, date, status, tenant_id, created_at, updated_at'
+      });
+
+      // v19: ERP Core - Transaction Engine, Workflows, Contabilidad
+      this.version(19).stores({
+        // Tablas existentes (mantener todos los índices)
+        products: 'id, name, category, tenant_id, updated_at, is_dirty, last_sync, deleted_at, version',
+        invoices: 'id, number, customerName, date, tenant_id, is_dirty, last_sync, type, deleted_at, payment_type, payment_status',
+        tenants: 'id, name, slug, is_dirty, deleted_at',
+        profiles: 'id, username, email, rif, tenant_id, is_dirty',
+        employees: 'id, dni, rif, tenant_id, status, is_dirty, deleted_at',
+        financial_accounts: 'id, code, tenant_id, is_dirty, deleted_at',
+        financial_transactions: 'id, account_id, tenant_id, created_at, is_dirty, deleted_at',
+        payroll_records: 'id, employee_id, tenant_id, period_date, is_dirty, deleted_at',
+        requisitions: 'id, tenant_id, status, created_at, is_dirty, deleted_at',
+        sys_config: 'id, key, tenant_id, is_dirty',
+        audit_logs: 'id, table_name, record_id, changed_by, created_at',
+        sync_logs: 'id, table_name, action, sync_status, created_at',
+        sellers: 'id, name, tenant_id, is_dirty, deleted_at',
+        salary_history: 'id, employee_id, tenant_id, is_dirty',
+        prestaciones_acumuladas: 'id, employee_id, tenant_id, is_dirty',
+        igtf_records: 'id, invoice_id, tenant_id, created_at, is_dirty',
+        compras_maestro: 'id, num_factura, proveedor_id, tenant_id, is_dirty, deleted_at',
+        compras_detalle: 'id, compra_id, producto_id, tenant_id',
+        suppliers: 'id, rif, name, tenant_id, is_dirty, deleted_at',
+        notifications: 'id, type, timestamp, userId, tenantId, read',
+        inventory_movements: 'id, product_id, tenant_id, type, reference_id, created_at, [tenant_id+type], [tenant_id+created_at]',
+        inventory_adjustments: 'id, date, type, status, tenant_id, created_at, [tenant_id+status]',
+        accounts_receivable: 'id, invoice_id, customer_rif, tenant_id, status, due_date, created_at',
+        payments: 'id, receivable_id, tenant_id, payment_method, created_at',
+        cash_register: 'id, tenant_id, type, reference_id, created_at',
+        libro_ventas: 'id, tenant_id, numero_factura, fecha_factura, periodo_fiscal, rif_cliente, created_at',
+        exchange_differences: 'id, invoice_id, payment_id, tenant_id, type, created_at, is_dirty',
+        password_reset_requests: 'id, user_id, username, status, tenant_id, created_at',
+        automation_queue: '++id, status, timestamp',
+        crm_chats: 'id, customer_id, tenant_id, status',
+        crm_messages: 'id, chat_id, sender, tenant_id',
+        reported_payments: 'id, invoice_number, tenant_id, status',
+        orders: 'id, client, clientId, date, status, tenant_id, created_at, updated_at',
+        
+        // Nuevas tablas ERP Core
+        business_transactions: 'id, company_id, type, status, origin_module, created_at, [company_id+type], [company_id+status]',
+        workflow_definitions: 'id, type, company_id, isActive',
+        workflow_instances: 'id, definitionId, type, status, documentId, company_id, currentStep, created_at, [company_id+status]',
+        ledger_entries: 'id, transaction_id, company_id, date, debitAccountId, creditAccountId, isPosted, [company_id+date]',
+        journal_entries: 'id, transaction_id, company_id, date, isPosted, [company_id+date]'
       });
   }
 
