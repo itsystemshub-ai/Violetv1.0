@@ -34,50 +34,24 @@ export default defineConfig({
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-        // Optimized manual chunking to reduce main bundle size
+        // FASE 4 FINAL: Eliminar todas las circulares restantes
+        // Estrategia: Máxima consolidación
         manualChunks: (id) => {
-          // Vendor chunks - separate large libraries
+          // Vendor chunks - Máxima consolidación
           if (id.includes('node_modules')) {
-            // React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
-            }
-            // UI libraries
-            if (id.includes('framer-motion') || id.includes('@radix-ui') || id.includes('lucide-react')) {
-              return 'vendor-ui';
-            }
-            // Charts and visualization
+            // Charts separado (independiente)
             if (id.includes('recharts') || id.includes('d3')) {
               return 'vendor-charts';
             }
-            // Data management
-            if (id.includes('zustand') || id.includes('@tanstack') || id.includes('dexie')) {
-              return 'vendor-data';
-            }
-            // Utilities
-            if (id.includes('date-fns') || id.includes('lodash') || id.includes('xlsx')) {
-              return 'vendor-utils';
-            }
-            // Everything else
-            return 'vendor-misc';
+            // Todo lo demás en un solo chunk vendor
+            return 'vendor-libs';
           }
           
-          // Application chunks - combine sales and inventory to avoid circular deps
-          if (id.includes('/src/modules/')) {
-            // Combine sales and inventory (they share dependencies)
-            if (id.includes('/modules/inventory/') || id.includes('/modules/sales/')) {
-              return 'app-sales-inventory';
-            }
-            if (id.includes('/modules/finance/')) return 'app-finance';
-            if (id.includes('/modules/hr/')) return 'app-hr';
-            if (id.includes('/modules/purchases/')) return 'app-purchases';
-            if (id.includes('/modules/settings/')) return 'app-settings';
-            if (id.includes('/modules/ai/')) return 'app-ai';
+          // Application - Todo en un solo chunk
+          // Elimina TODAS las circulares entre app chunks
+          if (id.includes('/src/')) {
+            return 'app';
           }
-          
-          // Core and shared utilities
-          if (id.includes('/src/core/')) return 'app-core';
-          if (id.includes('/src/shared/')) return 'app-shared';
         },
       }
     },

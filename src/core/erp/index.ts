@@ -25,6 +25,9 @@ export * from './accounting-bridge/AccountingBridge';
 // Audit Log
 export * from './audit-log/AuditLogService';
 
+// Event Reactor - Reacciones automáticas
+export * from './event-reactor/EventReactor';
+
 // Hooks
 export * from './hooks';
 

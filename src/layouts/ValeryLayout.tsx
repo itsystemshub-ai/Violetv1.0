@@ -435,6 +435,22 @@ export const ValeryLayout: React.FC = memo(() => {
                         "display",
                       ) as HTMLInputElement;
                       let expr = "";
+                      
+                      // Safe calculator function without eval
+                      const safeCalculate = (expression: string): string => {
+                        try {
+                          // Remove any non-numeric/operator characters for security
+                          const sanitized = expression.replace(/[^0-9+\-*/.()]/g, '');
+                          if (!sanitized) return '0';
+                          
+                          // Use Function constructor instead of eval (safer)
+                          const result = new Function('return ' + sanitized)();
+                          return String(result);
+                        } catch {
+                          return 'Error';
+                        }
+                      };
+                      
                       [
                         "7",
                         "8",
@@ -463,13 +479,9 @@ export const ValeryLayout: React.FC = memo(() => {
                             expr = "";
                             display.value = "";
                           } else if (b === "=") {
-                            try {
-                              display.value = String(eval(expr));
-                              expr = display.value;
-                            } catch {
-                              display.value = "Error";
-                              expr = "";
-                            }
+                            const result = safeCalculate(expr);
+                            display.value = result;
+                            expr = result === 'Error' ? '' : result;
                           } else {
                             expr += b;
                             display.value = expr;

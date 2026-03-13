@@ -4,6 +4,7 @@ export * from './useAdjustments';
 export * from './useCategories';
 export * from './useInventory';
 export * from './useInventoryAI';
+export * from './useInventoryERP';
 export * from './useInventoryLogic';
 export * from './useInventoryStore';
 export * from './useMovements';
