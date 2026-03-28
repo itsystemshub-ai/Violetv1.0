@@ -1,0 +1,150 @@
+      {/* Cart Items Table */}
+      <Card className="border-none shadow-xl bg-card border border-border/40 rounded-3xl overflow-hidden">
+        <div className="max-h-[900px] overflow-y-auto custom-scrollbar rounded-3xl bg-white">
+          <table className="w-full caption-bottom text-sm">
+            <thead>
+              <tr className="border-b border-border/40">
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Cauplas
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Torflex
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Indomax
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-2 h-9 text-center w-20 bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  OEM
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-4 h-9 text-left bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Descripción
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Categoría
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-right bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Precio Unit.
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Cantidad
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-right bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Total
+                </th>
+                <th className="text-[10px] font-black uppercase tracking-widest px-3 h-9 text-center bg-white sticky top-0 z-20 shadow-sm border-b border-border/40 text-muted-foreground font-medium">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {posCart.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="h-60">
+                    <div className="flex flex-col items-center justify-center">
+                      <ShoppingCart className="h-12 w-12 mb-3 text-muted-foreground/30" />
+                      <p className="text-sm font-black uppercase italic text-muted-foreground/40">
+                        El carrito está vacío
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                posCart.map((item) => {
+                  const itemTotal = (item.product.precioFCA || item.product.price || 0) * item.quantity;
+                  return (
+                    <tr
+                      key={item.product.id}
+                      className="border-b border-border/40 hover:bg-muted/10 transition-colors group"
+                    >
+                      <td className="font-black italic text-xs text-primary px-3 py-1.5 text-center align-middle">
+                        {item.product.cauplas || "---"}
+                      </td>
+                      <td className="font-bold text-xs text-foreground/70 px-3 py-1.5 text-center align-middle">
+                        {item.product.torflex || "---"}
+                      </td>
+                      <td className="font-bold text-xs text-foreground/70 px-3 py-1.5 text-center align-middle">
+                        {item.product.indomax || "---"}
+                      </td>
+                      <td className="font-bold text-xs text-foreground/70 px-2 py-1.5 text-center w-20 align-middle">
+                        {item.product.oem || "---"}
+                      </td>
+                      <td className="px-4 py-1.5 align-middle">
+                        <p className="font-bold text-xs uppercase text-foreground/90 leading-tight">
+                          {item.product.descripcionManguera || item.product.name}
+                        </p>
+                      </td>
+                      <td className="text-center px-3 py-1.5 align-middle">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] font-black uppercase border-primary/20 bg-primary/5 text-primary rounded-md px-2"
+                        >
+                          {item.product.category || "GENERAL"}
+                        </Badge>
+                      </td>
+                      <td className="text-right font-black italic text-xs text-foreground px-3 py-1.5 tabular-nums align-middle">
+                        {formatCurrency(item.product.precioFCA || item.product.price || 0, "USD")}
+                      </td>
+                      <td className="text-center px-3 py-1.5 align-middle">
+                        <div className="flex items-center justify-center">
+                          <div className="flex items-center bg-background/50 p-0.5 rounded-xl border border-border/40 shadow-inner">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-lg hover:bg-muted"
+                              onClick={() =>
+                                setPosCart((prev) =>
+                                  prev.map((p) =>
+                                    p.product.id === item.product.id
+                                      ? {
+                                          ...p,
+                                          quantity: Math.max(1, p.quantity - 1),
+                                        }
+                                      : p,
+                                  ),
+                                )
+                              }
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="w-8 text-center text-xs font-black italic">
+                              {item.quantity}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-lg hover:bg-muted"
+                              onClick={() =>
+                                setPosCart((prev) =>
+                                  prev.map((p) =>
+                                    p.product.id === item.product.id
+                                      ? { ...p, quantity: p.quantity + 1 }
+                                      : p,
+                                  ),
+                                )
+                              }
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="text-right font-black italic text-sm text-primary px-3 py-1.5 tabular-nums align-middle">
+                        {formatCurrency(itemTotal, "USD")}
+                      </td>
+                      <td className="text-center px-3 py-1.5 align-middle">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 rounded-lg text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                          onClick={() => removeFromCart(item.product.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>

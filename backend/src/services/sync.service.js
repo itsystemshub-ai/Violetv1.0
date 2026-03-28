@@ -40,7 +40,7 @@ class SyncService {
     this.isProcessing = true;
 
     try {
-      const configRows = DatabaseModel.executeSql(
+      const configRows = await DatabaseModel.executeSql(
         "SELECT value FROM config WHERE key = 'cloud_sync_enabled'"
       );
       const isSyncEnabled = configRows.length > 0 ? (configRows[0].value !== 'false') : true;
@@ -50,7 +50,7 @@ class SyncService {
         return;
       }
 
-      const pending = DatabaseModel.executeSql(`
+      const pending = await DatabaseModel.executeSql(`
         SELECT * FROM sync_logs 
         WHERE sync_status = 'PENDING' 
         AND attempts < 5 
@@ -79,12 +79,12 @@ class SyncService {
 
           if (result.error) throw result.error;
 
-          DatabaseModel.executeSql(`
+          await DatabaseModel.executeSql(`
             UPDATE sync_logs SET sync_status = 'SYNCED', updated_at = CURRENT_TIMESTAMP WHERE id = ?
           `, [id]);
 
           try {
-            DatabaseModel.executeSql(`
+            await DatabaseModel.executeSql(`
               UPDATE ${table_name} 
               SET is_dirty = 0, last_sync = CURRENT_TIMESTAMP 
               WHERE id = ?
@@ -93,7 +93,7 @@ class SyncService {
             console.log(`[SyncService] Skip metadata update for ${table_name}: ${e.message}`);
           }
         } catch (err) {
-          DatabaseModel.executeSql(`
+          await DatabaseModel.executeSql(`
             UPDATE sync_logs SET attempts = attempts + 1, last_error = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
           `, [err.message, log.id]);
           console.error(`[SyncService] Error en log ${log.id}:`, err.message);

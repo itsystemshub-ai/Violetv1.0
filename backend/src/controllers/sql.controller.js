@@ -10,7 +10,7 @@ class SqlController {
   static async execute(req, res, next) {
     try {
       const { query, params } = req.body;
-      const result = DatabaseModel.executeSql(query, params || []);
+      const result = await DatabaseModel.executeSql(query, params || []);
       
       res.json({ success: true, data: result });
     } catch (err) {
@@ -26,14 +26,14 @@ class SqlController {
       const { tableName, action, payload, recordId } = req.body;
       
       if (action === 'INSERT' || action === 'UPDATE') {
-        DatabaseModel.upsertRecord(tableName, payload);
+        await DatabaseModel.upsertRecord(tableName, payload);
       } else if (action === 'DELETE') {
-        DatabaseModel.executeSql(`DELETE FROM ${tableName} WHERE id = ?`, [recordId]);
+        await DatabaseModel.executeSql(`DELETE FROM ${tableName} WHERE id = ?`, [recordId]);
       }
 
       // Registrar en sync_logs
       const syncLogId = require('crypto').randomUUID();
-      DatabaseModel.executeSql(`
+      await DatabaseModel.executeSql(`
         INSERT INTO sync_logs (id, table_name, record_id, action, payload, sync_status)
         VALUES (?, ?, ?, ?, ?, 'PENDING')
       `, [syncLogId, tableName, recordId, action, JSON.stringify(payload)]);

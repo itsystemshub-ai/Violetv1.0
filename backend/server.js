@@ -28,11 +28,13 @@ function log(message) {
  * Obtener rutas base según el entorno
  */
 function getPaths() {
+  const rootDir = path.join(__dirname, '..');
+  
   if (isDev) {
     // Desarrollo: rutas relativas al proyecto
     return {
-      root: path.join(__dirname, '..'),
-      dist: path.join(__dirname, '..', 'dist'),
+      root: rootDir,
+      dist: path.join(rootDir, 'dist'),
       backend: __dirname
     };
   } else if (isElectron) {
@@ -43,10 +45,10 @@ function getPaths() {
       backend: path.join(process.resourcesPath, 'app.asar', 'backend')
     };
   } else {
-    // Producción standalone
+    // Producción standalone (Cloud/Docker)
     return {
-      root: path.join(__dirname, '..'),
-      dist: path.join(__dirname, '..', 'dist'),
+      root: rootDir,
+      dist: path.join(rootDir, 'dist'),
       backend: __dirname
     };
   }
