@@ -33,7 +33,7 @@ export const ConfigurableTable: React.FC<ConfigurableTableProps> = ({
   if (columns.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        No hay columnas visibles. Ve a Configuración > Sistema > Editar Encabezados
+        No hay columnas visibles. Ve a Configuración {'>'} Sistema {'>'} Editar Encabezados
         para configurar las columnas.
       </div>
     );

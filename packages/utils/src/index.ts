@@ -35,12 +35,12 @@ export function formatDate(
   locale = 'es-VE'
 ): string {
   const d = new Date(date);
-  
+
   if (isNaN(d.getTime())) {
     return 'Invalid Date';
   }
 
-  const options: Intl.DateTimeFormatOptions = {
+  const optionsMap: Record<typeof format, Intl.DateTimeFormatOptions> = {
     short: {
       day: '2-digit',
       month: '2-digit',
@@ -56,7 +56,9 @@ export function formatDate(
       hour: '2-digit',
       minute: '2-digit',
     },
-  }[format];
+  };
+
+  const options = optionsMap[format];
 
   return new Intl.DateTimeFormat(locale, options).format(d);
 }

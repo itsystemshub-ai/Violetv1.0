@@ -19,7 +19,10 @@
     "paths": {
       "@violet/types": ["./packages/types/src"],
       "@violet/utils": ["./packages/utils/src"],
-      "@violet/config": ["./packages/config/src"]
+      "@violet/config": ["./packages/config/src"],
+      "@violet/database": ["./packages/database/src"],
+      "@violet/services": ["./packages/services/src"],
+      "@violet/services/fiscal": ["./packages/services/src/fiscal"]
     }
   },
   "files": [],
@@ -27,6 +30,8 @@
     { "path": "./packages/types" },
     { "path": "./packages/utils" },
     { "path": "./packages/config" },
+    { "path": "./packages/database" },
+    { "path": "./packages/services" },
     { "path": "./apps/web" },
     { "path": "./apps/server" }
   ],

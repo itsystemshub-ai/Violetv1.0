@@ -284,7 +284,7 @@ export function useFeatureFlag(flag: keyof FeatureFlags): boolean {
 
 /**
  * Componente para renderizado condicional basado en feature flags.
- * 
+ *
  * @example
  * ```typescript
  * <FeatureGate flag="enableAIAssistant">
@@ -292,6 +292,8 @@ export function useFeatureFlag(flag: keyof FeatureFlags): boolean {
  * </FeatureGate>
  * ```
  */
+import { useFeatureFlag, type FeatureFlags } from './featureFlags';
+
 export function FeatureGate({
   flag,
   children,
@@ -302,7 +304,7 @@ export function FeatureGate({
   fallback?: React.ReactNode;
 }) {
   const isEnabled = useFeatureFlag(flag);
-  return isEnabled ? <>{children}</> : <>{fallback}</>;
+  return isEnabled ? children : fallback;
 }
 
 // Exponer en window para debugging (solo en dev)

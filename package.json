@@ -17,7 +17,7 @@
     "dev:electron": "npm run dev -w @violet/electron",
     "dev:all": "concurrently -k \"npm run dev:web\" \"npm run dev:server\" \"npm run dev:electron\"",
     "build": "npm run build:packages && npm run build:web",
-    "build:packages": "npm run build -w @violet/types && npm run build -w @violet/utils && npm run build -w @violet/config",
+    "build:packages": "npm run build -w @violet/types && npm run build -w @violet/utils && npm run build -w @violet/config && npm run build -w @violet/database && npm run build -w @violet/services",
     "build:web": "npm run build -w @violet/web",
     "build:server": "npm run build -w @violet/server",
     "build:electron": "npm run build -w @violet/electron",
@@ -28,7 +28,9 @@
     "lint:fix": "npm run lint:fix -w @violet/web",
     "typecheck": "npm run typecheck -w @violet/web",
     "clean": "npm run clean -w @violet/electron",
-    "install:all": "npm install"
+    "install:all": "npm install",
+    "migrate": "tsx packages/database/src/migrate.ts",
+    "seed": "tsx packages/database/src/seed.ts"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

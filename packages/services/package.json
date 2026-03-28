@@ -1,0 +1,41 @@
+{
+  "name": "@violet/services",
+  "version": "1.0.0",
+  "description": "Shared services for Violet ERP",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@violet/utils": "^1.0.0",
+    "@violet/types": "^1.0.0",
+    "date-fns": "^3.6.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "typescript": "^5.5.3",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "@violet/utils": "^1.0.0",
+    "@violet/types": "^1.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./fiscal": {
+      "types": "./dist/fiscal/index.d.ts",
+      "import": "./dist/fiscal/index.js"
+    },
+    "./reports": {
+      "types": "./dist/reports/index.d.ts",
+      "import": "./dist/reports/index.js"
+    }
+  }
+}
