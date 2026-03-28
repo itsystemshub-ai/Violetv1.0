@@ -1,25 +1,39 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@core/*": ["./src/core/*"],
-      "@modules/*": ["./src/modules/*"],
-      "@shared/*": ["./src/shared/*"],
-      "@infra/*": ["./src/infrastructure/*"],
-      "@infrastructure/*": ["./src/infrastructure/*"]
-
-    },
-    "noImplicitAny": true,
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": true
-  }
+      "@violet/types": ["./packages/types/src"],
+      "@violet/utils": ["./packages/utils/src"],
+      "@violet/config": ["./packages/config/src"]
+    }
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/types" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/config" },
+    { "path": "./apps/web" },
+    { "path": "./apps/server" }
+  ],
+  "exclude": [
+    "node_modules",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**"
+  ]
 }

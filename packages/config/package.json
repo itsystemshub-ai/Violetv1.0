@@ -1,0 +1,25 @@
+{
+  "name": "@violet/config",
+  "version": "1.0.0",
+  "description": "Shared configuration for Violet ERP",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "typescript": "^5.5.3",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.76"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  }
+}

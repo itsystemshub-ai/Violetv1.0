@@ -1,0 +1,58 @@
+{
+  "name": "@violet/electron",
+  "version": "1.0.0",
+  "description": "Electron desktop app for Violet ERP",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "wait-on http://localhost:8080 && electron .",
+    "build": "npm run clean && electron-builder",
+    "dist": "npm run clean && electron-builder --win",
+    "clean": "node -e \"const fs = require('fs'); ['dist', 'dist-electron'].forEach(d => fs.rmSync(d, { recursive: true, force: true }))\""
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "electron-is-dev": "^3.0.1",
+    "electron-updater": "^6.8.3"
+  },
+  "devDependencies": {
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "com.violet.erp",
+    "productName": "Violet ERP",
+    "copyright": "Copyright © 2026 Violet ERP",
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "electron"
+    },
+    "files": [
+      "electron/**/*",
+      "!electron/db.cjs"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "dist",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": ["nsis"],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "include": "installer.nsh",
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Violet ERP"
+    }
+  }
+}

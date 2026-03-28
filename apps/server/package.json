@@ -1,0 +1,25 @@
+{
+  "name": "@violet/server",
+  "version": "1.0.0",
+  "description": "Backend server for Violet ERP",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "node backend/src/index.ts",
+    "dev": "nodemon backend/src/index.ts",
+    "proxy": "node groq-proxy.cjs",
+    "dev:proxy": "nodemon groq-proxy.cjs"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "cors": "^2.8.6",
+    "socket.io": "^4.8.3",
+    "better-sqlite3": "^12.6.2",
+    "mysql2": "^3.11.0",
+    "@supabase/supabase-js": "^2.55.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "typescript": "^5.5.3"
+  }
+}
