@@ -1,15 +1,15 @@
-import { useTheme } from "next-themes";
+/**
+ * Violet ERP - Toaster Component
+ * Notificaciones con Sonner
+ */
 import { Toaster as Sonner } from "sonner";
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
-
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
-
+// next-themes no es requerido para funcionalidad básica
+const Toaster = ({ ...props }) => {
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
+      theme="light"
+      className="toaster theme-default"
       toastOptions={{
         classNames: {
           toast:
@@ -19,6 +19,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          success: "success-toast",
+          error: "error-toast",
+          warning: "warning-toast",
+          info: "info-toast",
         },
       }}
       {...props}

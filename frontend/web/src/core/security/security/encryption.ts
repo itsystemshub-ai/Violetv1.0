@@ -1,93 +1,131 @@
 /**
- * Módulo de encriptación para datos sensibles
- * Usa AES-256 para encriptar datos en localStorage
+ * Violet ERP - Encryption Service
+ * Usa Web Crypto API nativa del navegador en lugar de crypto-js
  */
 
-import CryptoJS from 'crypto-js';
+class EncryptionService {
+  private key: CryptoKey | null = null;
+  private keyMaterial: CryptoKey | null = null;
 
-// IMPORTANTE: En producción, esta clave DEBE venir de variables de entorno
-// Si no existe, se generará una estática in-memory para desarrollo, pero mostrará un warning.
-let runtimeKey = import.meta.env.VITE_ENCRYPTION_KEY;
+  /**
+   * Inicializar el servicio de encriptación
+   */
+  async initialize(password: string) {
+    try {
+      // Derivar clave usando PBKDF2
+      const encoder = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey(
+        'raw',
+        encoder.encode(password),
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey']
+      );
 
-if (!runtimeKey) {
-  console.warn('⚠️ ADVERTENCIA: VITE_ENCRYPTION_KEY no está definida en el entorno. Se utilizará una clave temporal estática, lo cual es inseguro para entornos de producción.');
-  runtimeKey = 'violet-erp-fallback-key-do-not-use-in-production-8f92a1';
+      this.keyMaterial = keyMaterial;
+
+      // Derivar clave AES-GCM
+      this.key = await window.crypto.subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: encoder.encode('violet-erp-salt'),
+          iterations: 100000,
+          hash: 'SHA-256',
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+
+      console.log('[Encryption] Service initialized');
+    } catch (error) {
+      console.error('[Encryption] Initialization error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Encriptar datos
+   */
+  async encrypt(data: string): Promise<string> {
+    if (!this.key) {
+      throw new Error('Encryption service not initialized');
+    }
+
+    try {
+      const encoder = new TextEncoder();
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      
+      const encrypted = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        this.key,
+        encoder.encode(data)
+      );
+
+      // Combinar IV + datos encriptados
+      const combined = new Uint8Array(iv.length + encrypted.byteLength);
+      combined.set(iv);
+      combined.set(new Uint8Array(encrypted), iv.length);
+
+      // Convertir a base64
+      return btoa(String.fromCharCode(...combined));
+    } catch (error) {
+      console.error('[Encryption] Encrypt error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Desencriptar datos
+   */
+  async decrypt(encryptedData: string): Promise<string> {
+    if (!this.key) {
+      throw new Error('Encryption service not initialized');
+    }
+
+    try {
+      // Convertir de base64 a Uint8Array
+      const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
+      
+      // Extraer IV y datos
+      const iv = combined.slice(0, 12);
+      const data = combined.slice(12);
+
+      const decrypted = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        this.key,
+        data
+      );
+
+      const decoder = new TextDecoder();
+      return decoder.decode(decrypted);
+    } catch (error) {
+      console.error('[Encryption] Decrypt error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generar hash SHA-256
+   */
+  async hash(data: string): Promise<string> {
+    try {
+      const encoder = new TextEncoder();
+      const hashBuffer = await window.crypto.subtle.digest(
+        'SHA-256',
+        encoder.encode(data)
+      );
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (error) {
+      console.error('[Encryption] Hash error:', error);
+      throw error;
+    }
+  }
 }
 
-const ENCRYPTION_KEY = runtimeKey;
+// Singleton instance
+export const encryptionService = new EncryptionService();
 
-/**
- * Encripta datos usando AES-256
- */
-export const encryptData = (data: any): string => {
-  try {
-    const jsonString = JSON.stringify(data);
-    return CryptoJS.AES.encrypt(jsonString, ENCRYPTION_KEY).toString();
-  } catch (error) {
-    console.error('Error encrypting data:', error);
-    throw new Error('Failed to encrypt data');
-  }
-};
-
-/**
- * Desencripta datos encriptados con AES-256
- */
-export const decryptData = (encryptedData: string): any => {
-  try {
-    const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
-    const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decryptedString);
-  } catch (error) {
-    console.error('Error decrypting data:', error);
-    return null;
-  }
-};
-
-/**
- * Storage seguro que encripta automáticamente
- */
-export const secureStorage = {
-  setItem: (key: string, value: any): void => {
-    try {
-      const encrypted = encryptData(value);
-      localStorage.setItem(key, encrypted);
-    } catch (error) {
-      console.error('Error storing encrypted data:', error);
-    }
-  },
-
-  getItem: (key: string): any => {
-    try {
-      const encrypted = localStorage.getItem(key);
-      if (!encrypted) return null;
-      return decryptData(encrypted);
-    } catch (error) {
-      console.error('Error retrieving encrypted data:', error);
-      return null;
-    }
-  },
-
-  removeItem: (key: string): void => {
-    localStorage.removeItem(key);
-  },
-
-  clear: (): void => {
-    localStorage.clear();
-  },
-};
-
-/**
- * Hash de contraseñas (para validación client-side)
- * NOTA: En producción, el hash debe hacerse en el servidor
- */
-export const hashPassword = (password: string): string => {
-  return CryptoJS.SHA256(password).toString();
-};
-
-/**
- * Genera un token seguro aleatorio
- */
-export const generateSecureToken = (): string => {
-  const randomBytes = CryptoJS.lib.WordArray.random(32);
-  return CryptoJS.enc.Base64.stringify(randomBytes);
-};
+export default encryptionService;
