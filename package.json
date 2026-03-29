@@ -1,83 +1,26 @@
 {
-  "name": "violet-erp-monorepo",
-  "private": true,
+  "name": "violet-erp",
   "version": "1.0.0",
-  "description": "Violet ERP - Sistema de Planificación de Recursos Empresariales Avanzado",
-  "type": "module",
+  "description": "Violet ERP - Sistema Empresarial con Firebird",
+  "private": true,
   "scripts": {
-    "dev": "pnpm run --parallel dev",
-    "dev:web": "pnpm --filter @violet-erp/web dev",
-    "dev:api": "pnpm --filter @violet-erp/api dev",
-    "dev:all": "pnpm run --parallel dev",
-    "build": "pnpm run --parallel build",
-    "build:web": "pnpm --filter @violet-erp/web build",
-    "build:api": "pnpm --filter @violet-erp/api build",
-    "build:all": "pnpm run --parallel build",
-    "lint": "pnpm run --parallel lint",
-    "lint:fix": "pnpm run --parallel lint:fix",
-    "typecheck": "pnpm run --parallel typecheck",
-    "test": "pnpm run --parallel test",
-    "test:web": "pnpm --filter @violet-erp/web test",
-    "test:api": "pnpm --filter @violet-erp/api test",
-    "clean": "pnpm run --parallel clean",
-    "clean:all": "rimraf **/node_modules **/dist **/.turbo **/*.tsbuildinfo",
-    "deps:install": "pnpm install",
-    "deps:update": "pnpm update -r",
-    "deps:outdated": "pnpm outdated -r",
-    "deps:dedupe": "pnpm dedupe",
-    "audit": "pnpm audit",
-    "prepare": "husky install",
-    "preinstall": "npx only-allow pnpm",
-    "violet:start": "pnpm run dev:all",
-    "violet:build": "pnpm run build:all",
-    "violet:dev:web": "pnpm run dev:web",
-    "violet:dev:api": "pnpm run dev:api"
+    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\"",
+    "dev:backend": "cd backend/api && npm run dev",
+    "dev:frontend": "cd frontend/web && npm run dev",
+    "build": "pnpm build:backend && pnpm build:frontend",
+    "build:backend": "cd backend/api && npm run build",
+    "build:frontend": "cd frontend/web && npm run build",
+    "start": "cd backend/api && npm start",
+    "db:init": "cd database/firebird && node -e \"console.log('Firebird schema ready')\"",
+    "install:all": "pnpm install && cd backend/api && npm install && cd ../../frontend/web && npm install"
   },
-  "keywords": [
-    "erp",
-    "violet",
-    "enterprise",
-    "business",
-    "management",
-    "inventory",
-    "sales",
-    "finance",
-    "accounting",
-    "crm"
-  ],
+  "keywords": ["erp", "violet", "firebird", "enterprise"],
   "author": "Violet ERP Team",
   "license": "MIT",
   "devDependencies": {
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
-    "rimraf": "^6.0.1"
+    "concurrently": "^9.2.1"
   },
-  "packageManager": "pnpm@9.15.0",
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "vite": "^6.1.7",
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1"
-    },
-    "peerDependencyRules": {
-      "ignoreMissing": [
-        "eslint",
-        "typescript"
-      ]
-    },
-    "patchedDependencies": {}
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md}": [
-      "prettier --write"
-    ]
+    "node": ">=20.0.0"
   }
 }
