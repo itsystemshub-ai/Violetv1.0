@@ -1,26 +1,56 @@
 {
-  "name": "violet-erp",
-  "version": "1.0.0",
-  "description": "Violet ERP - Sistema Empresarial con Firebird",
+  "name": "violet-erp-monorepo",
+  "version": "2.0.0",
+  "description": "Violet ERP - Sistema Empresarial Avanzado con Firebird",
   "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
-    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\"",
-    "dev:backend": "cd backend/api && npm run dev",
-    "dev:frontend": "cd frontend/web && npm run dev",
-    "build": "pnpm build:backend && pnpm build:frontend",
-    "build:backend": "cd backend/api && npm run build",
-    "build:frontend": "cd frontend/web && npm run build",
-    "start": "cd backend/api && npm start",
-    "db:init": "cd database/firebird && node -e \"console.log('Firebird schema ready')\"",
-    "install:all": "pnpm install && cd backend/api && npm install && cd ../../frontend/web && npm install"
+    "dev": "pnpm run --parallel dev",
+    "dev:backend": "pnpm --filter @violet-erp/backend dev",
+    "dev:frontend": "pnpm --filter @violet-erp/frontend dev",
+    "build": "pnpm run --parallel build",
+    "build:backend": "pnpm --filter @violet-erp/backend build",
+    "build:frontend": "pnpm --filter @violet-erp/frontend build",
+    "start": "pnpm --filter @violet-erp/backend start",
+    "test": "pnpm run --parallel test",
+    "test:backend": "pnpm --filter @violet-erp/backend test",
+    "test:frontend": "pnpm --filter @violet-erp/frontend test",
+    "test:coverage": "pnpm run --parallel test:coverage",
+    "lint": "pnpm run --parallel lint",
+    "lint:fix": "pnpm run --parallel lint:fix",
+    "typecheck": "pnpm run --parallel typecheck",
+    "db:migrate": "pnpm --filter @violet-erp/database migrate",
+    "db:backup": "pnpm --filter @violet-erp/database backup",
+    "db:restore": "pnpm --filter @violet-erp/database restore",
+    "clean": "pnpm run --parallel clean",
+    "clean:all": "rimraf **/node_modules **/dist **/.turbo",
+    "prepare": "husky install"
   },
-  "keywords": ["erp", "violet", "firebird", "enterprise"],
+  "keywords": ["erp", "violet", "firebird", "enterprise", "business"],
   "author": "Violet ERP Team",
   "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^9.2.1"
-  },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": ["eslint", "typescript"]
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md}": ["prettier --write"]
   }
 }
