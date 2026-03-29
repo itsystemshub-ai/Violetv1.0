@@ -1,0 +1,37 @@
+{
+  "name": "@violet-erp/database",
+  "version": "1.0.0",
+  "description": "Violet ERP - Paquete de base de datos y conexiones",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit",
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed.ts",
+    "generate": "tsx src/generate-types.ts"
+  },
+  "dependencies": {
+    "@violet-erp/types": "workspace:*",
+    "better-sqlite3": "^12.6.2",
+    "postgres": "^3.4.8",
+    "@supabase/supabase-js": "^2.55.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.5.5",
+    "typescript": "^5.5.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.21.0"
+  }
+}
