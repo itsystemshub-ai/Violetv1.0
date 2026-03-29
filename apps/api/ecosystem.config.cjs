@@ -1,8 +1,6 @@
 /**
  * Violet ERP - Configuración de PM2
- * 
  * Alternativa a Docker para producción
- * Gestión de procesos, auto-reinicio, logs, clustering
  */
 
 module.exports = {
@@ -20,10 +18,6 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000,
         INSTANCES: 4,
-      },
-      env_staging: {
-        NODE_ENV: 'staging',
-        PORT: 3001,
       },
       error_file: './logs/pm2-err.log',
       out_file: './logs/pm2-out.log',
@@ -54,25 +48,6 @@ module.exports = {
       },
       error_file: './logs/sync-err.log',
       out_file: './logs/sync-out.log',
-      log_file: './logs/sync-combined.log',
-      time: true,
-      autorestart: true,
-    },
-    {
-      name: 'violet-erp-socket',
-      script: './src/socket/standalone.js',
-      instances: 1,
-      exec_mode: 'fork',
-      env: {
-        NODE_ENV: 'development',
-        WS_PORT: 3001,
-      },
-      env_production: {
-        NODE_ENV: 'production',
-        WS_PORT: 3001,
-      },
-      error_file: './logs/socket-err.log',
-      out_file: './logs/socket-out.log',
       time: true,
       autorestart: true,
     },
