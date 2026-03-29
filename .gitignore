@@ -1,6 +1,12 @@
+# =============================================================================
+# VIOLET ERP - .gitignore
+# Sistema ERP Monorepo
+# =============================================================================
+
 # --- pnpm workspace ---
 .pnpm-store/
 .pnpm-debug.log*
+.pnpmfile.cjs
 
 # --- Dependencies ---
 node_modules/

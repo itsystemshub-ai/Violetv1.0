@@ -1,180 +1,161 @@
-const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
-const fs = require('fs');
-
-// Determinar si estamos en desarrollo o producción
-const isDev = process.env.NODE_ENV !== 'production';
-
-// Función para obtener la ruta base correcta
-function getBasePath() {
-  return path.join(__dirname, '../..');
-}
-
-const basePath = getBasePath();
-
-// Importar módulos - en producción estos están dentro de app.asar y funcionan con require
-const createApp = require('./app');
-const { port, cors } = require('./config/server');
-const syncService = require('./services/sync.service');
-
-let io = null;
-let serverInstance = null;
-let connectedNodes = [];
-
-// Función de logging
-function log(message) {
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] [Server] ${message}`);
-}
-
 /**
- * Inicia el servidor local
+ * Violet ERP - Backend API
+ * Servidor principal Express con Socket.IO
  */
-function startLocalServer() {
-  if (serverInstance) {
-    log('El servidor ya está en ejecución');
-    return;
-  }
 
-  log('Iniciando servidor local...');
-  log(`Puerto configurado: ${port}`);
+import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import { config } from './config/index.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { requestLogger } from './middleware/requestLogger.js';
+import { authRoutes } from './modules/auth/routes.js';
+import { userRoutes } from './modules/users/routes.js';
+import { productRoutes } from './modules/products/routes.js';
+import { inventoryRoutes } from './modules/inventory/routes.js';
+import { saleRoutes } from './modules/sales/routes.js';
+import { customerRoutes } from './modules/customers/routes.js';
+import { purchaseRoutes } from './modules/purchases/routes.js';
+import { supplierRoutes } from './modules/suppliers/routes.js';
+import { financeRoutes } from './modules/finance/routes.js';
+import { accountingRoutes } from './modules/accounting/routes.js';
+import { reportRoutes } from './modules/reports/routes.js';
+import { setupSocket } from './socket/index.js';
 
-  log(`Puerto configurado: ${port}`);
+const app: Express = express();
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: config.corsOrigin,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
 
-  // Crear aplicación Express
-  let app;
-  try {
-    app = createApp();
-    log('✓ Aplicación Express creada');
-  } catch (err) {
-    log(`✗ Error al crear aplicación Express: ${err.message}`);
-    throw err;
-  }
-  
-  try {
-    serverInstance = http.createServer(app);
-    log('✓ Servidor HTTP creado');
-  } catch (err) {
-    log(`✗ Error al crear servidor HTTP: ${err.message}`);
-    throw err;
-  }
-  
-  // Setup Socket.io
-  try {
-    io = new Server(serverInstance, { cors });
-    log('✓ Socket.io configurado');
-  } catch (err) {
-    log(`✗ Error al configurar Socket.io: ${err.message}`);
-    throw err;
-  }
+// ============================================================================
+// MIDDLEWARE
+// ============================================================================
 
-  // Servir archivos estáticos
-  const express = require('express');
-  
-  // En producción, dist está FUERA de app.asar, en resources/app.asar.unpacked/dist
-  // o directamente en resources/dist
-  // En la nube/servidor, dist está en la raíz del proyecto
-  let distPath = path.join(basePath, 'dist');
-  
-  if (!fs.existsSync(distPath)) {
-    // Fallback para entornos donde el server se ejecuta desde backend/src
-    distPath = path.resolve(__dirname, '../../dist');
-  }
-  
-  log(`Ruta de archivos estáticos seleccionada: ${distPath}`);
-  
-  if (!distPath || !fs.existsSync(distPath)) {
-    const error = `ERROR CRÍTICO: No se encontró la carpeta dist en ninguna ubicación`;
-    log(`✗ ${error}`);
-    throw new Error(error);
-  }
-  
-  app.use(express.static(distPath));
-  log('✓ Middleware de archivos estáticos configurado');
-  
-  const indexPath = path.join(distPath, 'index.html');
-  const indexExists = fs.existsSync(indexPath);
-  log(`index.html existe: ${indexExists}`);
+app.use(cors({
+  origin: config.corsOrigin,
+  credentials: true,
+}));
 
-  // Socket.io eventos
-  io.on('connection', (socket) => {
-    const nodeIp = socket.handshake.address;
-    log(`Nuevo nodo conectado: ${socket.id} (IP: ${nodeIp})`);
-    
-    connectedNodes.push({ 
-      id: socket.id, 
-      ip: nodeIp, 
-      connectedAt: new Date().toISOString() 
-    });
-    io.emit('nodes:update', connectedNodes);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-    socket.on('config:update', (data) => {
-      socket.broadcast.emit('config:update', data);
-    });
+// Logging
+app.use(requestLogger);
 
-    socket.on('disconnect', () => {
-      log(`Nodo desconectado: ${socket.id}`);
-      connectedNodes = connectedNodes.filter(n => n.id !== socket.id);
-      io.emit('nodes:update', connectedNodes);
-    });
+// Health check
+app.get('/health', (req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: config.appVersion,
   });
+});
 
-  // SPA Fallback
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Endpoint no encontrado' 
-      });
+// API Info
+app.get('/api', (req: Request, res: Response) => {
+  res.json({
+    name: 'Violet ERP API',
+    version: config.appVersion,
+    documentation: '/api/docs',
+    endpoints: {
+      auth: '/api/auth',
+      users: '/api/users',
+      products: '/api/products',
+      inventory: '/api/inventory',
+      sales: '/api/sales',
+      customers: '/api/customers',
+      purchases: '/api/purchases',
+      suppliers: '/api/suppliers',
+      finance: '/api/finance',
+      accounting: '/api/accounting',
+      reports: '/api/reports',
+    },
+  });
+});
+
+// ============================================================================
+// RUTAS DE LA API
+// ============================================================================
+
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/sales', saleRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/accounting', accountingRoutes);
+app.use('/api/reports', reportRoutes);
+
+// 404 handler
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: 'NOT_FOUND',
+      message: `Route ${req.method} ${req.path} not found`,
+    },
+  });
+});
+
+// Error handler
+app.use(errorHandler);
+
+// ============================================================================
+// SOCKET.IO
+// ============================================================================
+
+setupSocket(io);
+
+// ============================================================================
+// INICIAR SERVIDOR
+// ============================================================================
+
+const startServer = async () => {
+  try {
+    // Inicializar base de datos
+    const { initializeDatabase } = await import('./database/index.js');
+    await initializeDatabase();
+
+    server.listen(config.port, config.host, () => {
+      console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║   💜  V I O L E T   E R P   -   A P I   S E R V E R       ║
+║                                                           ║
+║   Environment: ${config.nodeEnv.padEnd(42)} ║
+║   Port: ${String(config.port).padEnd(48)}║
+║   Host: ${String(config.host).padEnd(46)}║
+║   Database: ${config.dbType.padEnd(42)} ║
+║                                                           ║
+║   API: http://${config.host}:${config.port}/api                       ║
+║   Health: http://${config.host}:${config.port}/health                 ║
+║   WebSocket: ws://${config.host}:${config.wsPort}                     ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+      `);
+    });
+
+    // WebSocket server
+    if (config.wsEnabled) {
+      io.listen(config.wsPort);
+      console.log(`   WebSocket Server: ws://${config.host}:${config.wsPort}`);
     }
-    log(`Sirviendo index.html para: ${req.path}`);
-    
-    const indexPath = path.join(distPath, 'index.html');
-    
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      log(`✗ ERROR: index.html no encontrado en ${indexPath}`);
-      res.status(500).send(`Error: index.html no encontrado en ${indexPath}`);
-    }
-  });
-
-  // Iniciar servidor
-  try {
-    serverInstance.listen(port, '0.0.0.0', () => {
-      log(`✓ Servidor ejecutándose en http://0.0.0.0:${port}`);
-      log(`✓ Archivos estáticos servidos desde: ${distPath}`);
-    });
-  } catch (err) {
-    log(`✗ Error al iniciar servidor en puerto ${port}: ${err.message}`);
-    throw err;
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
-
-  serverInstance.on('error', (err) => {
-    log(`✗ Error del servidor: ${err.message}`);
-    log(`Stack: ${err.stack}`);
-    throw err;
-  });
-
-  // Iniciar sincronización
-  try {
-    syncService.start();
-    log('✓ Servicio de sincronización iniciado');
-  } catch (err) {
-    log(`✗ Error al iniciar sincronización: ${err.message}`);
-  }
-}
-
-/**
- * Obtiene la instancia de Socket.io
- */
-function getSocketIo() {
-  return io;
-}
-
-module.exports = {
-  startLocalServer,
-  getSocketIo,
-  basePath
 };
+
+startServer();
+
+export { app, io, server };

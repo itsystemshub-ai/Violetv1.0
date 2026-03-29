@@ -1,0 +1,33 @@
+{
+  "name": "@violet-erp/services",
+  "version": "1.0.0",
+  "description": "Violet ERP - Servicios compartidos (API, eventos, notificaciones)",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@violet-erp/types": "workspace:*",
+    "@violet-erp/utils": "workspace:*",
+    "axios": "^1.13.2",
+    "socket.io-client": "^4.8.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "typescript": "^5.5.3",
+    "rimraf": "^6.0.1"
+  }
+}
