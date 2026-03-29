@@ -1,12 +1,12 @@
 @echo off
 REM =============================================================================
-REM Violet ERP - Instalación Automática Completa
+REM Violet ERP - Instalación Automática Completa (Solo CMD)
 REM Descarga e instala TODO lo necesario para el sistema
 REM =============================================================================
 
 echo.
 echo ╔═══════════════════════════════════════════════════════════╗
-echo ║      VIOLET ERP - INSTALACIÓN AUTOMÁTICA COMPLETA         ║
+echo ║      VIOLET ERP - INSTALACION AUTOMATICA COMPLETA         ║
 echo ╚═══════════════════════════════════════════════════════════╝
 echo.
 
@@ -15,7 +15,8 @@ net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo [!] Se requieren permisos de administrador
     echo.
-    echo Por favor, ejecuta este script como administrador.
+    echo Por favor, haz clic derecho en install.bat y selecciona:
+    echo "Ejecutar como administrador"
     echo.
     pause
     exit /b 1
@@ -29,7 +30,6 @@ REM 1. VERIFICAR E INSTALAR NODE.JS
 REM =============================================================================
 
 echo [1/6] Verificando Node.js...
-echo.
 
 node --version >nul 2>&1
 if %errorLevel% neq 0 (
@@ -38,7 +38,7 @@ if %errorLevel% neq 0 (
     echo.
     
     REM Descargar Node.js
-    powershell -Command "& {Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi' -OutFile '%TEMP%\nodejs.msi'}"
+    powershell -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi' -OutFile '%TEMP%\nodejs.msi'"
     
     REM Instalar silenciosamente
     start /wait msiexec /i "%TEMP%\nodejs.msi" /quiet /norestart
@@ -62,7 +62,6 @@ REM 2. INSTALAR PNPM GLOBAL
 REM =============================================================================
 
 echo [2/6] Verificando pnpm...
-echo.
 
 pnpm --version >nul 2>&1
 if %errorLevel% neq 0 (
@@ -89,7 +88,6 @@ REM 3. VERIFICAR FIREBIRD
 REM =============================================================================
 
 echo [3/6] Verificando Firebird...
-echo.
 
 sc query FirebirdServerDefaultInstance >nul 2>&1
 if %errorLevel% neq 0 (
@@ -100,7 +98,7 @@ if %errorLevel% neq 0 (
     echo      2. Descarga Firebird 3.0+
     echo      3. Ejecuta el instalador
     echo.
-    echo [→] O usa el script: .\configure-firebird.ps1
+    echo [→] O usa: configure-firebird.cmd
     echo.
     set /p SKIP_FIREBIRD="¿Continuar sin Firebird? (S/N): "
     if /i not "%SKIP_FIREBIRD%"=="S" (
@@ -204,7 +202,7 @@ REM ============================================================================
 
 echo.
 echo ╔═══════════════════════════════════════════════════════════╗
-echo ║          INSTALACIÓN COMPLETADA EXITOSAMENTE              ║
+echo ║          INSTALACION COMPLETADA EXITOSAMENTE              ║
 echo ╚═══════════════════════════════════════════════════════════╝
 echo.
 echo Componentes instalados:
