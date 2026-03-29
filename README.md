@@ -32,7 +32,19 @@ violet-erp/
 - Firebird 3.0+
 - pnpm o npm
 
-## Instalación
+## Instalación Automática
+
+### Windows - Instalación con un clic
+
+```batch
+# Método 1: Batch (CMD)
+install-all.bat
+
+# Método 2: PowerShell (como Administrador)
+.\install-all.bat
+```
+
+### Instalación Manual
 
 ```bash
 # Instalar dependencias
@@ -41,6 +53,35 @@ pnpm install:all
 # O por separado
 cd backend/api && npm install
 cd ../../frontend/web && npm install
+```
+
+## Inicio
+
+### Iniciar manualmente
+
+```batch
+start.bat
+```
+
+### Inicio automático en Windows
+
+```batch
+# Configurar inicio automático al encender el equipo
+setup-startup.bat
+
+# Remover inicio automático
+uninstall-startup.bat
+```
+
+### Desarrollo
+
+```bash
+# Iniciar todo (backend + frontend)
+pnpm dev
+
+# O por separado
+pnpm dev:backend
+pnpm dev:frontend
 ```
 
 ## Configuración
@@ -53,17 +94,6 @@ cp .env.example .env
 FIREBIRD_DATABASE=C:/ruta/a/tu/base.fdb
 FIREBIRD_USER=SYSDBA
 FIREBIRD_PASSWORD=tu-password
-```
-
-## Desarrollo
-
-```bash
-# Iniciar todo (backend + frontend)
-pnpm dev
-
-# O por separado
-pnpm dev:backend
-pnpm dev:frontend
 ```
 
 ## Producción
