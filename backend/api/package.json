@@ -18,6 +18,7 @@
     "lint:fix": "eslint src --ext .js,.ts --fix",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist logs",
+    "db:init": "node scripts/init-firebird.js",
     "db:migrate": "node scripts/migrate.js",
     "db:seed": "node scripts/seed.js",
     "db:backup": "node scripts/backup.js",
