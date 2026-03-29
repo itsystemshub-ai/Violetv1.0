@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node -e \"if(!require('fs').existsSync('node_modules')){console.log('Instalando dependencias...');require('child_process').execSync('npm install', {stdio:'inherit'});}\"",
     "dev": "vite",
     "build": "tsc && vite build",
     "build:staging": "tsc && vite build --mode staging",

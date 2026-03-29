@@ -6,6 +6,7 @@
   "type": "module",
   "main": "./src/server.js",
   "scripts": {
+    "predev": "node -e \"if(!require('fs').existsSync('node_modules')){console.log('Instalando dependencias...');require('child_process').execSync('npm install', {stdio:'inherit'});}\"",
     "dev": "nodemon --exec node src/server.js",
     "start": "node src/server.js",
     "start:prod": "pm2 start ecosystem.config.cjs --env production",

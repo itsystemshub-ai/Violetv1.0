@@ -1,64 +1,96 @@
 @echo off
 REM =============================================================================
-REM Violet ERP - Iniciar Sistema
-REM Ejecuta: start.bat
+REM Violet ERP - Iniciar Sistema Automático
+REM Instala dependencias si faltan y inicia backend + frontend
 REM =============================================================================
 
 echo.
 echo ╔═══════════════════════════════════════════════════════════╗
-echo ║              VIOLET ERP - INICIANDO SISTEMA               ║
+echo ║         VIOLET ERP - INICIANDO SISTEMA                    ║
 echo ╚═══════════════════════════════════════════════════════════╝
 echo.
 
 cd /d "%~dp0"
 
-REM Verificar si .env existe
-if not exist ".env" (
-    echo [!] No se encontró .env
-    echo [→] Copiando .env.example a .env...
-    copy .env.example .env
-    echo [✓] .env creado - Edítalo con tus credenciales
-    echo.
-)
-
-REM Verificar dependencias instaladas
+REM Verificar si node_modules existe en root
 if not exist "node_modules" (
-    echo [!] Dependencias no instaladas
-    echo [→] Ejecutando instalación automática...
+    echo [!] Dependencias root no instaladas
+    echo [→] Instalando dependencias con pnpm...
     echo.
-    call install-all.bat
+    call pnpm install
+    if %errorLevel% neq 0 (
+        echo [!] Error instalando dependencias root
+        echo [→] Usando npm como fallback...
+        call npm install
+    )
+    echo.
 )
 
-echo [1/3] Iniciando Backend...
+REM Verificar backend
+cd backend\api
+if not exist "node_modules" (
+    echo [!] Dependencias backend no instaladas
+    echo [→] Instalando dependencias del backend...
+    echo.
+    call pnpm install
+    if %errorLevel% neq 0 (
+        call npm install
+    )
+    echo.
+)
+cd ..\..
+
+REM Verificar frontend
+cd frontend\web
+if not exist "node_modules" (
+    echo [!] Dependencias frontend no instaladas
+    echo [→] Instalando dependencias del frontend...
+    echo.
+    call pnpm install
+    if %errorLevel% neq 0 (
+        call npm install
+    )
+    echo.
+)
+cd ..\..
+
+echo ╔═══════════════════════════════════════════════════════════╗
+echo ║              INICIANDO SERVIDORES                         ║
+echo ╚═══════════════════════════════════════════════════════════╝
 echo.
 
-start "Violet ERP - Backend" cmd /k "cd backend\api && npm run dev"
+REM Iniciar backend en ventana separada
+echo [1/2] Iniciando Backend...
+start "Violet ERP - Backend" cmd /k "cd backend\api && echo Backend API - http://localhost:3000 && echo Health: http://localhost:3000/health && echo. && npm run dev"
 
+REM Esperar a que el backend inicie
 timeout /t 5 /nobreak >nul
 
-echo [2/3] Iniciando Frontend...
-echo.
+REM Iniciar frontend en ventana separada
+echo [2/2] Iniciando Frontend...
+start "Violet ERP - Frontend" cmd /k "cd frontend\web && echo Frontend Web - http://localhost:5173 && echo. && npm run dev"
 
-start "Violet ERP - Frontend" cmd /k "cd frontend\web && npm run dev"
-
-timeout /t 3 /nobreak >nul
-
-echo [3/3] Sistema iniciado...
 echo.
 echo ╔═══════════════════════════════════════════════════════════╗
-echo ║              SISTEMA INICIADO CORRECTAMENTE               ║
+echo ║           SISTEMA INICIADO CORRECTAMENTE                  ║
 echo ╚═══════════════════════════════════════════════════════════╝
 echo.
 echo Accede a:
 echo   → Frontend: http://localhost:5173
 echo   → Backend:  http://localhost:3000
+echo   → Health:   http://localhost:3000/health
 echo.
-echo Para detener el sistema:
+echo Credenciales:
+echo   Email:    admin@violet-erp.com
+echo   Password: admin123
+echo.
+echo Para detener:
 echo   → Cierra las ventanas de Backend y Frontend
-echo.
+echo   → O ejecuta: stop.bat
 echo.
 
 REM Abrir navegador automáticamente
+timeout /t 3 /nobreak >nul
 start http://localhost:5173
 
 exit /b 0
