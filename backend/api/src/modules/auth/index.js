@@ -5,8 +5,8 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { config } from '../config/env.js';
-import { authLimiter } from '../middleware/rateLimit.js';
+import { config } from '../../config/env.js';
+import { authLimiter } from '../../middleware/rateLimit.js';
 
 export const authRouter = Router();
 
