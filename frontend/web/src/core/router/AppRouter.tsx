@@ -1,89 +1,60 @@
-/**
- * AppRouter - Configuración centralizada de rutas
- *
- * Arquitectura: Feature-Based Routing
- * - Separa la lógica de routing del componente App
- * - Implementa lazy loading automático
- * - Maneja error boundaries por ruta
- */
+import React, { Suspense, lazy } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import React, { Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
-import { ProtectedRoute } from "@/core/auth/components/ProtectedRoute";
-import { RouteErrorBoundary } from "@/shared/components/feedback/ErrorBoundary";
-import {
-  PUBLIC_ROUTES,
-  PROTECTED_ROUTES,
-  NOT_FOUND_ROUTE,
-  RouteConfig,
-} from "./routes.config";
-import { ValeryLayout } from "@/layouts/ValeryLayout";
+// Lazy load pages
+const Login = lazy(() => import('@/modules/auth/pages/Login'));
+const Dashboard = lazy(() => import('@/modules/dashboard/pages/Dashboard'));
 
-/**
- * Loading Fallback Component
- */
-const LoadingFallback: React.FC = () => (
-  <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background gap-4">
-    <div className="relative">
-      <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
-      <div className="absolute top-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+// Loading component
+const PageLoader = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    background: '#f5f5f5'
+  }}>
+    <div style={{
+      textAlign: 'center',
+      color: '#666'
+    }}>
+      <h2 style={{ marginBottom: '10px' }}>💜 Violet ERP</h2>
+      <p>Cargando...</p>
     </div>
-    <p className="text-muted-foreground font-medium animate-pulse">
-      Cargando módulo...
-    </p>
   </div>
 );
 
-/**
- * Render a single route with error boundary
- */
-const renderRoute = (route: RouteConfig) => {
-  const Component = route.component;
-  const element = (
-    <RouteErrorBoundary routeName={route.title || route.path}>
-      <Component />
-    </RouteErrorBoundary>
-  );
-
-  return <Route key={route.path} path={route.path} element={element} />;
+// Protected route wrapper
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const token = localStorage.getItem('violet_token');
+  
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
 };
 
-/**
- * Render a protected route with authentication and permissions
- */
-const renderProtectedRoute = (route: RouteConfig) => {
-  const Component = route.component;
-  const element = (
-    <ProtectedRoute requiredPermission={route.permission}>
-      <RouteErrorBoundary routeName={route.title || route.path}>
-        <Component />
-      </RouteErrorBoundary>
-    </ProtectedRoute>
-  );
-
-  return <Route key={route.path} path={route.path} element={element} />;
-};
-
-/**
- * AppRouter Component
- */
 export const AppRouter: React.FC = () => {
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public Routes */}
-        {PUBLIC_ROUTES.map(renderRoute)}
-
-        {/* Protected Routes Wrapper */}
-        <Route element={<ValeryLayout />}>
-          {PROTECTED_ROUTES.map(renderProtectedRoute)}
-        </Route>
-
-        {/* 404 Route */}
-        {renderRoute(NOT_FOUND_ROUTE)}
+        {/* Rutas públicas */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Rutas protegidas */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Redirección por defecto */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
   );
 };
-
-export default AppRouter;
