@@ -1,41 +1,30 @@
 # 💜 Violet ERP v2.0
 
-**Sistema Empresarial Avanzado con Firebird + React + pnpm Monorepo**
+**Sistema Empresarial Híbrido 100% Autocontenido**
 
-![Versión](https://img.shields.io/badge/versión-2.0.0-purple)
-![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-green)
-![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.0.0-yellow)
-![Firebird](https://img.shields.io/badge/firebird-3.0+-red)
-![Tests](https://img.shields.io/badge/tests-vitest-blue)
+Firebird + React + Monorepo + Sincronización Local-Nube
 
 ---
 
 ## 🚀 Características Principales
 
-### Arquitectura Avanzada
+### Arquitectura Híbrida
 
-| Característica | Tecnología |
-|----------------|------------|
-| **Monorepo** | pnpm workspaces |
-| **Backend** | Express + Firebird Pool |
-| **Frontend** | React 18 + Vite + TypeScript |
-| **Base de Datos** | Firebird 3.0+ |
-| **Cache** | Redis (opcional) |
-| **WebSockets** | Socket.IO |
-| **Tests** | Vitest + Testing Library |
-| **CI/CD** | GitHub Actions |
+| Modo | Descripción | Caso de Uso |
+|------|-------------|-------------|
+| **Local** | Todo en una máquina | Negocio sin internet |
+| **Cloud** | Todo en servidor central | SaaS multi-tenant |
+| **Híbrido** ⭐ | Local + Sync automático | Multi-sucursal |
 
-### Módulos Empresariales
+### Características Técnicas
 
-- ✅ **Auth** - JWT, RBAC, refresh tokens
-- ✅ **Usuarios** - CRUD completo con permisos
-- ✅ **Productos** - Gestión con stock en tiempo real
-- ✅ **Inventario** - Múltiples almacenes, movimientos
-- 🔄 **Ventas** - Facturación, cotizaciones
-- 🔄 **Compras** - Órdenes, proveedores
-- 🔄 **Finanzas** - Cuentas por cobrar/pagar
-- 🔄 **Contabilidad** - Asientos, libros
-- 🔄 **Reportes** - Dashboard, analytics
+- ✅ **100% Autocontenido**: Sin dependencias de servicios externos
+- ✅ **Offline-First**: Funciona sin internet
+- ✅ **Sincronización Nativa**: Sync entre nodos sin Supabase/externos
+- ✅ **Firebird**: Base de datos robusta y probada
+- ✅ **React 18 + TypeScript**: Frontend moderno
+- ✅ **Socket.IO**: Tiempo real integrado
+- ✅ **PWA**: Instalable en cualquier dispositivo
 
 ---
 
@@ -43,41 +32,40 @@
 
 ```
 violet-erp/
-├── .github/workflows/       # CI/CD pipelines
 ├── backend/
 │   └── api/
 │       ├── src/
-│       │   ├── config/      # Configuración
-│       │   ├── database/    # Firebird pool
-│       │   ├── middleware/  # Auth, rate limit, logs
-│       │   ├── modules/     # Rutas API
-│       │   ├── services/    # Lógica de negocio
-│       │   ├── socket/      # WebSockets
-│       │   └── utils/       # Logger, helpers
-│       ├── tests/
-│       │   ├── services/    # Tests unitarios
-│       │   └── integration/ # Tests de integración
-│       ├── ecosystem.config.cjs  # PM2
+│       │   ├── config/          # Configuración híbrida
+│       │   ├── database/        # Firebird pool
+│       │   ├── middleware/      # Auth, rateLimit, errorHandler
+│       │   ├── modules/         # Auth, users, products, sync
+│       │   ├── services/        # Hybrid sync service
+│       │   ├── socket/          # WebSocket server
+│       │   ├── utils/           # Logger, helpers
+│       │   └── server.js        # Servidor híbrido
+│       ├── scripts/             # init-firebird.js
 │       └── package.json
 │
 ├── frontend/
 │   └── web/
 │       ├── src/
-│       │   ├── core/        # Providers, router, initializer
-│       │   ├── modules/     # Módulos UI
-│       │   ├── stores/      # Zustand stores
-│       │   ├── components/  # Componentes reutilizables
-│       │   └── test/        # Setup de tests
-│       ├── tests/           # Tests de componentes
+│       │   ├── core/
+│       │   │   ├── config/      # App config híbrida
+│       │   │   ├── sync/        # SyncEngine nativo
+│       │   │   ├── database/    # IndexedDB (localforage)
+│       │   │   └── api/         # API client
+│       │   ├── modules/         # Módulos UI
+│       │   └── components/      # Componentes reutilizables
 │       └── package.json
 │
 ├── database/
 │   └── firebird/
-│       ├── schema.sql       # Esquema de BD
-│       └── scripts/         # Migraciones
+│       ├── schema.sql           # Esquema + tablas sync
+│       └── scripts/             # Migraciones
 │
-├── package.json             # Root monorepo
-└── pnpm-workspace.yaml      # Workspaces config
+├── .env.example                 # Variables híbridas
+├── package.json                 # Root monorepo
+└── HYBRID_ARCHITECTURE.md       # Docs completas
 ```
 
 ---
@@ -88,10 +76,7 @@ violet-erp/
 
 ```bash
 # Node.js 20+
-node --version  # v20.x o superior
-
-# pnpm 9+
-pnpm --version  # 9.15.0 o superior
+node --version
 
 # Firebird 3.0+
 # Descargar: https://firebirdsql.org
@@ -100,36 +85,37 @@ pnpm --version  # 9.15.0 o superior
 ### 2. Instalación
 
 ```bash
-# Clonar repositorio
-git clone <repo-url> violet-erp
-cd violet-erp
-
-# Instalar dependencias (automático con pnpm)
+# Clonar e instalar
 pnpm install
 
 # Copiar variables de entorno
 cp .env.example .env
 ```
 
-### 3. Configurar Firebird
+### 3. Configurar Modo Híbrido
 
-```bash
-# Editar .env
-FIREBIRD_DATABASE=C:/ruta/a/tu/base.fdb
-FIREBIRD_USER=SYSDBA
-FIREBIRD_PASSWORD=masterkey
+```env
+# Servidor Maestro
+HYBRID_MODE=hybrid
+HYBRID_NODE_ROLE=master
+HYBRID_IS_MASTER=true
 
-# Crear base de datos
-# 1. Abre IBExpert o FlameRobin
-# 2. Conéctate a Firebird
-# 3. Crea nueva base de datos
-# 4. Ejecuta database/firebird/schema.sql
+# Sucursal (Slave)
+HYBRID_MODE=hybrid
+HYBRID_NODE_ROLE=slave
+HYBRID_CLOUD_API_URL=https://master.violet-erp.com
 ```
 
-### 4. Iniciar Desarrollo
+### 4. Inicializar Base de Datos
 
 ```bash
-# Iniciar todo (backend + frontend)
+pnpm db:init
+```
+
+### 5. Iniciar Sistema
+
+```bash
+# Desarrollo (backend + frontend)
 pnpm dev
 
 # O por separado
@@ -137,7 +123,7 @@ pnpm dev:backend   # http://localhost:3000
 pnpm dev:frontend  # http://localhost:5173
 ```
 
-### 5. Acceder
+### 6. Acceder
 
 - **Frontend**: http://localhost:5173
 - **API**: http://localhost:3000/api
@@ -151,135 +137,41 @@ Password: admin123
 
 ---
 
-## 📚 Comandos Disponidos
+## 📚 Comandos Disponibles
 
 ### Root (Monorepo)
 
 ```bash
 pnpm dev                 # Iniciar todo
-pnpm build               # Construir todo
-pnpm test                # Ejecutar tests
-pnpm lint                # Linter
-pnpm typecheck           # TypeScript check
-
-pnpm clean               # Limpiar builds
-pnpm clean:all           # Limpieza total
+pnpm dev:backend         # Solo backend
+pnpm dev:frontend        # Solo frontend
+pnpm build               # Build completo
+pnpm db:init             # Inicializar Firebird
 ```
 
 ### Backend
 
 ```bash
 cd backend/api
-pnpm dev                 # Desarrollo con nodemon
-pnpm start               # Producción
-pnpm start:prod          # PM2 production mode
-pnpm test                # Tests unitarios
-pnpm test:integration    # Tests de integración
-pnpm test:coverage       # Coverage report
-pnpm db:migrate          # Migraciones
-pnpm db:backup           # Backup BD
+npm run dev              # Desarrollo
+npm run start            # Producción
+npm run db:init          # Inicializar BD
+npm run lint             # Linter
 ```
 
 ### Frontend
 
 ```bash
 cd frontend/web
-pnpm dev                 # Vite dev server
-pnpm build               # Build producción
-pnpm preview             # Preview build
-pnpm test                # Tests con Vitest
-pnpm test:ui             # Tests con UI
-pnpm test:coverage       # Coverage report
-pnpm analyze             # Bundle analyzer
+npm run dev              # Vite dev
+npm run build            # Build producción
+npm run preview          # Preview
+npm run lint             # Linter
 ```
 
 ---
 
-## 🧪 Testing
-
-### Tests Unitarios
-
-```bash
-# Backend
-pnpm run test:backend
-
-# Frontend  
-pnpm run test:frontend
-
-# Coverage completo
-pnpm run test:coverage
-```
-
-### Tests de Integración
-
-```bash
-# Requiere Firebird corriendo
-pnpm run test:integration
-```
-
-### Ejemplos de Tests
-
-```typescript
-// Backend
-describe('AuthService', () => {
-  it('should generate valid JWT token', () => {
-    const token = authService.generateAccessToken(user, permissions);
-    expect(token.split('.')).toHaveLength(3);
-  });
-});
-
-// Frontend
-describe('Login Page', () => {
-  it('should render login form', () => {
-    render(<Login />);
-    expect(screen.getByPlaceholderText(/correo/i)).toBeInTheDocument();
-  });
-});
-```
-
----
-
-## 🔧 Configuración Avanzada
-
-### Firebird Connection Pool
-
-```javascript
-// backend/api/src/database/firebird-pool.js
-{
-  maxSize: 10,
-  minSize: 2,
-  acquireTimeout: 5000,
-  idleTimeout: 30000,
-}
-```
-
-### Redis Cache (Opcional)
-
-```env
-REDIS_ENABLED=true
-REDIS_URL=redis://localhost:6379/0
-```
-
-### Rate Limiting
-
-```env
-RATE_LIMIT_ENABLED=true
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-```
-
-### Logs Avanzados
-
-```env
-LOG_LEVEL=debug
-LOG_MAX_SIZE=10m
-LOG_MAX_FILES=30d
-LOG_HTTP_ENABLED=true
-```
-
----
-
-## 📊 API Endpoints
+## 🔌 Endpoints de API
 
 ### Autenticación
 
@@ -289,149 +181,194 @@ POST   /api/auth/register       - Registrar usuario
 POST   /api/auth/refresh        - Refresh token
 POST   /api/auth/logout         - Cerrar sesión
 GET    /api/auth/me             - Usuario actual
-PUT    /api/auth/password       - Cambiar contraseña
 ```
 
-### Productos
+### Módulos Empresariales
 
 ```
-GET    /api/products            - Listar productos
-GET    /api/products/:id        - Obtener producto
-POST   /api/products            - Crear producto
-PUT    /api/products/:id        - Actualizar producto
-DELETE /api/products/:id        - Eliminar producto
-POST   /api/products/stock      - Actualizar stock
+GET/POST/PUT/DELETE  /api/users       - Usuarios
+GET/POST/PUT/DELETE  /api/products    - Productos
+GET/POST/PUT/DELETE  /api/sales       - Ventas
+GET/POST/PUT/DELETE  /api/inventory   - Inventario
 ```
 
-### Usuarios
+### Sincronización Híbrida
 
 ```
-GET    /api/users               - Listar usuarios
-GET    /api/users/:id           - Obtener usuario
-POST   /api/users               - Crear usuario
-PUT    /api/users/:id           - Actualizar usuario
-DELETE /api/users/:id           - Eliminar usuario
+POST   /api/sync/receive      - Recibir sync desde slave
+POST   /api/sync/register     - Registrar nodo
+POST   /api/sync/enqueue      - Encolar registro
+GET    /api/sync/stats        - Estadísticas sync
+GET    /api/sync/nodes        - Nodos registrados
+POST   /api/sync/cleanup      - Limpiar logs antiguos
 ```
 
 ---
 
-## 🏗️ CI/CD con GitHub Actions
+## 🗄️ Base de Datos Firebird
 
-### Pipelines Disponibles
+### Tablas Principales
 
-1. **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
-   - Tests en Node 20.x y 22.x
-   - Build backend y frontend
-   - Upload de artifacts
+- USUARIOS, ROLES, PERMISOS
+- PRODUCTOS, CATEGORIAS, UNIDADES
+- CLIENTES, PROVEEDORES
+- VENTAS, COMPRAS
+- INVENTARIO, ALMACENES
+- CUENTAS POR COBRAR/PAGAR
+- AUDITORIA
 
-2. **Code Quality** (`.github/workflows/code-quality.yml`)
-   - ESLint
-   - Security audit
-   - Snyk scan
+### Tablas de Sincronización
 
-### Variables de Entorno para CI/CD
+- SYNC_NODES - Nodos registrados
+- SYNC_LOGS - Log de cambios
+- SYNC_QUEUE - Cola de prioridad
+- SYNC_CONFIG - Configuración
 
-```yaml
-# Secrets requeridos
-CODECOV_TOKEN: tu-token
-SNYK_TOKEN: tu-token
+---
+
+## 🔧 Configuración Híbrida
+
+### Variables Principales (.env)
+
+```env
+# Modo híbrido
+HYBRID_MODE=hybrid
+HYBRID_NODE_ROLE=master
+HYBRID_IS_MASTER=true
+
+# Firebird
+FIREBIRD_HOST=localhost
+FIREBIRD_PORT=3050
+FIREBIRD_DATABASE=C:/VioletERP/database/valery3.fdb
+
+# Sync
+HYBRID_SYNC_INTERVAL=15000
+HYBRID_SYNC_BATCH_SIZE=20
+HYBRID_SYNC_MAX_RETRIES=5
+
+# API Key entre nodos
+HYBRID_API_KEY=tu-api-key-secreta
 ```
+
+---
+
+## 📊 Flujo de Sincronización
+
+```
+┌─────────────────┐
+│  Sucursal A     │  ──┐
+│  (Slave)        │    │
+└─────────────────┘    │   ┌──────────────┐
+                       ├──▶│   Maestro    │
+┌─────────────────┐    │   │   (Cloud)    │
+│  Sucursal B     │  ──┘   └──────────────┘
+│  (Slave)        │              │
+└─────────────────┘              │
+                          Broadcast
+                            ▼
+                    ┌──────────────┐
+                    │  Sucursal C  │
+                    │  (Sync)      │
+                    └──────────────┘
+```
+
+### Pasos
+
+1. Usuario crea registro en Sucursal A
+2. Se guarda en Firebird local + IndexedDB
+3. Sync Engine encola para sincronización
+4. Cada 15s envía pendientes al Maestro
+5. Maestro aplica cambios y broadcast a otras sucursales
 
 ---
 
 ## 🔐 Seguridad
 
-### Best Practices Implementadas
-
-- ✅ JWT con refresh tokens
-- ✅ Bcrypt con 12 rounds
-- ✅ Rate limiting por IP
-- ✅ Helmet.js security headers
-- ✅ CORS configurado
-- ✅ Input validation con Zod
-- ✅ SQL injection prevention (Firebird params)
-- ✅ XSS protection
-
-### Headers de Seguridad
-
-```javascript
-// Helmet.js configurado automáticamente
-X-DNS-Prefetch-Control: off
-X-Frame-Options: SAMEORIGIN
-Strict-Transport-Security: max-age=15552000; includeSubDomains
-X-Download-Options: noopen
-X-Content-Type-Options: nosniff
-X-XSS-Protection: 0
-```
+- JWT con refresh tokens
+- Bcrypt 12 rounds
+- API Key entre nodos
+- HTTPS obligatorio en producción
+- Rate limiting por IP
+- Auditoría de todos los cambios
 
 ---
 
 ## 📈 Monitoreo
 
-### Logs
+### Health Check
 
 ```bash
-# Ver logs en tiempo real
-tail -f backend/api/logs/combined-*.log
-tail -f backend/api/logs/error-*.log
-tail -f backend/api/logs/http-*.log
+curl http://localhost:3000/health
 ```
 
-### Métricas PM2
+### Estadísticas de Sync
 
 ```bash
-pm2 monit
-pm2 show violet-erp-api
-pm2 logs violet-erp-api
+curl http://localhost:3000/api/sync/stats
 ```
 
-### Sentry (Opcional)
+### Logs SQL
 
-```env
-SENTRY_ENABLED=true
-SENTRY_DSN=https://tu-dsn@sentry.io/proyecto
+```sql
+-- Ver sync pendientes
+SELECT * FROM SYNC_LOGS 
+WHERE SYNC_STATUS = 'PENDING';
+
+-- Ver nodos activos
+SELECT * FROM SYNC_NODES 
+WHERE ACTIVE = 'S';
 ```
+
+---
+
+## 🎯 Casos de Uso
+
+### 1. Farmacia Multi-Sucursal
+
+```
+5 sucursales → 1 servidor maestro
+Inventario sincronizado en tiempo real
+```
+
+### 2. Clínica Sin Internet
+
+```
+Modo local standalone
+Todo funciona offline
+```
+
+### 3. Retail Nacional
+
+```
+20 tiendas → Cloud central
+Reportes consolidados
+```
+
+---
+
+## 📖 Documentación
+
+- [Arquitectura Híbrida](./HYBRID_ARCHITECTURE.md) - Docs completas del modo híbrido
+- [Backend API](./backend/api/README.md) - Endpoints y configuración
+- [Database Schema](./database/firebird/schema.sql) - Estructura completa
 
 ---
 
 ## 🤝 Contribuir
 
-1. Fork el repositorio
-2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -m 'Add nueva funcionalidad'`)
-4. Push (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
-
-### Convenciones de Commits
-
-```
-feat: nueva funcionalidad
-fix: corrección de bug
-docs: cambios en documentación
-style: formato, sin cambios de código
-refactor: refactorización
-test: agregar tests
-chore: cambios en build/config
-```
+1. Fork del repositorio
+2. Rama de feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit (`git commit -m 'Add nueva funcionalidad'`)
+4. Push y Pull Request
 
 ---
 
 ## 📄 Licencia
 
-MIT License - ver [LICENSE](LICENSE) para más detalles.
-
----
-
-## 💜 Equipo Violet
-
-Desarrollado con ❤️ para revolucionar la gestión empresarial.
-
-**Sitio Web**: violet-erp.com  
-**Twitter**: @VioletERP  
-**Discord**: discord.gg/violet-erp
+MIT License
 
 ---
 
 <p align="center">
-  <sub>Hecho con 💜 y mucho ☕ por el equipo de Violet ERP</sub>
+  <sub>Hecho con 💜 por Violet ERP Team - 100% Autocontenido</sub>
 </p>

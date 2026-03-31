@@ -1,114 +1,177 @@
-# 📁 Backend - Violet ERP
+# 💜 Violet ERP - Backend API
 
-Estructura organizada y profesional del backend del sistema Violet ERP.
+**Backend API con Express + Firebird**
 
-## 📂 Estructura de Carpetas
+---
 
-```
-backend/
-├── src/
-│   ├── config/          # Configuración del proyecto
-│   │   ├── database.js  # Configuración de SQLite
-│   │   └── server.js    # Configuración del servidor
-│   │
-│   ├── controllers/     # Manejo de las peticiones
-│   │   ├── sql.controller.js
-│   │   └── groq.controller.js
-│   │
-│   ├── middlewares/     # Funciones intermedias
-│   │   ├── cors.js
-│   │   └── errorHandler.js
-│   │
-│   ├── models/          # Definición de los modelos
-│   │   └── database.model.js
-│   │
-│   ├── routes/          # Definición de las rutas
-│   │   ├── api.routes.js
-│   │   └── groq.routes.js
-│   │
-│   ├── services/        # Lógica del negocio
-│   │   └── sync.service.js
-│   │
-│   ├── utils/           # Funciones reutilizables
-│   │   └── crypto.js
-│   │
-│   ├── app.js           # Aplicación Express
-│   ├── server.js        # Servidor principal
-│   └── proxy.js         # Servidor proxy de IA
-│
-├── package.json
-└── README.md
-```
+## 🚀 Inicio Rápido
 
-## 🚀 Uso
+### Instalar
 
-### Servidor Principal
 ```bash
-cd backend
+cd backend/api
 npm install
-npm start
 ```
 
-### Servidor Proxy
+### Iniciar
+
 ```bash
-npm run proxy
+# Desarrollo
+npm run dev
+
+# Producción
+npm run start
 ```
 
-### Desarrollo
+### Inicializar Base de Datos
+
 ```bash
-npm run dev          # Servidor principal con nodemon
-npm run dev:proxy    # Servidor proxy con nodemon
+npm run db:init
 ```
 
-## 📝 Descripción de Componentes
+---
 
-### Config
-- **database.js**: Configuración y conexión a SQLite
-- **server.js**: Configuración de puertos y CORS
+## 📂 Estructura
 
-### Controllers
-- **sql.controller.js**: Manejo de consultas SQL directas
-- **groq.controller.js**: Proxy para Groq API (IA)
+```
+backend/api/
+├── src/
+│   ├── config/        # Configuración (env.js)
+│   ├── controllers/   # Controladores
+│   ├── database/      # Firebird pool
+│   ├── middleware/    # Auth, rateLimit, errorHandler
+│   ├── models/        # Modelos de datos
+│   ├── modules/       # Módulos (auth, users, products)
+│   ├── services/      # Servicios de negocio
+│   ├── socket/        # WebSockets (Socket.IO)
+│   ├── utils/         # Utilidades (logger, helpers)
+│   └── server.js      # Entry point
+├── scripts/           # init-firebird.js
+├── tests/
+└── package.json
+```
 
-### Middlewares
-- **cors.js**: Configuración de CORS
-- **errorHandler.js**: Manejo centralizado de errores
+---
 
-### Models
-- **database.model.js**: Modelo base para operaciones de BD
+## 📚 Comandos
 
-### Routes
-- **api.routes.js**: Rutas de la API principal
-- **groq.routes.js**: Rutas del proxy de IA
+```bash
+npm run dev          # Desarrollo con nodemon
+npm run start        # Producción
+npm run db:init      # Inicializar Firebird
+npm run test         # Tests
+npm run lint         # Linter
+npm run clean        # Limpiar dist/logs
+```
 
-### Services
-- **sync.service.js**: Sincronización con la nube (Supabase)
+---
 
-### Utils
-- **crypto.js**: Utilidades de criptografía
+## 🔌 Endpoints API
 
-## 🔌 Endpoints
+### Autenticación
+```
+POST   /api/auth/login       - Iniciar sesión
+POST   /api/auth/register    - Registrar usuario
+POST   /api/auth/refresh     - Refresh token
+POST   /api/auth/logout      - Cerrar sesión
+GET    /api/auth/me          - Usuario actual
+```
 
-### API Principal (Puerto 8080)
-- `GET /api/ping` - Health check
-- `POST /api/sql` - Ejecutar consulta SQL
-- `POST /api/mutate` - Mutación de datos
+### Usuarios
+```
+GET    /api/users            - Listar usuarios
+GET    /api/users/:id        - Obtener usuario
+POST   /api/users            - Crear usuario
+PUT    /api/users/:id        - Actualizar usuario
+DELETE /api/users/:id        - Eliminar usuario
+```
 
-### Proxy IA (Puerto 3001)
-- `GET /api/groq/health` - Health check
-- `POST /api/groq/chat` - Chat con IA
+### Productos
+```
+GET    /api/products         - Listar productos
+GET    /api/products/:id     - Obtener producto
+POST   /api/products         - Crear producto
+PUT    /api/products/:id     - Actualizar producto
+DELETE /api/products/:id     - Eliminar producto
+```
 
-## 🔒 Seguridad
+---
 
-- CORS configurado
-- Manejo de errores centralizado
-- Validación de API keys
-- Logs de auditoría
+## 🔧 Configuración
 
-## 📦 Dependencias
+### Variables de Entorno (.env)
 
-- **express**: Framework web
-- **cors**: Manejo de CORS
-- **socket.io**: WebSockets
-- **better-sqlite3**: Base de datos SQLite
-- **@supabase/supabase-js**: Cliente de Supabase
+```env
+NODE_ENV=development
+PORT=3000
+HOST=0.0.0.0
+
+# Firebird
+FIREBIRD_HOST=localhost
+FIREBIRD_PORT=3050
+FIREBIRD_DATABASE=C:/VioletERP/database/valery3.fdb
+FIREBIRD_USER=SYSDBA
+FIREBIRD_PASSWORD=masterkey
+
+# JWT
+JWT_SECRET=change-this-in-production
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_SECRET=change-this-too
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Logs
+LOG_LEVEL=debug
+LOG_FILE=./logs/app.log
+```
+
+---
+
+## 🏗️ Arquitectura
+
+### Middleware
+- **cors**: CORS habilitado
+- **helmet**: Security headers
+- **compression**: Gzip compression
+- **express-rate-limit**: Rate limiting
+- **morgan**: HTTP logging
+
+### Base de Datos
+- **Firebird 3.0+**: Base de datos principal
+- **Connection Pool**: 2-10 conexiones
+- **Transacciones**: Soporte completo
+
+### Auth
+- **JWT**: Access tokens (1h)
+- **Refresh Tokens**: (7d)
+- **Bcrypt**: Hash de contraseñas (12 rounds)
+
+### WebSockets
+- **Socket.IO**: Tiempo real
+- **Eventos**: nodos, config, sync
+
+---
+
+## 🧪 Tests
+
+```bash
+npm run test           # Tests unitarios
+npm run test:coverage  # Coverage report
+```
+
+---
+
+## 📦 Dependencias Principales
+
+- express ^5.2.1
+- node-firebird ^1.0.10
+- jsonwebtoken ^9.0.3
+- bcrypt ^6.0.0
+- socket.io ^4.8.3
+- winston ^3.11.0
+- zod ^3.25.76
+
+---
+
+<p align="center">
+  <sub>Hecho con 💜 por Violet ERP Team</sub>
+</p>

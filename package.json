@@ -12,7 +12,7 @@
     "build:backend": "cd backend/api && npm run build",
     "build:frontend": "cd frontend/web && npm run build",
     "start": "cd backend/api && npm start",
-    "install:all": "npm install && cd backend/api && npm install && cd ../../frontend/web && npm install"
+    "db:init": "cd backend/api && npm run db:init"
   },
   "keywords": ["erp", "violet", "firebird", "enterprise"],
   "author": "Violet ERP Team",
