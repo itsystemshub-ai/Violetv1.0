@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "Bash(del *)",
-      "Bash(rmdir *)"
+      "Bash(rmdir *)",
+      "Bash(pnpm install)",
+      "Bash(npm install)",
+      "Bash(npm run *)",
+      "Bash(timeout *)",
+      "Bash(curl *)",
+      "Bash(node *)",
+      "Bash(findstr *)",
+      "Bash(taskkill *)",
+      "Bash(type *)",
+      "Bash(move *)",
+      "Bash(netstat *)",
+      "Bash(copy *)"
     ]
   },
   "$version": 3

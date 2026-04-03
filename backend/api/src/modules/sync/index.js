@@ -4,8 +4,8 @@
  */
 
 import { Router } from 'express';
-import { hybridSyncService } from '../services/hybrid-sync.service.js';
-import { config } from '../config/env.js';
+import { hybridSyncService } from '../../services/hybrid-sync.service.js';
+import { config } from '../../config/env.js';
 
 const router = Router();
 

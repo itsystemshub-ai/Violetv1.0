@@ -8,59 +8,37 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const HYBRID_MODES = {
-  LOCAL: 'local',      // Solo local, sin sync
-  CLOUD: 'cloud',      // Solo nube (SaaS)
-  HYBRID: 'hybrid',    // Local + Nube sincronizada
-} as const;
-
-export type HybridMode = typeof HYBRID_MODES[keyof typeof HYBRID_MODES];
-
-export interface HybridConfig {
-  mode: HybridMode;
-  isMaster: boolean;   // true = servidor maestro de sync
-  nodeRole: 'master' | 'slave' | 'standalone';
-}
+  LOCAL: 'local',
+  CLOUD: 'cloud',
+  HYBRID: 'hybrid',
+};
 
 export const config = {
-  // ============================================================================
-  // APLICACIÓN
-  // ============================================================================
+  // Aplicación
   nodeEnv: process.env.NODE_ENV || 'development',
   appName: process.env.APP_NAME || 'Violet ERP',
   appVersion: process.env.APP_VERSION || '2.0.0',
 
-  // ============================================================================
-  // SERVIDOR
-  // ============================================================================
+  // Servidor
   port: parseInt(process.env.PORT || '3000', 10),
   host: process.env.HOST || '0.0.0.0',
   corsOrigin: process.env.CORS_ORIGIN || '*',
   corsCredentials: process.env.CORS_CREDENTIALS === 'true',
 
-  // ============================================================================
-  // MODO HÍBRIDO
-  // ============================================================================
+  // Modo híbrido
   hybrid: {
-    mode: (process.env.HYBRID_MODE || 'hybrid') as HybridMode,
+    mode: process.env.HYBRID_MODE || 'hybrid',
     isMaster: process.env.HYBRID_IS_MASTER === 'true',
-    nodeRole: (process.env.HYBRID_NODE_ROLE || 'standalone') as 'master' | 'slave' | 'standalone',
-    
-    // Sync configuration
+    nodeRole: process.env.HYBRID_NODE_ROLE || 'standalone',
     syncInterval: parseInt(process.env.HYBRID_SYNC_INTERVAL || '15000', 10),
     syncBatchSize: parseInt(process.env.HYBRID_SYNC_BATCH_SIZE || '20', 10),
     syncMaxRetries: parseInt(process.env.HYBRID_SYNC_MAX_RETRIES || '5', 10),
-    
-    // Cloud API endpoint (para modo híbrido)
     cloudApiUrl: process.env.HYBRID_CLOUD_API_URL || 'http://localhost:3000',
     cloudWsUrl: process.env.HYBRID_CLOUD_WS_URL || 'ws://localhost:3001',
-    
-    // Local API endpoint (para nodos slaves)
     localApiUrl: process.env.HYBRID_LOCAL_API_URL || 'http://localhost:3000',
   },
 
-  // ============================================================================
-  // FIREBIRD DATABASE
-  // ============================================================================
+  // Firebird
   firebird: {
     host: process.env.FIREBIRD_HOST || 'localhost',
     port: parseInt(process.env.FIREBIRD_PORT || '3050', 10),
@@ -69,26 +47,20 @@ export const config = {
     password: process.env.FIREBIRD_PASSWORD || 'masterkey',
     role: process.env.FIREBIRD_ROLE || 'RDB$ADMIN',
     pageSize: parseInt(process.env.FIREBIRD_PAGE_SIZE || '4096', 10),
-    
-    // Pool settings
     poolMin: parseInt(process.env.FIREBIRD_POOL_MIN || '2', 10),
     poolMax: parseInt(process.env.FIREBIRD_POOL_MAX || '10', 10),
     poolAcquireTimeout: parseInt(process.env.FIREBIRD_POOL_ACQUIRE_TIMEOUT || '5000', 10),
     poolIdleTimeout: parseInt(process.env.FIREBIRD_POOL_IDLE_TIMEOUT || '30000', 10),
   },
 
-  // ============================================================================
-  // SQLITE LOCAL (para caché y offline)
-  // ============================================================================
+  // SQLite local
   sqlite: {
     enabled: process.env.SQLITE_ENABLED !== 'false',
     path: process.env.SQLITE_PATH || './data/violet_local.db',
     journalMode: process.env.SQLITE_JOURNAL_MODE || 'WAL',
   },
 
-  // ============================================================================
-  // JWT & SEGURIDAD
-  // ============================================================================
+  // JWT
   jwt: {
     secret: process.env.JWT_SECRET || 'violet-erp-super-secret-jwt-key-change-in-production-2026',
     expiresIn: process.env.JWT_EXPIRES_IN || '24h',
@@ -100,18 +72,14 @@ export const config = {
 
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '12', 10),
 
-  // ============================================================================
-  // WEBSOCKETS
-  // ============================================================================
+  // WebSockets
   ws: {
     enabled: process.env.WS_ENABLED !== 'false',
     port: parseInt(process.env.WS_PORT || '3001', 10),
     corsOrigin: process.env.WS_CORS_ORIGIN || '*',
   },
 
-  // ============================================================================
-  // LOGS
-  // ============================================================================
+  // Logs
   logs: {
     level: process.env.LOG_LEVEL || 'info',
     file: process.env.LOG_FILE || './logs/app.log',
@@ -120,18 +88,14 @@ export const config = {
     httpEnabled: process.env.LOG_HTTP_ENABLED === 'true',
   },
 
-  // ============================================================================
-  // ARCHIVOS
-  // ============================================================================
+  // Archivos
   uploads: {
     path: process.env.UPLOAD_PATH || './uploads',
     maxSize: parseInt(process.env.UPLOAD_MAX_SIZE || '10485760', 10),
     allowedExtensions: process.env.UPLOAD_ALLOWED_EXTENSIONS || 'jpg,jpeg,png,pdf,xlsx,xls,csv,doc,docx,zip',
   },
 
-  // ============================================================================
-  // RATE LIMITING
-  // ============================================================================
+  // Rate limiting
   rateLimit: {
     enabled: process.env.RATE_LIMIT_ENABLED !== 'false',
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
@@ -140,9 +104,7 @@ export const config = {
     authMaxRequests: parseInt(process.env.RATE_LIMIT_AUTH_MAX_REQUESTS || '10', 10),
   },
 
-  // ============================================================================
-  // CARACTERÍSTICAS
-  // ============================================================================
+  // Características
   features: {
     emailVerification: process.env.FEATURE_EMAIL_VERIFICATION === 'true',
     twoFactorAuth: process.env.FEATURE_TWO_FACTOR_AUTH === 'true',
@@ -153,9 +115,7 @@ export const config = {
     offlineMode: process.env.FEATURE_OFFLINE_MODE !== 'false',
   },
 
-  // ============================================================================
-  // UTILS
-  // ============================================================================
+  // Utils
   get isDevelopment() {
     return this.nodeEnv === 'development';
   },

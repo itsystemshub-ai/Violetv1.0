@@ -36,6 +36,9 @@ export const authenticate = (req, res, next) => {
   }
 };
 
+// Alias para authenticate
+export const requireAuth = authenticate;
+
 export const authorize = (...permissions) => {
   return (req, res, next) => {
     if (!req.user) {

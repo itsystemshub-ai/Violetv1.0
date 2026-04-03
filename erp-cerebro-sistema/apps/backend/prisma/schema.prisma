@@ -1,0 +1,410 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// PRISMA SCHEMA - ERP ZENITH
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USUARIOS Y AUTENTICACIÓN
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  username        String    @unique
+  passwordHash    String
+  name            String
+  firstName       String
+  lastName        String
+  cedula          String    @unique
+  phone           String?
+  avatar          String?
+  roleId          String
+  role            Role      @relation(fields: [roleId], references: [id])
+  isActive        Boolean   @default(true)
+  isVerified      Boolean   @default(false)
+  mfaSecret       String?
+  mfaEnabled      Boolean   @default(false)
+  lastLogin       DateTime?
+  lastLoginIP     String?
+  failedAttempts  Int       @default(0)
+  lockedUntil     DateTime?
+
+  // Relaciones
+  sessions        Session[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([roleId])
+  @@index([isActive])
+  @@index([cedula])
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  color       String       @default("#6366f1")
+  icon        String       @default("shield")
+  isSystem    Boolean      @default(false)
+  permissions Permission[]
+  users       User[]
+  modules     ModuleAccess[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([name])
+}
+
+model Permission {
+  id        String   @id @default(cuid())
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  module    String
+  action    String
+  resource  String?
+  createdAt DateTime @default(now())
+
+  @@unique([roleId, module, action, resource])
+  @@index([roleId])
+  @@index([module])
+}
+
+model ModuleAccess {
+  id          String   @id @default(cuid())
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  moduleGroup String
+  moduleName  String
+  canView     Boolean  @default(true)
+  canEdit     Boolean  @default(false)
+  canDelete   Boolean  @default(false)
+  canExport   Boolean  @default(false)
+  canReport   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([roleId, moduleName])
+  @@index([roleId])
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique
+  refreshToken String?
+  ipAddress   String?
+  userAgent   String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String
+  module     String
+  entityId   String?
+  entityType String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([module])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info")
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURACIÓN DE EMPRESA
+// ─────────────────────────────────────────────────────────────────────────────
+
+model CompanyConfig {
+  id              String   @id @default(cuid())
+  businessName    String
+  rif             String
+  address         String?
+  phone           String?
+  email           String?
+  logoUrl         String?
+
+  // Configuración fiscal
+  fiscalYear      String   @default("ENERO-DICIEMBRE")
+  currency        String   @default("VES")
+  taxRate         Float    @default(0.16)
+
+  // Facturación
+  invoicePrefix   String   @default("F")
+  invoiceControl  String   @default("00-00000001")
+  invoiceSeries   String   @default("A")
+  nextInvoiceNum  Int      @default(1)
+
+  // Configuración de ventas
+  checkStock      Boolean  @default(true)
+  allowNegativeStock Boolean @default(false)
+  commissionRate  Float    @default(0)
+
+  // Configuración de inventario
+  defaultWarehouseId String?
+  valuationMethod String   @default("PROMEDIO")
+
+  // Actualización
+  updatedAt       DateTime @updatedAt
+  updatedBy       String?
+
+  @@index([rif])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURACIÓN DEL SISTEMA (Parámetros)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string")
+  group     String
+  label     String
+  isPublic  Boolean  @default(false)
+  isEditable Boolean @default(true)
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  @@index([group])
+  @@index([key])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABLAS DEL SISTEMA (Catálogos)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model SystemTable {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  items       SystemTableItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+model SystemTableItem {
+  id          String   @id @default(cuid())
+  tableId     String
+  table       SystemTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  code        String
+  name        String
+  description String?
+  color       String?
+  icon        String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  extraData   Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tableId])
+  @@index([code])
+  @@unique([tableId, code])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTABILIDAD
+// ─────────────────────────────────────────────────────────────────────────────
+
+model PlanCuenta {
+  id          String   @id @default(cuid())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  tipo        String   @default("MOVIMIENTO") // SINTETICA | MOVIMIENTO
+  naturaleza  String   @default("DEUDORA")    // DEUDORA | ACREEDORA
+  padreId     String?
+  padre       PlanCuenta? @relation("CuentasHijas", fields: [padreId], references: [id])
+  hijos       PlanCuenta[] @relation("CuentasHijas")
+  isActive    Boolean  @default(true)
+  movimientos MovimientoContable[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([codigo])
+  @@index([padreId])
+  @@index([isActive])
+}
+
+model AsientoContable {
+  id              String   @id @default(cuid())
+  correlativo     Int      @unique
+  fecha           DateTime
+  descripcion     String
+  tipo            String   @default("MANUAL") // MANUAL | AUTOMATICO | SISTEMA
+  referencia      String?
+  usuarioId       String
+  usuario         User     @relation(fields: [usuarioId], references: [id])
+  totalDebe       Float
+  totalHaber      Float
+  anulado         Boolean  @default(false)
+  anuladoEn       DateTime?
+  motivoAnulacion String?
+  movimientos     MovimientoContable[]
+  createdAt       DateTime @default(now())
+
+  @@index([fecha])
+  @@index([correlativo])
+  @@index([anulado])
+}
+
+model MovimientoContable {
+  id          String   @id @default(cuid())
+  asientoId   String
+  asiento     AsientoContable @relation(fields: [asientoId], references: [id], onDelete: Cascade)
+  cuentaId    String
+  cuenta      PlanCuenta @relation(fields: [cuentaId], references: [id])
+  tipo        String   // DEBE | HABER
+  monto       Float
+  descripcion String?
+  createdAt   DateTime @default(now())
+
+  @@index([asientoId])
+  @@index([cuentaId])
+  @@index([tipo])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INVENTARIO
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Producto {
+  id               String   @id @default(cuid())
+  codigo           String   @unique
+  nombre           String
+  descripcion      String?
+  categoria        String?
+  unidadMedida     String   @default("UND")
+  costoActual      Float    @default(0)
+  precioVenta      Float    @default(0)
+  existenciaActual Float    @default(0)
+  existenciaMinima Float    @default(10)
+  existenciaMaxima Float?
+  isActive         Boolean  @default(true)
+  stock            Stock[]
+  movimientos      MovimientoInventario[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([codigo])
+  @@index([categoria])
+  @@index([isActive])
+}
+
+model Almacen {
+  id          String   @id @default(cuid())
+  codigo      String   @unique
+  nombre      String
+  direccion   String?
+  responsable String?
+  isActive    Boolean  @default(true)
+  stock       Stock[]
+  movimientos MovimientoInventario[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([codigo])
+  @@index([isActive])
+}
+
+model Stock {
+  id                 String   @id @default(cuid())
+  productoId         String
+  producto           Producto @relation(fields: [productoId], references: [id])
+  almacenId          String
+  almacen            Almacen  @relation(fields: [almacenId], references: [id])
+  cantidad           Float    @default(0)
+  reservado          Float    @default(0)
+  disponible         Float    @default(0)
+  costoPromedio      Float    @default(0)
+  ultimaActualizacion DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([productoId, almacenId])
+  @@index([productoId])
+  @@index([almacenId])
+}
+
+model MovimientoInventario {
+  id          String   @id @default(cuid())
+  productoId  String
+  producto    Producto @relation(fields: [productoId], references: [id])
+  almacenId   String
+  almacen     Almacen  @relation(fields: [almacenId], references: [id])
+  tipo        String   // ENTRADA | SALIDA | TRANSFERENCIA | AJUSTE
+  cantidad    Float
+  stockAnterior Float
+  stockNuevo  Float
+  referencia  String?
+  descripcion String?
+  usuarioId   String
+  usuario     User     @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([productoId])
+  @@index([almacenId])
+  @@index([tipo])
+  @@index([usuarioId])
+  @@index([createdAt])
+}
+
+model TransferenciaInventario {
+  id          String   @id @default(cuid())
+  productoId  String
+  origenId    String
+  destinoId   String
+  cantidad    Float
+  referencia  String?
+  descripcion String?
+  usuarioId   String
+  usuario     User     @relation(fields: [usuarioId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([productoId])
+  @@index([origenId])
+  @@index([destinoId])
+}

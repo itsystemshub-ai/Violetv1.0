@@ -18,6 +18,9 @@ import authRouter from './modules/auth/index.js';
 import usersRouter from './modules/users/index.js';
 import productsRouter from './modules/products/index.js';
 import syncRouter from './modules/sync/index.js';
+import reportsRouter from './modules/reports/index.js';
+import notificationsRouter from './modules/notifications/index.js';
+import settingsRouter from './modules/settings/index.js';
 
 // Socket.IO setup
 import { setupSocket } from './socket/index.js';
@@ -107,6 +110,9 @@ app.get('/api', (req, res) => {
       users: '/api/users',
       products: '/api/products',
       sync: '/api/sync',
+      reports: '/api/reports',
+      notifications: '/api/notifications',
+      settings: '/api/settings',
     },
     features: {
       hybrid: config.isHybrid,
@@ -142,6 +148,15 @@ app.use('/api/products', productsRouter);
 
 // Sincronización Híbrida
 app.use('/api/sync', syncRouter);
+
+// Reportes
+app.use('/api/reports', reportsRouter);
+
+// Notificaciones
+app.use('/api/notifications', notificationsRouter);
+
+// Configuración
+app.use('/api/settings', settingsRouter);
 
 // ============================================================================
 // HANDLERS

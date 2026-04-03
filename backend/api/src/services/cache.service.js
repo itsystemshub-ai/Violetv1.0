@@ -1,303 +1,343 @@
 /**
- * Violet ERP - Redis Cache Service
- * Caché distribuida con Redis
+ * Violet ERP - CacheService Avanzado
+ * Sistema de caché en memoria con fallback a Redis opcional
  */
 
 import { createLogger } from '../utils/logger.js';
 
 const logger = createLogger('CacheService');
 
-class CacheService {
+/**
+ * Clase de caché en memoria con TTL
+ */
+class MemoryCache {
   constructor() {
-    this.client = null;
-    this.enabled = false;
-    this.defaultTTL = 3600; // 1 hora
-  }
-
-  /**
-   * Inicializar conexión a Redis
-   */
-  async initialize(config = {}) {
-    const { enabled = false, url = 'redis://localhost:6379/0' } = config;
-
-    if (!enabled) {
-      logger.info('Redis cache disabled');
-      this.enabled = false;
-      return;
-    }
-
-    try {
-      const redis = await import('redis');
-      
-      this.client = redis.createClient({ url });
-      
-      this.client.on('error', (err) => {
-        logger.error('Redis error:', err);
-        this.enabled = false;
-      });
-
-      this.client.on('connect', () => {
-        logger.info('Redis connected');
-        this.enabled = true;
-      });
-
-      await this.client.connect();
-      
-      logger.info('Redis cache initialized');
-    } catch (error) {
-      logger.warn('Redis not available, cache disabled:', error.message);
-      this.enabled = false;
-    }
+    this.cache = new Map();
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      sets: 0,
+      deletes: 0,
+    };
   }
 
   /**
    * Obtener valor del caché
    */
-  async get(key) {
-    if (!this.enabled || !this.client) {
+  get(key) {
+    const item = this.cache.get(key);
+
+    if (!item) {
+      this.stats.misses++;
       return null;
     }
 
-    try {
-      const value = await this.client.get(key);
-      
-      if (value === null) {
-        logger.debug(`Cache miss: ${key}`);
-        return null;
-      }
-
-      logger.debug(`Cache hit: ${key}`);
-      return JSON.parse(value);
-    } catch (error) {
-      logger.error('Cache get error:', error);
+    // Verificar TTL
+    if (item.expiry && Date.now() > item.expiry) {
+      this.cache.delete(key);
+      this.stats.misses++;
       return null;
     }
+
+    this.stats.hits++;
+    return item.value;
   }
 
   /**
-   * Guardar valor en caché
+   * Establecer valor en caché
    */
-  async set(key, value, ttl = null) {
-    if (!this.enabled || !this.client) {
+  set(key, value, ttlSeconds = 3600) {
+    const expiry = ttlSeconds ? Date.now() + (ttlSeconds * 1000) : null;
+
+    this.cache.set(key, {
+      value,
+      expiry,
+      createdAt: Date.now(),
+    });
+
+    this.stats.sets++;
+    logger.debug(`Cache SET: ${key} (TTL: ${ttlSeconds}s)`);
+  }
+
+  /**
+   * Eliminar valor del caché
+   */
+  delete(key) {
+    const deleted = this.cache.delete(key);
+    if (deleted) {
+      this.stats.deletes++;
+      logger.debug(`Cache DELETE: ${key}`);
+    }
+    return deleted;
+  }
+
+  /**
+   * Eliminar múltiples keys por patrón
+   */
+  deleteByPattern(pattern) {
+    const regex = new RegExp(pattern.replace('*', '.*'));
+    let deleted = 0;
+
+    for (const key of this.cache.keys()) {
+      if (regex.test(key)) {
+        this.cache.delete(key);
+        deleted++;
+      }
+    }
+
+    logger.debug(`Cache DELETE BY PATTERN: ${pattern} (${deleted} keys)`);
+    return deleted;
+  }
+
+  /**
+   * Limpiar todo el caché
+   */
+  clear() {
+    this.cache.clear();
+    logger.info('Cache cleared');
+  }
+
+  /**
+   * Verificar si existe una key
+   */
+  has(key) {
+    const item = this.cache.get(key);
+
+    if (!item) return false;
+
+    if (item.expiry && Date.now() > item.expiry) {
+      this.cache.delete(key);
       return false;
     }
 
-    try {
-      const expireTime = ttl || this.defaultTTL;
-      await this.client.set(key, JSON.stringify(value), { EX: expireTime });
-      
-      logger.debug(`Cache set: ${key} (TTL: ${expireTime}s)`);
-      return true;
-    } catch (error) {
-      logger.error('Cache set error:', error);
-      return false;
+    return true;
+  }
+
+  /**
+   * Obtener tamaño del caché
+   */
+  size() {
+    return this.cache.size;
+  }
+
+  /**
+   * Obtener estadísticas
+   */
+  getStats() {
+    const total = this.stats.hits + this.stats.misses;
+    return {
+      ...this.stats,
+      size: this.cache.size,
+      hitRate: total > 0 ? ((this.stats.hits / total) * 100).toFixed(2) + '%' : '0%',
+    };
+  }
+
+  /**
+   * Incrementar valor numérico
+   */
+  increment(key, amount = 1, ttlSeconds = 3600) {
+    const current = parseInt(this.get(key)) || 0;
+    const newValue = current + amount;
+    this.set(key, newValue, ttlSeconds);
+    return newValue;
+  }
+
+  /**
+   * Decrementar valor numérico
+   */
+  decrement(key, amount = 1, ttlSeconds = 3600) {
+    return this.increment(key, -amount, ttlSeconds);
+  }
+}
+
+/**
+ * Servicio de caché principal
+ */
+class CacheService {
+  constructor() {
+    this.memoryCache = new MemoryCache();
+    this.enabled = true;
+    this.defaultTTL = 3600; // 1 hora por defecto
+  }
+
+  /**
+   * Inicializar servicio de caché
+   */
+  initialize(options = {}) {
+    this.enabled = options.enabled !== false;
+    this.defaultTTL = options.defaultTTL || 3600;
+
+    logger.info(`CacheService initialized (enabled: ${this.enabled}, defaultTTL: ${this.defaultTTL}s)`);
+  }
+
+  /**
+   * Obtener valor del caché con fallback a función
+   */
+  async get(key, fallbackFn = null, ttl = null) {
+    if (!this.enabled) {
+      return fallbackFn ? await fallbackFn() : null;
     }
+
+    const cachedValue = this.memoryCache.get(key);
+
+    if (cachedValue !== null) {
+      logger.debug(`Cache HIT: ${key}`);
+      return cachedValue;
+    }
+
+    // Si hay fallback, ejecutarlo
+    if (fallbackFn) {
+      try {
+        const value = await fallbackFn();
+        await this.set(key, value, ttl);
+        return value;
+      } catch (error) {
+        logger.error(`Cache fallback error for ${key}:`, error);
+        throw error;
+      }
+    }
+
+    logger.debug(`Cache MISS: ${key}`);
+    return null;
+  }
+
+  /**
+   * Establecer valor en caché
+   */
+  async set(key, value, ttl = null) {
+    if (!this.enabled) return;
+
+    this.memoryCache.set(key, value, ttl || this.defaultTTL);
   }
 
   /**
    * Eliminar valor del caché
    */
   async delete(key) {
-    if (!this.enabled || !this.client) {
-      return false;
-    }
+    if (!this.enabled) return;
 
-    try {
-      await this.client.del(key);
-      logger.debug(`Cache delete: ${key}`);
-      return true;
-    } catch (error) {
-      logger.error('Cache delete error:', error);
-      return false;
-    }
+    this.memoryCache.delete(key);
   }
 
   /**
-   * Eliminar múltiples keys por patrón
+   * Eliminar por patrón
    */
   async deleteByPattern(pattern) {
-    if (!this.enabled || !this.client) {
-      return false;
-    }
+    if (!this.enabled) return;
 
-    try {
-      const keys = await this.client.keys(pattern);
-      
-      if (keys.length > 0) {
-        await this.client.del(keys);
-        logger.debug(`Cache delete pattern: ${pattern} (${keys.length} keys)`);
-      }
-      
-      return true;
-    } catch (error) {
-      logger.error('Cache delete pattern error:', error);
-      return false;
-    }
+    this.memoryCache.deleteByPattern(pattern);
   }
 
   /**
-   * Limpiar todo el caché
+   * Limpiar caché
    */
-  async flush() {
-    if (!this.enabled || !this.client) {
-      return false;
-    }
+  async clear() {
+    if (!this.enabled) return;
 
-    try {
-      await this.client.flushDb();
-      logger.warn('Cache flushed');
-      return true;
-    } catch (error) {
-      logger.error('Cache flush error:', error);
-      return false;
-    }
+    this.memoryCache.clear();
   }
 
   /**
-   * Verificar si existe una key
+   * Verificar si existe
    */
-  async exists(key) {
-    if (!this.enabled || !this.client) {
-      return false;
-    }
+  async has(key) {
+    if (!this.enabled) return false;
 
-    try {
-      const exists = await this.client.exists(key);
-      return exists === 1;
-    } catch (error) {
-      logger.error('Cache exists error:', error);
-      return false;
-    }
+    return this.memoryCache.has(key);
   }
 
   /**
-   * Obtener TTL restante
+   * Incrementar valor
    */
-  async getTTL(key) {
-    if (!this.enabled || !this.client) {
-      return -1;
-    }
+  async increment(key, amount = 1, ttl = null) {
+    if (!this.enabled) return amount;
 
-    try {
-      return await this.client.ttl(key);
-    } catch (error) {
-      logger.error('Cache TTL error:', error);
-      return -1;
-    }
+    return this.memoryCache.increment(key, amount, ttl || this.defaultTTL);
   }
 
   /**
-   * Incrementar valor numérico
+   * Decrementar valor
    */
-  async increment(key, amount = 1) {
-    if (!this.enabled || !this.client) {
-      return null;
-    }
+  async decrement(key, amount = 1, ttl = null) {
+    if (!this.enabled) return amount;
 
-    try {
-      return await this.client.incrBy(key, amount);
-    } catch (error) {
-      logger.error('Cache increment error:', error);
-      return null;
-    }
+    return this.memoryCache.decrement(key, amount, ttl || this.defaultTTL);
   }
 
   /**
-   * Decrementar valor numérico
+   * Obtener estadísticas
    */
-  async decrement(key, amount = 1) {
-    if (!this.enabled || !this.client) {
-      return null;
-    }
-
-    try {
-      return await this.client.decrBy(key, amount);
-    } catch (error) {
-      logger.error('Cache decrement error:', error);
-      return null;
-    }
+  getStats() {
+    return this.memoryCache.getStats();
   }
 
   /**
-   * Obtener estadísticas del caché
+   * Habilitar caché
    */
-  async getStats() {
-    if (!this.enabled || !this.client) {
-      return {
-        enabled: false,
-        connected: false,
-      };
-    }
-
-    try {
-      const info = await this.client.info('stats');
-      const dbSize = await this.client.dbSize();
-      
-      return {
-        enabled: true,
-        connected: true,
-        keys: dbSize,
-        info: this.parseRedisInfo(info),
-      };
-    } catch (error) {
-      logger.error('Cache stats error:', error);
-      return {
-        enabled: false,
-        connected: false,
-      };
-    }
+  enable() {
+    this.enabled = true;
+    logger.info('Cache enabled');
   }
 
   /**
-   * Parsear información de Redis
+   * Deshabilitar caché
    */
-  parseRedisInfo(infoString) {
-    const info = {};
-    const lines = infoString.split('\r\n');
-    
-    for (const line of lines) {
-      const [key, value] = line.split(':');
-      if (key && value) {
-        info[key] = value;
-      }
-    }
-    
-    return info;
-  }
-
-  /**
-   * Cerrar conexión
-   */
-  async disconnect() {
-    if (this.client && this.enabled) {
-      await this.client.quit();
-      this.enabled = false;
-      this.client = null;
-      logger.info('Redis disconnected');
-    }
+  disable() {
+    this.enabled = false;
+    logger.info('Cache disabled');
   }
 }
 
-// Singleton instance
+/**
+ * Decorador para cachear resultados de funciones
+ */
+export function cached(ttl = 3600, keyPrefix = 'fn') {
+  const cacheService = new CacheService();
+
+  return function (target, propertyKey, descriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = async function (...args) {
+      // Generar key única basada en argumentos
+      const argsKey = args.map(arg => JSON.stringify(arg)).join(':');
+      const key = `${keyPrefix}:${propertyKey}:${argsKey}`;
+
+      // Intentar obtener del caché
+      const cachedValue = await cacheService.get(key);
+
+      if (cachedValue !== null) {
+        return cachedValue;
+      }
+
+      // Ejecutar función original
+      const result = await originalMethod.apply(this, args);
+
+      // Guardar en caché
+      await cacheService.set(key, result, ttl);
+
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+/**
+ * Helper para cachear queries de base de datos
+ */
+export async function cachedQuery(pool, queryKey, sql, params = [], ttl = 300) {
+  const cacheService = new CacheService();
+
+  return await cacheService.get(
+    `db:${queryKey}`,
+    async () => {
+      const result = await pool.executeQuery(sql, params);
+      return result;
+    },
+    ttl
+  );
+}
+
+// Singleton
 export const cacheService = new CacheService();
-
-// Helper function para caché con fallback
-export async function cached(key, ttl, fetchFunction) {
-  // Intentar obtener del caché
-  const cachedValue = await cacheService.get(key);
-  
-  if (cachedValue !== null) {
-    return cachedValue;
-  }
-
-  // Fetch y guardar en caché
-  const value = await fetchFunction();
-  
-  if (value !== null && value !== undefined) {
-    await cacheService.set(key, value, ttl);
-  }
-  
-  return value;
-}
-
 export default cacheService;
